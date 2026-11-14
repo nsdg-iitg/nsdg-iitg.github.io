@@ -18,6 +18,10 @@ contact_phone: "+91 361 258 3469"
 # then put its code here, e.g. goatcounter: "nsdg-iitg". Leave empty to switch off.
 goatcounter: ""
 
+# Chat assistant (optional). Address of the Cloudflare Worker described in chatbot/README.md,
+# e.g. chat_endpoint: "https://nsdg-chat.example.workers.dev". Leave empty to switch off.
+chat_endpoint: ""
+
 collections:
   people:
     output: true
@@ -44,6 +48,7 @@ kramdown:
   smart_quotes: ["apos", "apos", "quot", "quot"]
 
 exclude:
+  - chatbot
   - README.md
   - CONTRIBUTING.md
   - Gemfile
