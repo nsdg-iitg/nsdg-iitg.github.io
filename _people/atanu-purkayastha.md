@@ -13,6 +13,9 @@ highlights:
   - "Lead-free all-perovskite tandem designed to 31.34% (simulated)"
   - "Life-cycle assessment: energy payback under 0.6 years"
   - "Best Paper, ICAER 2023; Rice University MRESP fellow, 2024; software copyright SW-17416/2023"
+links:
+  scholar: "https://scholar.google.com/citations?user=8S-70kQAAAAJ"
+  orcid: "https://orcid.org/0000-0001-9559-0688"
 description: "Dr. Atanu Purkayastha (PhD, IIT Guwahati, 2025) worked on lead-free tin perovskite solar cells, tandem and bifacial designs, and their life-cycle assessment."
 figures:
   - src: "/assets/img/figures/tin-psc-band-jpv2025.jpg"

@@ -12,6 +12,8 @@ highlights:
   - "ON/OFF ratio above 10⁵, 10⁴ switching cycles, and over 30 days in humid air without encapsulation"
   - "Flexible 4×4 crossbar with 81% device yield"
   - "Synapse-like learning and forgetting at about 0.1 µJ per event"
+links:
+  orcid: "https://orcid.org/0009-0008-1845-5229"
 description: "Radharani Yumlembam (IIT Guwahati) works on flexible, air-stable, lead-free Cs3Bi2I9 perovskite memristors, crossbar arrays and artificial synapses."
 figures:
   - src: "/assets/img/figures/flexible-cs3bi2i9-device-fpe2025.jpg"

@@ -7,6 +7,9 @@ order: 5
 topic: "Memristor-based neuromorphic olfactory (artificial smell) system"
 email: "nonglenm@iitg.ac.in"
 areas: [memristors]
+links:
+  scholar: "https://scholar.google.com/citations?user=ANXPU-IAAAAJ"
+  orcid: "https://orcid.org/0000-0002-9720-2156"
 description: "Dr. Ph. Nonglen Meitei (IIT Guwahati): Memristor-based neuromorphic olfactory (artificial smell) system."
 ---
 

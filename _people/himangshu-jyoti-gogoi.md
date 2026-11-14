@@ -13,6 +13,9 @@ highlights:
   - "A measurement protocol for perovskite memristors"
   - "Perspective on flexible perovskite memristors in J. Phys. Chem. Lett."
   - "Best Poster, PSIM 2023, IIT Roorkee"
+links:
+  scholar: "https://scholar.google.com/citations?user=JhuTqRkAAAAJ"
+  orcid: "https://orcid.org/0000-0003-1158-6994"
 description: "Dr. Himangshu Jyoti Gogoi (PhD, IIT Guwahati, 2023) worked on hybrid perovskite memristors: switching modes, measurement protocols, SPICE models and defect spectroscopy."
 figures:
   - src: "/assets/img/figures/complementary-switching-aelm2022.jpg"

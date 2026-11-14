@@ -6,6 +6,8 @@ order: 3
 now: "Postdoctoral researcher, NIT Meghalaya"
 topic: "Compact models of double-gate MOSFETs and phase-change memory"
 areas: [trap-analysis-modelling]
+links:
+  orcid: "https://orcid.org/0000-0003-2645-517X"
 description: "Dr. Rekib Uddin Ahmed worked at IIT Guwahati on compact models of double-gate MOSFETs and on energy-efficient phase-change memory."
 figures:
   - src: "/assets/img/figures/dgmosfet-structure-physscr2025.jpg"

@@ -10,6 +10,8 @@ email: "aruntej@iitg.ac.in"
 phone: "+91 361 258 3469"
 areas: [memristors, solar-cells, light-emitting-diodes, trap-analysis-modelling, nanowire-devices]
 links:
+  scholar: "https://scholar.google.com/citations?user=LqnkxZkAAAAJ"
+  orcid: "https://orcid.org/0000-0003-4112-4344"
   irins: "https://iitg.irins.org/profile/128319"
 description: "Dr. Arun Tej Mallajosyula, Associate Professor at IIT Guwahati, leads the Nanoelectronics and Semiconductor Devices Group working on perovskite memristors, lead-free solar cells and perovskite LEDs."
 ---

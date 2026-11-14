@@ -12,6 +12,9 @@ highlights:
   - "Showed that Br⁻ ion migration to the anode drives LED degradation, and that rest partly heals it"
   - "Grain-size study: small grains give brighter LEDs, large grains live longer (T50 175 vs 252 min)"
   - "Found a 0.30 eV bromide-vacancy-related trap by DLTS"
+links:
+  scholar: "https://scholar.google.com/citations?user=NEuGuiMAAAAJ"
+  orcid: "https://orcid.org/0009-0002-3102-5289"
 description: "Dr. Abinash Baruah (PhD, IIT Guwahati, 2026) worked on perovskite light-emitting diodes: ion migration, dielectric relaxation and trap physics in MAPbBr3 PeLEDs."
 figures:
   - src: "/assets/img/figures/peled-degradation-jpd2025.jpg"

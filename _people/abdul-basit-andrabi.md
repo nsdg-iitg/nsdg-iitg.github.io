@@ -11,6 +11,9 @@ highlights:
   - "A trap probe that needs only a dark current–voltage curve (Solar Energy, 2023)"
   - "Wrote his own drift–diffusion device simulator with traps and mobile ions"
   - "DLTS of ionic defects in flexible perovskite memristors"
+links:
+  scholar: "https://scholar.google.com/citations?user=uiO_8fkAAAAJ"
+  orcid: "https://orcid.org/0000-0002-4036-1789"
 description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written his own drift–diffusion simulator."
 figures:
   - src: "/assets/img/figures/transition-voltage-solen2023.jpg"
