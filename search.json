@@ -9,7 +9,7 @@ sitemap: false
 {%- unless first %},{% endunless -%}{%- assign first = false -%}
 {"t":{% if d.collection == "people" %}{{ d.name | jsonify }}{% else %}{{ d.title | jsonify }}{% endif %},"k":{% if d.collection == "people" %}"Person"{% else %}"Research"{% endif %},"u":{{ d.url | jsonify }},"s":{{ d.topic | default: d.lead | jsonify }},"x":{{ d.content | strip_html | normalize_whitespace | append: " " | append: d.role | append: " " | append: d.methods | jsonify }}}
 {%- endfor -%}
-{%- for p in site.html_pages -%}{%- if p.heading and p.url != "/404.html" -%}
+{%- for p in site.html_pages -%}{%- if p.heading and p.url != "/404.html" and p.search != false -%}
 ,{"t":{{ p.heading | jsonify }},"k":"Page","u":{{ p.url | jsonify }},"s":{{ p.lead | jsonify }},"x":{{ p.content | strip_html | normalize_whitespace | truncate: 12000, "" | jsonify }}}
 {%- endif -%}{%- endfor -%}
 {%- for p in site.data.publications -%}
