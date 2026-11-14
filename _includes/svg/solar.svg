@@ -1,0 +1,17 @@
+<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Inverted tin perovskite solar cell stack lit through the glass">
+  <rect x="40" y="18" width="160" height="16" rx="2" fill="var(--fig-metal)"/>
+  <rect x="40" y="34" width="160" height="10" fill="var(--fig-soft)"/>
+  <rect x="40" y="44" width="160" height="40" fill="var(--c-energy)"/>
+  <rect x="40" y="84" width="160" height="10" fill="var(--fig-soft2)"/>
+  <rect x="40" y="94" width="160" height="10" fill="var(--fig-tco)"/>
+  <rect x="40" y="104" width="160" height="22" rx="2" fill="var(--fig-glass)"/>
+  <g class="fig-label" text-anchor="start">
+    <text x="206" y="30">Ag</text><text x="206" y="42">ETL</text><text x="206" y="68">Sn perovskite</text>
+    <text x="206" y="92">HTL</text><text x="206" y="103">ITO</text><text x="206" y="119">glass</text>
+  </g>
+  <g stroke="var(--c-energy)" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M70 168 L70 136 M64 144 L70 136 L76 144"/>
+    <path d="M120 172 L120 136 M114 144 L120 136 L126 144"/>
+    <path d="M170 168 L170 136 M164 144 L170 136 L176 144"/>
+  </g>
+</svg>

@@ -1,0 +1,56 @@
+title: "NSDG · IIT Guwahati"
+group_name: "Nanoelectronics and Semiconductor Devices Group"
+short_name: "NSDG"
+tagline: "Energy harvesting, Light emission and Memories"
+description: "The Nanoelectronics and Semiconductor Devices Group (NSDG) at IIT Guwahati conducts research on perovskite memristors, lead-free solar cells, perovskite LEDs, defect spectroscopy and nanowire devices."
+url: "https://nsdg-iitg.github.io"
+baseurl: ""
+lang: en
+timezone: Asia/Kolkata
+
+institute: "Indian Institute of Technology Guwahati"
+department: "Department of Electronics and Electrical Engineering and Centre for Nanotechnology"
+address: "Department of EEE, IIT Guwahati, Guwahati 781039, Assam, India"
+contact_email: "aruntej@iitg.ac.in"
+contact_phone: "+91 361 258 3469"
+
+# Visitor statistics (optional, free). Create a site at https://www.goatcounter.com,
+# then put its code here, e.g. goatcounter: "nsdg-iitg". Leave empty to switch off.
+goatcounter: "nsdg-iitg"
+
+# Chat assistant (optional). Address of the Cloudflare Worker described in chatbot/README.md,
+# e.g. chat_endpoint: "https://nsdg-chat.example.workers.dev". Leave empty to switch off.
+chat_endpoint: "https://nsdg-chat.nsdg-iitg.workers.dev/"
+
+collections:
+  people:
+    output: true
+    permalink: /people/:name/
+  research:
+    output: true
+    permalink: /research/:name/
+
+defaults:
+  - scope: { path: "", type: people }
+    values: { layout: person }
+  - scope: { path: "", type: research }
+    values: { layout: area }
+  - scope: { path: "" }
+    values: { layout: page }
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  smart_quotes: ["apos", "apos", "quot", "quot"]
+
+exclude:
+  - chatbot
+  - README.md
+  - CONTRIBUTING.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor

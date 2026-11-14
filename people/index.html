@@ -1,0 +1,45 @@
+---
+title: "People"
+kicker: "People"
+heading: "The team"
+lead: "Postdoctoral researchers and PhD, M.Tech and B.Tech students working with Dr. Arun Tej Mallajosyula at IIT Guwahati."
+description: "Members and alumni of the Nanoelectronics and Semiconductor Devices Group (NSDG), IIT Guwahati."
+---
+{% assign pi = site.people | where: "category", "pi" | first %}
+<a class="pi-card" href="{{ pi.url | relative_url }}">
+  {% include avatar.html person=pi size="lg" %}
+  <div>
+    <p class="kicker">Group leader</p>
+    <h2>{{ pi.name }}</h2>
+    <p class="muted">{{ pi.role }}, Department of EEE and Centre for Nanotechnology, IIT Guwahati. Chair, IEEE EDS Guwahati Chapter. Previously at Los Alamos National Laboratory, NUS and TSMC.</p>
+  </div>
+</a>
+
+<h2 class="section-title">Members</h2>
+<div class="people-grid">
+  {% assign current = site.people | where: "category", "current" | sort: "order" %}
+  {% for m in current %}{% include person-card.html person=m %}{% endfor %}
+</div>
+
+<h2 class="section-title">Alumni</h2>
+<div class="people-grid">
+  {% assign alumni = site.people | where: "category", "alumni" | sort: "order" %}
+  {% for m in alumni %}{% include person-card.html person=m %}{% endfor %}
+</div>
+
+<h3 class="sub-title">M.Tech</h3>
+<div class="table-wrap">
+<table class="compact">
+  <thead><tr><th>Name</th><th>Year</th><th>Thesis</th></tr></thead>
+  <tbody>{% for a in site.data.alumni.mtech %}<tr><td>{{ a.name }}</td><td>{{ a.year | default: "–" }}</td><td>{{ a.thesis }}</td></tr>{% endfor %}</tbody>
+</table>
+</div>
+<h3 class="sub-title">B.Tech projects</h3>
+<div class="table-wrap">
+<table class="compact">
+  <thead><tr><th>Names</th><th>Year</th><th>Project</th></tr></thead>
+  <tbody>{% for a in site.data.alumni.btech %}<tr><td>{{ a.name }}</td><td>{{ a.year | default: "–" }}</td><td>{{ a.thesis }}</td></tr>{% endfor %}</tbody>
+</table>
+</div>
+<h3 class="sub-title">Interns</h3>
+<ul class="plain cols">{% for a in site.data.alumni.interns %}<li>{{ a }}</li>{% endfor %}</ul>

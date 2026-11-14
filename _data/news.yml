@@ -1,0 +1,69 @@
+# Newest first. date: YYYY-MM-DD. If the day is not known use 01; the site then shows only the month. link is optional.
+- date: 2026-11-10
+  title: "Abinash Baruah defends his PhD thesis"
+  text: "Thesis: Multiscale phenomena in perovskite LEDs: coupled interplay of ion migration, dielectric relaxation, and trap-assisted degradation."
+  link: /people/abinash-baruah/
+
+  image: /assets/img/news/abinash-phd.jpg
+- date: 2026-10-30
+  title: "IIT Guwahati and Tata Electronics sign MoU on semiconductor packaging"
+  text: "The group is extending its research to semiconductor packaging and heterogeneous integration."
+
+- date: 2025-12-01
+  title: "New paper in J. Phys. D on grain size in perovskite LEDs"
+  text: "Smaller grains yield higher luminance, whereas larger grains yield longer operating lifetime. Dielectric spectroscopy and DLTS are used to explain this trade-off."
+  link: /research/light-emitting-diodes/
+
+- date: 2025-06-30
+  title: "Atanu Purkayastha defends his PhD thesis"
+  text: "Thesis: Efficiency enhancement and sustainability analysis of lead-free hybrid perovskite tandem solar cells. Atanu has since joined CeNSE, IISc Bangalore."
+  link: /people/atanu-purkayastha/
+
+  image: /assets/img/news/atanu-phd.jpg
+- date: 2025-06-01
+  title: "Nanowire paper in Journal of Applied Physics"
+  text: "A short nitrogen plasma treatment increases the conductivity of a single CuO nanowire by about an order of magnitude."
+  link: /research/nanowire-devices/
+
+- date: 2025-02-01
+  title: "Flexible lead-free memristor synapses published"
+  text: "Air-stable Cs3Bi2I9 memristors on a flexible PET substrate, integrated into a 4×4 crossbar array, published in Flexible and Printed Electronics."
+  link: /research/memristors/
+
+- date: 2024-06-11
+  title: "Talk at IEEE PVSC 2024, Seattle"
+  text: "Optical modelling of solution-processed all-perovskite triple-junction solar cells, in the multi-junction perovskite session."
+  image: /assets/img/news/pvsc-2024.jpg
+
+- date: 2024-01-01
+  title: "Atanu Purkayastha awarded Rice University MRESP fellowship"
+  text: "Research visit to Rice University, USA, from January to April 2024."
+
+- date: 2023-12-01
+  title: "Best Paper Award at ICAER 2023, IIT Bombay"
+  text: "For the bifacial lead-free all-perovskite tandem solar cell for indoor use."
+
+- date: 2023-06-01
+  title: "Paper at IEEE PVSC 2023, Puerto Rico"
+  text: "Influence of spectral albedo on lead-free perovskite bifacial tandem solar cells."
+  image: /assets/img/news/pvsc-2023.jpg
+
+- date: 2023-11-01
+  title: "Software copyright granted"
+  text: "Granted for an optical simulation model of triple-junction solar cells (SW-17416/2023)."
+
+  image: /assets/img/news/copyright.jpg
+- date: 2023-05-12
+  title: "Himangshu Jyoti Gogoi defends his PhD thesis"
+  text: "Thesis: Design, optimization and modelling of hybrid organic-inorganic perovskite memristors. Himangshu is now an Assistant Professor at Assam Skill University."
+  link: /people/himangshu-jyoti-gogoi/
+
+  image: /assets/img/news/himangshu-phd.jpg
+- date: 2023-03-01
+  title: "Best Poster awards at PSIM, IIT Roorkee"
+  text: "Awarded to Atanu Purkayastha and Himangshu Jyoti Gogoi."
+
+- date: 2022-07-01
+  title: "Talk at IEEE IFETC 2022"
+  text: "Ionic defect analysis in flexible hybrid perovskite memristors using deep-level transient spectroscopy."
+  image: /assets/img/news/ifetc-2022.jpg

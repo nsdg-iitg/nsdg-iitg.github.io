@@ -1,0 +1,20 @@
+---
+title: "Teaching"
+permalink: /teaching/
+kicker: "Teaching"
+heading: "Teaching"
+lead: "Courses taught by Dr. Arun Tej Mallajosyula at IIT Guwahati, ranging from first-year electronics to graduate courses on device modelling, photovoltaics and electronic packaging."
+description: "Courses taught by Dr. Arun Tej Mallajosyula at IIT Guwahati."
+---
+<div class="course-cols">
+  <section>
+    <h2 class="section-title">Theory</h2>
+    <ul class="courses">{% for c in site.data.teaching.theory %}<li><span class="code">{{ c.code }}</span><span>{{ c.title }}{% if c.level %}<small class="course-level">{{ c.level }}</small>{% endif %}</span></li>{% endfor %}</ul>
+  </section>
+  <section>
+    <h2 class="section-title">Laboratory</h2>
+    <ul class="courses">{% for c in site.data.teaching.lab %}<li><span class="code">{{ c.code }}</span><span>{{ c.title }}{% if c.level %}<small class="course-level">{{ c.level }}</small>{% endif %}</span></li>{% endfor %}</ul>
+    <h2 class="section-title">Tutorial</h2>
+    <ul class="courses">{% for c in site.data.teaching.tutorial %}<li><span class="code">{{ c.code }}</span><span>{{ c.title }}{% if c.level %}<small class="course-level">{{ c.level }}</small>{% endif %}</span></li>{% endfor %}</ul>
+  </section>
+</div>

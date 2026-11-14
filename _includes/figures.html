@@ -1,0 +1,10 @@
+{% if include.figs %}
+<div class="figs">
+  {% for f in include.figs %}
+  <figure class="fig">
+    <a href="{{ f.src | relative_url }}"><img src="{{ f.src | relative_url }}" alt="{{ f.caption | split: '. From' | first | escape }}" loading="lazy"></a>
+    <figcaption>{{ f.caption }}</figcaption>
+  </figure>
+  {% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,55 @@
+---
+layout: default
+---
+{% assign slug = page.slug %}
+<section class="page-head person-head">
+  <div class="wrap person-head-grid">
+    {% include avatar.html person=page size="xl" %}
+    <div>
+      <p class="kicker"><a href="{{ '/people/' | relative_url }}">People</a> · {% if page.category == 'alumni' %}Alumni{% elsif page.category == 'pi' %}Group leader{% else %}Current member{% endif %}</p>
+      <h1>{{ page.name }}</h1>
+      <p class="person-role-lg">{{ page.role }}</p>
+      <p class="lead">{{ page.topic }}</p>
+      <ul class="person-links">
+        {% if page.now %}<li><span class="muted">Now:</span> {{ page.now }}</li>{% endif %}
+        {% if page.email != "" and page.email %}<li><a href="mailto:{{ page.email }}">{{ page.email }}</a></li>{% endif %}
+        {% if page.links.scholar %}<li><a href="{{ page.links.scholar }}">Google Scholar</a></li>{% endif %}
+        {% if page.links.orcid %}<li><a href="{{ page.links.orcid }}">ORCID</a></li>{% endif %}
+        {% if page.links.linkedin %}<li><a href="{{ page.links.linkedin }}">LinkedIn</a></li>{% endif %}
+        {% if page.links.irins %}<li><a href="{{ page.links.irins }}">IRINS profile</a></li>{% endif %}
+        {% if page.links.github %}<li><a href="{{ page.links.github }}">GitHub</a></li>{% endif %}
+      </ul>
+    </div>
+  </div>
+</section>
+<div class="wrap two-col">
+  <article class="prose">
+    {{ content }}
+    {% include figures.html figs=page.figures %}
+    {% if page.thesis and page.category == 'alumni' %}<p class="thesis"><span class="muted">PhD thesis:</span> <em>{{ page.thesis }}</em></p>{% endif %}
+    {% if page.education %}<h3>Education</h3><ul class="edu">{% for e in page.education %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  </article>
+  <aside class="side">
+    {% if page.highlights %}
+    <h2 class="side-title">Highlights</h2>
+    <ul class="highlights">{% for h in page.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% if page.areas %}
+    <h2 class="side-title">Research areas</h2>
+    <ul class="plain">
+      {% for a in page.areas %}{% assign ar = site.research | where: "slug", a | first %}{% if ar %}<li><a href="{{ ar.url | relative_url }}">{{ ar.title }}</a></li>{% endif %}{% endfor %}
+    </ul>
+    {% endif %}
+  </aside>
+</div>
+{% assign pubs = site.data.publications | where_exp: "p", "p.people contains slug" %}
+{% if pubs.size > 0 %}
+<section class="wrap section">
+  <h2>Publications{% if page.category == 'pi' %} with the group{% endif %}</h2>
+  <ol class="pubs">{% for p in pubs %}{% include pub.html p=p %}{% endfor %}</ol>
+</section>
+{% endif %}
+{% capture same %}{% for l in page.links %}"{{ l[1] }}"{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":{{ page.name | remove: "Dr. " | jsonify }},"jobTitle":{{ page.role | jsonify }},"description":{{ page.topic | jsonify }},"url":{{ page.url | absolute_url | jsonify }},{% if page.email != "" and page.email %}"email":{{ page.email | jsonify }},{% endif %}"affiliation":{"@type":"Organization","name":"{{ site.group_name }}, {{ site.institute }}","url":{{ site.url | jsonify }}}{% if same != "" %},"sameAs":[{{ same }}]{% endif %},"knowsAbout":{{ page.topic | jsonify }}}
+</script>

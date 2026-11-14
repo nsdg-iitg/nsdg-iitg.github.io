@@ -1,0 +1,386 @@
+# Group publications. Newest first within each type.
+# Fields:
+#   type:    journal | conference | preprint | ip | talk
+#   people:  member page slugs (file names in _people/) -> paper shows on their page
+#   areas:   research area slugs (file names in _research/) -> paper shows on that area page
+#   note:    optional badge, e.g. "Open access" or "Best Paper Award"
+
+# ---------------- Journal articles ----------------
+- type: journal
+  year: 2026
+  title: "Integrating dimensional engineering and optical management for high-performance lead-free all-perovskite tandem solar cells"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "Solar Energy Materials and Solar Cells"
+  details: "297, 114100"
+  doi: "10.1016/j.solmat.2025.114100"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: journal
+  year: 2026
+  title: "Multiscale dielectric relaxation and trap-assisted conduction in halide perovskite light-emitting diodes"
+  authors: "A. Baruah, A. T. Mallajosyula"
+  venue: "Journal of Physics D: Applied Physics"
+  details: "59, 015112"
+  doi: "10.1088/1361-6463/ae27de"
+  people: [abinash-baruah, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes, trap-analysis-modelling]
+
+- type: journal
+  year: 2025
+  title: "Giant polarization facilitating ion migration in perovskite light emitting diodes: implications for performance degradation"
+  authors: "A. Baruah, H. J. Gogoi, A. T. Mallajosyula"
+  venue: "Journal of Physics D: Applied Physics"
+  details: "58, 205105"
+  doi: "10.1088/1361-6463/adcd82"
+  people: [abinash-baruah, himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes]
+
+- type: journal
+  year: 2025
+  title: "Nitrogen plasma-induced conductivity enhancement of a single CuO nanowire"
+  authors: "J. Pati, P. Dobbidi, A. T. Mallajosyula"
+  venue: "Journal of Applied Physics"
+  details: "138, 024302"
+  doi: "10.1063/5.0261371"
+  note: "Open access"
+  people: [jawaharlal-pati, arun-tej-mallajosyula]
+  areas: [nanowire-devices]
+
+- type: journal
+  year: 2025
+  title: "Efficient and accurate modeling of double-gate MOSFETs: a computationally feasible approach for potential, subthreshold, and drain current characteristics"
+  authors: "R. U. Ahmed, A. T. Mallajosyula"
+  venue: "Physica Scripta"
+  details: "100, 085414"
+  doi: "10.1088/1402-4896/adf5f6"
+  people: [rekib-uddin-ahmed, arun-tej-mallajosyula]
+  areas: [trap-analysis-modelling]
+
+- type: journal
+  year: 2025
+  title: "Artificial synapse using flexible and air-stable Cs3Bi2I9 perovskite memristors"
+  authors: "R. Yumlembam, H. J. Gogoi, R. P. Palathinkal, A. T. Mallajosyula"
+  venue: "Flexible and Printed Electronics"
+  details: "10, 015007"
+  doi: "10.1088/2058-8585/adacf9"
+  people: [radharani-yumlembam, himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: journal
+  year: 2025
+  title: "Performance of 2-D/3-D mixed-dimension tin perovskite solar cells and their prospects under bifacial configuration"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "IEEE Journal of Photovoltaics"
+  details: "15(1), 54–60"
+  doi: "10.1109/JPHOTOV.2024.3497135"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: journal
+  year: 2024
+  title: "Efficiency enhancement and life cycle assessment of 2D/3D mixed-dimensional tin perovskite plasmonic solar cells"
+  authors: "A. Purkayastha, M. Minz, R. K. Sonkar, A. T. Mallajosyula"
+  venue: "ACS Applied Electronic Materials"
+  details: "6(2), 737–747"
+  doi: "10.1021/acsaelm.3c01166"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: journal
+  year: 2023
+  title: "Unraveling trap distribution in perovskite films: a qualitative analysis via diffusion to drift transition voltage of current–voltage characteristics"
+  authors: "A. B. Andrabi, A. T. Mallajosyula"
+  venue: "Solar Energy"
+  details: "264, 112020"
+  doi: "10.1016/j.solener.2023.112020"
+  people: [abdul-basit-andrabi, arun-tej-mallajosyula]
+  areas: [trap-analysis-modelling, solar-cells]
+
+- type: journal
+  year: 2023
+  title: "Hybrid perovskite-based flexible and stable memristor by complete solution process for neuromorphic computing"
+  authors: "M. Patel, D. D. Kumbhar, J. Gosai, M. R. Sekhar, A. T. Mallajosyula, A. Solanki"
+  venue: "Advanced Electronic Materials"
+  details: "9(4), 2200908"
+  doi: "10.1002/aelm.202200908"
+  note: "Collaboration with PDEU"
+  people: [arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: journal
+  year: 2022
+  title: "Multifunctional bipolar and complementary resistive switching in HOIP memristors by the control of compliance current"
+  authors: "H. J. Gogoi, A. T. Mallajosyula"
+  venue: "ACS Applied Electronic Materials"
+  details: "4(3), 1039–1046"
+  doi: "10.1021/acsaelm.1c01200"
+  people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: journal
+  year: 2021
+  title: "Advances in flexible memristors with hybrid perovskites"
+  authors: "H. J. Gogoi, K. Bajpai, A. T. Mallajosyula, A. Solanki"
+  venue: "The Journal of Physical Chemistry Letters"
+  details: "12(36), 8798–8825"
+  doi: "10.1021/acs.jpclett.1c02105"
+  note: "Perspective"
+  people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: journal
+  year: 2021
+  title: "Enhancing the switching performance of CH3NH3PbI3 memristors by the control of size and characterization parameters"
+  authors: "H. J. Gogoi, A. T. Mallajosyula"
+  venue: "Advanced Electronic Materials"
+  details: "7(11), 2100472"
+  doi: "10.1002/aelm.202100472"
+  people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: journal
+  year: 2021
+  title: "Effect of various interlayers on the performance of cesium formamidinium lead mixed halide (CsFAPbX3) – formamidinium tin iodide (FASnI3) two-terminal tandem solar cell"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "Solar Energy"
+  details: "228, 523–530"
+  doi: "10.1016/j.solener.2021.09.046"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: journal
+  year: 2021
+  title: "Optical modelling of tandem solar cells using hybrid organic-inorganic tin perovskite bottom sub-cell"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "Solar Energy"
+  details: "218, 251–261"
+  doi: "10.1016/j.solener.2021.01.054"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: journal
+  year: 2020
+  title: "A comparative study on the forming methods of chalcogenide memristors to optimize the resistive switching performance"
+  authors: "H. J. Gogoi, A. T. Mallajosyula"
+  venue: "Journal of Physics D: Applied Physics"
+  details: "53, 445108"
+  doi: "10.1088/1361-6463/aba56e"
+  people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+# ---------------- Conference proceedings ----------------
+- type: conference
+  year: 2026
+  title: "Trap-mediated ionic dynamics in MAPbBr3 PeLEDs revealed by modulus and deep-level transient spectroscopies"
+  authors: "A. Baruah, A. T. Mallajosyula"
+  venue: "10th IEEE Electron Devices Technology & Manufacturing Conference (EDTM)"
+  doi: "10.1109/EDTM65772.2026.11496963"
+  people: [abinash-baruah, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes, trap-analysis-modelling]
+
+- type: conference
+  year: 2026
+  title: "Energy-efficient pore-confined phase change memory using current-crowding effect: a simulation study"
+  authors: "R. U. Ahmed, A. T. Mallajosyula, B. Saini, U. Ganguly"
+  venue: "VLSI Design and Test (VDAT), Springer CCIS"
+  details: "459–472"
+  doi: "10.1007/978-3-032-26305-6_36"
+  people: [rekib-uddin-ahmed, arun-tej-mallajosyula]
+  areas: [trap-analysis-modelling]
+
+- type: conference
+  year: 2025
+  title: "Multiscale dielectric relaxation in MAPbBr3 based perovskite light-emitting diodes"
+  authors: "A. Baruah, A. T. Mallajosyula"
+  venue: "IEEE Latin American Conference on Nanotechnology (LANANO)"
+  details: "123–128"
+  doi: "10.1109/LANANO68466.2025.11512587"
+  people: [abinash-baruah, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes]
+
+- type: conference
+  year: 2025
+  title: "Quantifying ionic dynamics in MAPbBr3 PeLEDs: modulus peaks, split Arrhenius kinetics, and correlated barrier hopping transport"
+  authors: "A. Baruah, A. T. Mallajosyula"
+  venue: "IEEE International Conference on Emerging Electronics (ICEE)"
+  doi: "10.1109/ICEE67165.2025.11409695"
+  people: [abinash-baruah, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes]
+
+- type: conference
+  year: 2025
+  title: "Effect of phenylethylammonium iodide incorporation on the performance of tin-based perovskite solar cells"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "IEEE 53rd Photovoltaic Specialists Conference (PVSC)"
+  details: "1721–1723"
+  doi: "10.1109/PVSC59419.2025.11132971"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2024
+  title: "Optical modelling of solution processed all-perovskite triple junction solar cells"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "IEEE 52nd Photovoltaic Specialists Conference (PVSC)"
+  details: "899–901"
+  doi: "10.1109/PVSC57443.2024.10749552"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2024
+  title: "Performance of bifacial lead-free all-perovskite tandem solar cell for indoor applications"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "ICAER 2023, Advances in Clean Energy and Sustainability (Springer)"
+  details: "555–563"
+  doi: "10.1007/978-981-97-5415-1_46"
+  note: "Best Paper Award"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2023
+  title: "Optical modelling of lead-free all-OIHP tandem solar cell"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "XXII International Workshop on Physics of Semiconductor Devices (IWPSD), IIT Madras"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2023
+  title: "Influence of spectral albedo on the performance of lead-free perovskite bifacial tandem solar cell"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "IEEE 50th Photovoltaic Specialists Conference (PVSC)"
+  doi: "10.1109/PVSC48320.2023.10359550"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2022
+  title: "Effect of spectral albedo on bifacial 2D/3D tin perovskite solar cells under concurrent illumination"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "6th IEEE International Conference on Emerging Electronics (ICEE), Bengaluru"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2022
+  title: "Ionic defect analysis in flexible hybrid perovskite memristor using deep level transient spectroscopy"
+  authors: "H. J. Gogoi, A. B. Andrabi, M. R. Sekhar, A. T. Mallajosyula"
+  venue: "IEEE International Flexible Electronics Technology Conference (IFETC)"
+  doi: "10.1109/IFETC53656.2022.9948530"
+  people: [himangshu-jyoti-gogoi, abdul-basit-andrabi, arun-tej-mallajosyula]
+  areas: [memristors, trap-analysis-modelling]
+
+- type: conference
+  year: 2022
+  title: "Investigation of lead-free 2D/3D mixed-dimensional tin perovskite solar cell embedded with plasmonic metal nanoparticles"
+  authors: "A. Purkayastha, M. Minz, R. K. Sonkar, A. T. Mallajosyula"
+  venue: "IEEE 49th Photovoltaics Specialists Conference (PVSC)"
+  details: "504–506"
+  doi: "10.1109/PVSC48317.2022.9938955"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2021
+  title: "Effect of active layer thickness and angle of incidence on the efficiency of planar heterojunction lead-free tin perovskite solar cell"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "IEEE 48th Photovoltaic Specialists Conference (PVSC)"
+  details: "1236–1239"
+  doi: "10.1109/PVSC43889.2021.9518909"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2020
+  title: "Photocurrent loss analysis of series connected tandem solar cells based on hybrid tin perovskites, kesterites, and semiconducting polymers"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "5th IEEE International Conference on Emerging Electronics (ICEE)"
+  doi: "10.1109/ICEE50728.2020.9776944"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2018
+  title: "Effect of antisolvent method on the performance of HOIP based memristive devices"
+  authors: "H. J. Gogoi, A. Solanki, A. T. Mallajosyula"
+  venue: "4th IEEE International Conference on Emerging Electronics (ICEE)"
+  doi: "10.1109/ICEE44586.2018.8937971"
+  people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+# ---------------- Talks and preprints ----------------
+- type: talk
+  year: 2024
+  title: "Charge transport in methyl ammonium lead tri-bromide perovskite light emitting diodes"
+  authors: "A. Baruah, A. T. Mallajosyula"
+  venue: "2nd International Conference on Low-Energy Digital Devices and Computing (ICLED), Singapore"
+  people: [abinash-baruah, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes]
+
+- type: talk
+  year: 2023
+  title: "Lead-free all-inorganic perovskite memristor by thermal evaporation"
+  authors: "R. Yumlembam, H. J. Gogoi, R. P. Palathinkal, A. T. Mallajosyula"
+  venue: "International Conference on Condensed Matter and Device Physics (ICCMDP), Gandhinagar"
+  people: [radharani-yumlembam, himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: talk
+  year: 2023
+  title: "Analysis of ionic defects in hybrid perovskite memristors using deep level transient spectroscopy"
+  authors: "H. J. Gogoi*, A. B. Andrabi*, A. T. Mallajosyula"
+  venue: "1st International Conference on Low-Energy Digital Devices and Computing (ICLED), Singapore"
+  people: [himangshu-jyoti-gogoi, abdul-basit-andrabi, arun-tej-mallajosyula]
+  areas: [memristors, trap-analysis-modelling]
+
+- type: talk
+  year: 2021
+  title: "SPICE simulation of hybrid organic-inorganic perovskite memristive devices"
+  authors: "H. J. Gogoi"
+  venue: "7th International Conference on Advanced Nanomaterials and Nanotechnology, flash talk"
+  people: [himangshu-jyoti-gogoi]
+  areas: [memristors]
+
+- type: talk
+  year: 2021
+  title: "Measurement process-dependent performance and conduction mechanism of hybrid perovskite memristors"
+  authors: "H. J. Gogoi, A. T. Mallajosyula"
+  venue: "nanoGe International Conference on Perovskite Memristors and Electronics (ICPME), oral"
+  doi: "10.29363/nanoge.icpme.2021.009"
+  people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: preprint
+  year: 2024
+  title: "High performance MAGeI3:2D/3D-FASnI3 hybrid perovskite tandem solar cells"
+  authors: "A. Purkayastha, A. B. Andrabi, A. T. Mallajosyula"
+  venue: "SSRN preprint"
+  doi: "10.2139/ssrn.4926406"
+  people: [atanu-purkayastha, abdul-basit-andrabi, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+# ---------------- Patents and copyright ----------------
+- type: ip
+  year: 2023
+  title: "A model for the optical simulation of triple junction solar cells"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "Software copyright SW-17416/2023, granted 2023"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: ip
+  year: 2020
+  title: "A solar cell with improved light absorption capacity"
+  authors: "S. Sundar Kumar Iyer, A. T. Mallajosyula"
+  venue: "Indian Patent No. 344791, granted 2020"
+  people: [arun-tej-mallajosyula]
+
+- type: ip
+  year: 2016
+  title: "An improved organic optoelectronic device"
+  authors: "S. Sundar Kumar Iyer, R. Gurunath, A. T. Mallajosyula, B. K. Rajbongshi, G. Bhattacharjya, V. Jain"
+  venue: "Indian Patent No. 271903, granted 2016"
+  people: [arun-tej-mallajosyula]

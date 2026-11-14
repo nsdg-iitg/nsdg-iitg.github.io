@@ -1,0 +1,45 @@
+---
+title: "Publications"
+permalink: /publications/
+kicker: "Publications"
+heading: "Publications"
+lead: "Journal papers, conference papers, talks, patents and copyright from the group. Every title links to the paper through its DOI."
+description: "Publications of the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati, with DOI links."
+---
+{% assign jr = site.data.publications | where: "type", "journal" %}{% assign cf = site.data.publications | where: "type", "conference" %}
+{% assign both = jr | concat: cf %}{% assign ys = both | map: "year" | sort %}{% assign y0 = ys.first %}{% assign y1 = ys.last %}
+<figure class="pub-chart" aria-label="Journal and conference papers per year">
+  <figcaption><strong>Papers per year</strong><span class="pc-legend"><span class="pc-key pc-j"></span>Journal <span class="pc-key pc-c"></span>Conference</span></figcaption>
+  <div class="pc-bars">
+    {% for y in (y0..y1) %}{% assign nj = jr | where: "year", y | size %}{% assign nc = cf | where: "year", y | size %}
+    <div class="pc-col" title="{{ y }}: {{ nj }} journal, {{ nc }} conference"><span class="pc-total">{{ nj | plus: nc }}</span><span class="pc-bar pc-c" style="--n: {{ nc }}"></span><span class="pc-bar pc-j" style="--n: {{ nj }}"></span><span class="pc-year">{{ y }}</span></div>
+    {% endfor %}
+  </div>
+</figure>
+<div class="pub-tools" role="group" aria-label="Filter publications">
+  <input type="search" id="pub-search" placeholder="Search title, author or journal" aria-label="Search publications">
+  <div class="chips">
+    <button class="chip" data-type="all" aria-pressed="true">All</button>
+    <button class="chip" data-type="journal" aria-pressed="false">Journals</button>
+    <button class="chip" data-type="conference" aria-pressed="false">Conferences</button>
+    <button class="chip" data-type="other" aria-pressed="false">Talks, preprints, IP</button>
+  </div>
+</div>
+<p id="pub-count" class="muted small" aria-live="polite"></p>
+
+{% assign sections = "journal:Journal articles,conference:Conference proceedings,talk:Talks,preprint:Preprints,ip:Patents and copyright" | split: "," %}
+{% for s in sections %}
+  {% assign kv = s | split: ":" %}
+  {% assign list = site.data.publications | where: "type", kv[0] %}
+  {% if list.size > 0 %}
+  <section class="pub-section" data-type="{% if kv[0] == 'journal' or kv[0] == 'conference' %}{{ kv[0] }}{% else %}other{% endif %}">
+    <h2 class="section-title">{{ kv[1] }} <span class="count">{{ list.size }}</span></h2>
+    {% assign years = list | group_by: "year" %}
+    {% for y in years %}
+      <h3 class="year">{{ y.name }}</h3>
+      <ol class="pubs">{% for p in y.items %}{% include pub.html p=p %}{% endfor %}</ol>
+    {% endfor %}
+  </section>
+  {% endif %}
+{% endfor %}
+<p class="muted small">Something missing or wrong? Edit <code>_data/publications.yml</code> in the site repository.</p>

@@ -1,0 +1,9 @@
+{% assign m = include.person %}
+<a class="person-card" href="{{ m.url | relative_url }}">
+  {% include avatar.html person=m %}
+  <span class="person-meta">
+    <span class="person-name">{{ m.name }}</span>
+    <span class="person-role">{{ m.role }}</span>
+    <span class="person-topic">{% if m.now %}Now: {{ m.now }}{% else %}{{ m.topic }}{% endif %}</span>
+  </span>
+</a>

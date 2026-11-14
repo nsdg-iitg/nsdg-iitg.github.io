@@ -1,0 +1,94 @@
+---
+layout: default
+title: "Nanoelectronics and Semiconductor Devices Group, IIT Guwahati"
+description: "NSDG at IIT Guwahati fabricates and models semiconductor devices for energy harvesting, light emission and memory: perovskite memristors, lead-free solar cells, perovskite LEDs and nanowire devices."
+body_class: home
+---
+<section class="hero">
+  <div class="wrap hero-head">
+    <p class="kicker">{{ site.group_name }} · IIT Guwahati</p>
+    <h1>Devices that <span class="hl-energy">harvest energy</span>, <span class="hl-light">emit light</span> and <span class="hl-memory">remember</span>.</h1>
+  </div>
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="lead">The group fabricates and models semiconductor devices based on halide perovskites, organic semiconductors and nanowires. The work extends from thin-film growth and device fabrication to defect spectroscopy, device simulation and circuit design.</p>
+      <p class="lead">Current devices include flexible perovskite memristors and crossbar arrays for neuromorphic computing, lead-free and tandem perovskite solar cells, green perovskite light-emitting diodes, and sensors based on single nanowires. More recent work addresses organic light-emitting diodes, a memristor-based artificial olfactory system, and energy-harvesting devices and circuits with supercapacitor storage. The group has also begun work on semiconductor packaging.</p>
+      <p class="lead">For each device, we study the underlying physics, namely carrier generation and recombination, electronic and ionic transport, and the energy and spatial distribution of traps and mobile ions. The experimental methods include deep-level transient spectroscopy, impedance spectroscopy, low-temperature I–V and C–V measurements and nanoscale imaging. These are supported by TCAD and by CEISIM, a drift–diffusion simulator developed in the group, which form the basis for analytical and compact models.</p>
+      <p class="cta">
+        <a class="btn" href="{{ '/research/' | relative_url }}">Explore our research</a>
+        <a class="btn ghost" href="{{ '/people/' | relative_url }}">Meet the team</a>
+      </p>
+    </div>
+    <figure class="hero-figure" aria-hidden="true">{% include svg/hero.svg %}</figure>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="section-head">
+    <h2>Research</h2>
+    <a class="more" href="{{ '/research/' | relative_url }}">All research →</a>
+  </div>
+  <div class="area-grid">
+    {% assign areas = site.research | sort: "order" %}
+    {% for a in areas %}
+    <a class="area-card area-{{ a.slug }}" href="{{ a.url | relative_url }}">
+      <span class="area-icon" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</span>
+      <span class="area-short">{{ a.short }}</span>
+      <span class="area-title">{{ a.title }}</span>
+      <span class="area-lead">{{ a.lead }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% assign journals = site.data.publications | where: "type", "journal" %}
+{% assign phds = site.people | where: "category", "alumni" %}
+<section class="stats-band">
+  <div class="wrap"><div class="stats">
+    <div><span class="stat-num">{{ journals.size }}</span><span class="stat-label">journal papers since 2020</span></div>
+    <div><span class="stat-num">8</span><span class="stat-label">funded projects</span></div>
+    <div><span class="stat-num">3</span><span class="stat-label">PhD theses completed</span></div>
+    <div><span class="stat-num">5</span><span class="stat-label">IITG facilities we work in</span></div>
+  </div></div>
+</section>
+
+<section class="wrap section home-split">
+  <div>
+    <div class="section-head"><h2>News</h2><a class="more" href="{{ '/news/' | relative_url }}">All news →</a></div>
+    <ul class="news-list">
+      {% assign news_sorted = site.data.news | sort: "date" | reverse %}
+      {% for n in news_sorted limit: 4 %}
+      <li>
+        <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
+        <span>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div>
+    <div class="section-head"><h2>Recent papers</h2><a class="more" href="{{ '/publications/' | relative_url }}">All publications →</a></div>
+    <ol class="pubs compact">
+      {% for p in journals limit: 4 %}{% include pub.html p=p %}{% endfor %}
+    </ol>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="section-head"><h2>Life in the group</h2><a class="more" href="{{ '/gallery/' | relative_url }}">Gallery →</a></div>
+  <div class="photo-strip">
+    {% assign strip = "gallery-02.jpg,gallery-21.jpg,gallery-19.jpg,gallery-13.jpg" | split: "," %}
+    {% for f in strip %}
+    <a href="{{ '/gallery/' | relative_url }}"><img src="{{ '/assets/img/gallery/thumbs/' | append: f | relative_url }}" alt="Group photo" loading="lazy"></a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="wrap section join">
+  <div class="join-box">
+    <div>
+      <h2>Join us</h2>
+      <p>The group welcomes applications from prospective PhD, M.Tech and B.Tech students, postdoctoral researchers and interns with an interest in device fabrication and device physics. Please write to Dr. Arun Tej Mallajosyula with a CV and a short statement of research interests.</p>
+    </div>
+    <a class="btn" href="{{ '/contact/' | relative_url }}">Get in touch</a>
+  </div>
+</section>
