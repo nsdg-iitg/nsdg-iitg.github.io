@@ -1,6 +1,7 @@
 ---
 name: "Guri Thanusha"
 role: "M.Tech, Electronics and Electrical Engineering"
+photo: /assets/img/people/guri-thanusha.jpg
 category: current
 order: 9
 topic: "A solar cell, power-management IC and supercapacitor circuit to run an edge-AI load"

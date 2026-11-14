@@ -2,6 +2,7 @@
 name: "Dr. Arun Tej Mallajosyula"
 short_name: "Arun Tej M."
 role: "Associate Professor and Principal Investigator"
+photo: /assets/img/people/arun-tej-mallajosyula.jpg
 category: pi
 order: 0
 topic: "Perovskite and organic devices: memories, solar cells and light emitters"

@@ -1,6 +1,7 @@
 ---
 name: "Dr. Rabin Paul"
 role: "Institute Postdoctoral Fellow"
+photo: /assets/img/people/rabin-paul.jpg
 category: current
 order: 6
 topic: "Design and modelling of third- and fourth-generation solar cells"

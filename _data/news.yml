@@ -4,6 +4,7 @@
   text: "Abinash's thesis work on bright green perovskite LEDs, their ion migration and trap physics, is complete. Congratulations, Dr. Baruah!"
   link: /people/abinash-baruah/
 
+  image: /assets/img/news/abinash-phd.jpg
 - date: 2026-10-30
   title: "IIT Guwahati and Tata Electronics sign MoU on semiconductor packaging"
   text: "The group is expanding into semiconductor packaging and heterogeneous integration."
@@ -18,6 +19,7 @@
   text: "Thesis: Efficiency enhancement and sustainability analysis of lead-free hybrid perovskite tandem solar cells. Atanu has since joined CeNSE, IISc Bangalore."
   link: /people/atanu-purkayastha/
 
+  image: /assets/img/news/atanu-phd.jpg
 - date: 2025-06-01
   title: "Nanowire paper in Journal of Applied Physics"
   text: "A short nitrogen plasma treatment makes a single CuO nanowire about 10 times more conductive."
@@ -28,6 +30,11 @@
   text: "Air-stable Cs3Bi2I9 memristors on plastic, built into a 4×4 crossbar, in Flexible and Printed Electronics."
   link: /research/memristors/
 
+- date: 2024-06-11
+  title: "Talk at IEEE PVSC 2024, Seattle"
+  text: "Optical modelling of solution-processed all-perovskite triple-junction solar cells, in the multi-junction perovskite session."
+  image: /assets/img/news/pvsc-2024.jpg
+
 - date: 2024-01-01
   title: "Atanu Purkayastha awarded Rice University MRESP fellowship"
   text: "A research visit to Rice University, USA, from January to April 2024."
@@ -36,15 +43,27 @@
   title: "Best Paper Award at ICAER 2023, IIT Bombay"
   text: "For the bifacial lead-free all-perovskite tandem solar cell for indoor use."
 
+- date: 2023-06-01
+  title: "Paper at IEEE PVSC 2023, Puerto Rico"
+  text: "Influence of spectral albedo on lead-free perovskite bifacial tandem solar cells."
+  image: /assets/img/news/pvsc-2023.jpg
+
 - date: 2023-11-01
   title: "Software copyright granted"
   text: "For a model for the optical simulation of triple-junction solar cells (SW-17416/2023)."
 
+  image: /assets/img/news/copyright.jpg
 - date: 2023-05-12
   title: "Himangshu Jyoti Gogoi defends his PhD thesis"
   text: "Thesis: Design, optimization and modelling of hybrid organic-inorganic perovskite memristors. Himangshu is now an Assistant Professor at Assam Skill University."
   link: /people/himangshu-jyoti-gogoi/
 
+  image: /assets/img/news/himangshu-phd.jpg
 - date: 2023-03-01
   title: "Best Poster awards at PSIM, IIT Roorkee"
   text: "Awarded to Atanu Purkayastha and Himangshu Jyoti Gogoi."
+
+- date: 2022-07-01
+  title: "Talk at IEEE IFETC 2022"
+  text: "Ionic defect analysis in flexible hybrid perovskite memristors using deep-level transient spectroscopy."
+  image: /assets/img/news/ifetc-2022.jpg

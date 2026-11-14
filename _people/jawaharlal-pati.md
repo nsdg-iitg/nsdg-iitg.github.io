@@ -1,6 +1,7 @@
 ---
 name: "Jawaharlal Pati"
 role: "PhD Scholar, Centre for Nanotechnology"
+photo: /assets/img/people/jawaharlal-pati.jpg
 category: current
 order: 4
 topic: "Single metal-oxide nanowire devices and sensors"
@@ -11,6 +12,9 @@ highlights:
   - "7-minute nitrogen plasma raises nanowire conductivity about 10×, from ~10 to 40–105 S/m"
   - "Showed that the doping is at the surface, so thinner wires gain more"
 description: "Jawaharlal Pati (IIT Guwahati) works on single CuO nanowire devices, nitrogen plasma surface doping, and nanowire sensors."
+figures:
+  - src: "/assets/img/figures/nanowire-process-jap2025.jpg"
+    caption: "Single-nanowire device fabrication and N2 plasma treatment. From J. Pati et al., J. Appl. Phys. 138, 024302 (2025), CC BY-NC-ND 4.0."
 ---
 
 Jawaharlal makes electrical devices on single metal-oxide nanowires and tunes their surfaces for sensing. He is co-supervised by Prof. D. Pamu.

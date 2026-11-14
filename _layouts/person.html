@@ -25,6 +25,7 @@ layout: default
 <div class="wrap two-col">
   <article class="prose">
     {{ content }}
+    {% include figures.html figs=page.figures %}
     {% if page.thesis and page.category == 'alumni' %}<p class="thesis"><span class="muted">PhD thesis:</span> <em>{{ page.thesis }}</em></p>{% endif %}
   </article>
   <aside class="side">

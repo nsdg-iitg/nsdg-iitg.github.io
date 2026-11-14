@@ -1,6 +1,7 @@
 ---
 name: "Dr. Ph. Nonglen Meitei"
 role: "Visvesvaraya Postdoctoral Fellow"
+photo: /assets/img/people/ph-nonglen-meitei.jpg
 category: current
 order: 5
 topic: "Memristor-based neuromorphic olfactory (artificial smell) system"

@@ -11,6 +11,9 @@ highlights:
   - "Wrote his own drift–diffusion device simulator with traps and mobile ions"
   - "DLTS of ionic defects in flexible perovskite memristors"
 description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written his own drift–diffusion simulator."
+figures:
+  - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
+    caption: "DLTS of ionic defects in a flexible perovskite memristor. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
 ---
 
 Basit works on the device physics of halide perovskite devices. His question is simple to state: what do ordinary electrical measurements, such as dark J–V, capacitance–frequency, impedance and current transients, actually tell us about the traps and mobile ions inside a perovskite film? He also asks when each reading can be trusted.

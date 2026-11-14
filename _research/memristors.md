@@ -7,6 +7,11 @@ lead: "Resistive-switching memories from halide perovskites, on glass and on ben
 people: [radharani-yumlembam, ph-nonglen-meitei, himangshu-jyoti-gogoi]
 methods: "Spin coating and thermal / e-beam evaporation · conductive AFM · DC and pulsed I–V (Keysight B1500A, Keithley 4200) · DLTS · SPICE (Yakopcic) models · ReRAM peripheral circuits at 180 nm and 65 nm"
 description: "Perovskite memristors, flexible ReRAM crossbar arrays and artificial synapses at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+figures:
+  - src: "/assets/img/figures/memristor-overview.jpg"
+    caption: "Hybrid perovskite memristors: memories, synapses and logic from inorganic, organic and hybrid materials."
+  - src: "/assets/img/figures/flexible-memristor-aem2023.jpg"
+    caption: "Flexible perovskite memristor on PET, its switching and synaptic plasticity. From M. Patel et al., Adv. Electron. Mater. 9, 2200908 (2023)."
 ---
 
 A memristor is a two-terminal cell whose resistance can be switched between a high and a low state and keeps that state without power. In halide perovskites, mobile ions and vacancies form and break a thin conducting filament between the electrodes. These memories are cheap to make, switch at low voltage, and can be built on flexible substrates. Because their conductance can be tuned in small steps, they can also act like the synapses of a brain.

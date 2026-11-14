@@ -7,6 +7,11 @@ lead: "Bright, colour-pure green perovskite LEDs, and the ion migration and trap
 people: [binita-boro, abinash-baruah]
 methods: "Solution processing · electroluminescence and luminance (Konica Minolta CS-2000) · temperature-dependent impedance (77–380 K) · electric modulus and universal dielectric response analysis · DLTS · FESEM and cross-section EDX"
 description: "Perovskite light-emitting diodes (PeLEDs), ion migration, dielectric relaxation and DLTS at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+figures:
+  - src: "/assets/img/figures/peled-degradation-jpd2025.jpg"
+    caption: "How ion migration degrades a perovskite LED, and how it partly recovers at rest. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
+  - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
+    caption: "Device stack, electroluminescence, colour coordinates, luminance and lifetime of green MAPbBr3 LEDs. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
 ---
 
 Halide perovskites emit light with a very narrow linewidth, and their colour can be tuned through the halide. That makes them attractive for displays. Their weak point is lifetime: the same mobile ions that make perovskites easy to process also move under bias and degrade the device. We make green MAPbBr3 LEDs and follow these ions and traps with electrical spectroscopy.

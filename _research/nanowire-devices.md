@@ -7,6 +7,9 @@ lead: "Electrical devices on single metal-oxide nanowires, with surfaces tuned b
 people: [jawaharlal-pati, imrongmenla-ozukum]
 methods: "Thermal oxidation growth · laser and e-beam lithography · RIE nitrogen plasma · single-wire Raman · TEM and EDX · 2- and 4-probe I–V · transfer length method"
 description: "Single CuO nanowire devices, plasma surface doping and nanowire sensors at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+figures:
+  - src: "/assets/img/figures/nanowire-process-jap2025.jpg"
+    caption: "Making 2- and 4-terminal devices on single CuO nanowires, with N2 plasma treatment. From J. Pati et al., J. Appl. Phys. 138, 024302 (2025), CC BY-NC-ND 4.0."
 ---
 
 A nanowire has a very large surface for its volume, so small changes at its surface change its current strongly. That makes single nanowires sensitive sensors, provided we can make reliable contacts to them and control their surface.

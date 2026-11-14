@@ -1,6 +1,7 @@
 ---
 name: "Dr. Abinash Baruah"
 role: "MS + PhD, Electronics and Electrical Engineering"
+photo: /assets/img/people/abinash-baruah.jpg
 category: current
 order: 1
 topic: "Perovskite light-emitting diodes"
@@ -12,6 +13,11 @@ highlights:
   - "Grain-size study: small grains give brighter LEDs, large grains live longer (T50 175 vs 252 min)"
   - "Found a 0.30 eV bromide-vacancy-related trap by DLTS"
 description: "Abinash Baruah (IIT Guwahati) works on perovskite light-emitting diodes: ion migration, dielectric relaxation and trap physics in MAPbBr3 PeLEDs."
+figures:
+  - src: "/assets/img/figures/peled-degradation-jpd2025.jpg"
+    caption: "Ion migration and recovery in a perovskite LED. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
+  - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
+    caption: "Green MAPbBr3 LED: stack, emission, luminance and lifetime. From J. Phys. D 58, 205105 (2025)."
 ---
 
 Abinash makes bright green perovskite light-emitting diodes (PeLEDs) from MAPbBr3 and studies why they lose brightness over time. He defended his PhD thesis in November 2026.

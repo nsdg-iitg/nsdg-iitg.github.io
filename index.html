@@ -52,7 +52,8 @@ body_class: home
   <div>
     <div class="section-head"><h2>News</h2><a class="more" href="{{ '/news/' | relative_url }}">All news →</a></div>
     <ul class="news-list">
-      {% for n in site.data.news limit: 4 %}
+      {% assign news_sorted = site.data.news | sort: "date" | reverse %}
+      {% for n in news_sorted limit: 4 %}
       <li>
         <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
         <span>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</span>
@@ -65,6 +66,16 @@ body_class: home
     <ol class="pubs compact">
       {% for p in journals limit: 4 %}{% include pub.html p=p %}{% endfor %}
     </ol>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="section-head"><h2>Life in the group</h2><a class="more" href="{{ '/gallery/' | relative_url }}">Gallery →</a></div>
+  <div class="photo-strip">
+    {% assign strip = "gallery-02.jpg,gallery-21.jpg,gallery-19.jpg,gallery-13.jpg" | split: "," %}
+    {% for f in strip %}
+    <a href="{{ '/gallery/' | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: f | relative_url }}" alt="Group photo" loading="lazy"></a>
+    {% endfor %}
   </div>
 </section>
 

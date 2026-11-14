@@ -7,6 +7,9 @@ lead: "Physics-based ways to find traps and mobile ions in perovskite devices fr
 people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed]
 methods: "Sentaurus and Silvaco TCAD · in-house 1D drift–diffusion simulator · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"
 description: "Trap and mobile-ion characterisation, DLTS, drift–diffusion device simulation and compact modelling at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+figures:
+  - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
+    caption: "C–V, doping profile and DLTS of a flexible perovskite memristor, showing ionic defect levels. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
 ---
 
 Every perovskite device we make, whether a memory, a solar cell or an LED, is shaped by defects: deep and shallow traps, and ions that move. Measuring them is hard, because their signals overlap in ordinary electrical measurements. We develop methods that separate them, check those methods against device simulation, and say when each reading can be trusted.

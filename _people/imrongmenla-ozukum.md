@@ -1,6 +1,7 @@
 ---
 name: "Imrongmenla Ozukum"
 role: "PhD Scholar, Centre for Nanotechnology"
+photo: /assets/img/people/imrongmenla-ozukum.jpg
 category: current
 order: 8
 topic: "Nanodevices for combined energy generation and storage"

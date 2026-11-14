@@ -1,6 +1,7 @@
 ---
 name: "Dr. Binita Boro"
 role: "Institute Postdoctoral Fellow"
+photo: /assets/img/people/binita-boro.jpg
 category: current
 order: 7
 topic: "Organic light-emitting diodes"

@@ -1,6 +1,7 @@
 ---
 name: "Radharani Yumlembam"
 role: "PhD Scholar, Electronics and Electrical Engineering"
+photo: /assets/img/people/radharani-yumlembam.jpg
 category: current
 order: 2
 topic: "Flexible lead-free perovskite memristors and crossbar arrays"
