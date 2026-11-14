@@ -24,6 +24,10 @@ figures:
 
 Every perovskite device we make, whether a memory, a solar cell or an LED, is shaped by defects: deep and shallow traps, and ions that move. Measuring them is hard, because their signals overlap in ordinary electrical measurements. We develop methods that separate them, check those methods against device simulation, and say when each reading can be trusted.
 
+### Our approach
+
+For each device we make or simulate, we want to understand the physics underneath and turn it into analytical or semi-empirical models. We study generation and recombination, and both electronic and ionic charge transport, using nano-scale imaging, deep-level transient spectroscopy, impedance spectroscopy, and low-temperature I–V and C–V measurements. Device structures are simulated with Synopsys Sentaurus and Silvaco 2D/3D TCAD, Lumerical and MATLAB, to support the experiments and to build new models.
+
 ### What we have shown
 
 - **Traps from an ordinary dark J–V curve.** Trapped charge near the injecting contact bends the bands. This shifts the voltage where current changes from diffusion to drift (the peak of d log J / d log V) to lower values. The shift tracks trap density and depth even with mobile ions present, and compares films better than V<sub>OC</sub>.

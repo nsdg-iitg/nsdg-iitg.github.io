@@ -21,3 +21,5 @@ figures:
 ---
 
 Rekib developed an efficient analytical model of double-gate MOSFETs for the channel potential, subthreshold current and drain current, accurate enough for circuit simulation at low computing cost. He also designed, by simulation, a pore-confined phase-change memory cell that uses current crowding to cut programming energy.
+
+His postdoctoral project in the group was *Compact model development for double-gate MOSFETs*.

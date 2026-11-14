@@ -241,10 +241,26 @@
 
 - type: conference
   year: 2023
+  title: "Optical modelling of lead-free all-OIHP tandem solar cell"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "XXII International Workshop on Physics of Semiconductor Devices (IWPSD), IIT Madras"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2023
   title: "Influence of spectral albedo on the performance of lead-free perovskite bifacial tandem solar cell"
   authors: "A. Purkayastha, A. T. Mallajosyula"
   venue: "IEEE 50th Photovoltaic Specialists Conference (PVSC)"
   doi: "10.1109/PVSC48320.2023.10359550"
+  people: [atanu-purkayastha, arun-tej-mallajosyula]
+  areas: [solar-cells]
+
+- type: conference
+  year: 2022
+  title: "Effect of spectral albedo on bifacial 2D/3D tin perovskite solar cells under concurrent illumination"
+  authors: "A. Purkayastha, A. T. Mallajosyula"
+  venue: "6th IEEE International Conference on Emerging Electronics (ICEE), Bengaluru"
   people: [atanu-purkayastha, arun-tej-mallajosyula]
   areas: [solar-cells]
 
@@ -297,6 +313,38 @@
 
 # ---------------- Talks and preprints ----------------
 - type: talk
+  year: 2024
+  title: "Charge transport in methyl ammonium lead tri-bromide perovskite light emitting diodes"
+  authors: "A. Baruah, A. T. Mallajosyula"
+  venue: "2nd International Conference on Low-Energy Digital Devices and Computing (ICLED), Singapore"
+  people: [abinash-baruah, arun-tej-mallajosyula]
+  areas: [light-emitting-diodes]
+
+- type: talk
+  year: 2023
+  title: "Lead-free all-inorganic perovskite memristor by thermal evaporation"
+  authors: "R. Yumlembam, H. J. Gogoi, R. P. Palathinkal, A. T. Mallajosyula"
+  venue: "International Conference on Condensed Matter and Device Physics (ICCMDP), Gandhinagar"
+  people: [radharani-yumlembam, himangshu-jyoti-gogoi, arun-tej-mallajosyula]
+  areas: [memristors]
+
+- type: talk
+  year: 2023
+  title: "Analysis of ionic defects in hybrid perovskite memristors using deep level transient spectroscopy"
+  authors: "H. J. Gogoi*, A. B. Andrabi*, A. T. Mallajosyula"
+  venue: "1st International Conference on Low-Energy Digital Devices and Computing (ICLED), Singapore"
+  people: [himangshu-jyoti-gogoi, abdul-basit-andrabi, arun-tej-mallajosyula]
+  areas: [memristors, trap-analysis-modelling]
+
+- type: talk
+  year: 2021
+  title: "SPICE simulation of hybrid organic-inorganic perovskite memristive devices"
+  authors: "H. J. Gogoi"
+  venue: "7th International Conference on Advanced Nanomaterials and Nanotechnology, flash talk"
+  people: [himangshu-jyoti-gogoi]
+  areas: [memristors]
+
+- type: talk
   year: 2021
   title: "Measurement process-dependent performance and conduction mechanism of hybrid perovskite memristors"
   authors: "H. J. Gogoi, A. T. Mallajosyula"
@@ -319,20 +367,20 @@
   year: 2023
   title: "A model for the optical simulation of triple junction solar cells"
   authors: "A. Purkayastha, A. T. Mallajosyula"
-  venue: "Software copyright SW-17416/2023"
+  venue: "Software copyright SW-17416/2023, granted 2023"
   people: [atanu-purkayastha, arun-tej-mallajosyula]
   areas: [solar-cells]
 
 - type: ip
   year: 2020
-  title: "Solar cell with improved light absorption"
-  authors: "A. T. Mallajosyula et al."
-  venue: "Patent"
+  title: "A solar cell with improved light absorption capacity"
+  authors: "S. Sundar Kumar Iyer, A. T. Mallajosyula"
+  venue: "Indian Patent No. 344791, granted 2020"
   people: [arun-tej-mallajosyula]
 
 - type: ip
   year: 2016
-  title: "Improved organic optoelectronic device"
-  authors: "A. T. Mallajosyula et al."
-  venue: "Patent"
+  title: "An improved organic optoelectronic device"
+  authors: "S. Sundar Kumar Iyer, R. Gurunath, A. T. Mallajosyula, B. K. Rajbongshi, G. Bhattacharjya, V. Jain"
+  venue: "Indian Patent No. 271903, granted 2016"
   people: [arun-tej-mallajosyula]

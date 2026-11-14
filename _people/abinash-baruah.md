@@ -3,6 +3,7 @@ name: "Dr. Abinash Baruah"
 role: "MS + PhD, Electronics and Electrical Engineering (2026)"
 photo: /assets/img/people/abinash-baruah.jpg
 category: alumni
+thesis: "Multiscale phenomena in perovskite LEDs: coupled interplay of ion migration, dielectric relaxation, and trap-assisted degradation"
 order: 0
 topic: "Perovskite light-emitting diodes"
 email: "abaruah@iitg.ac.in"
@@ -25,6 +26,9 @@ figures:
     caption: "DLTS of a deep trap in a MAPbBr3 LED. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
   - src: "/assets/img/figures/peled-grains-sem-jpd2026.jpg"
     caption: "Small-grain and large-grain MAPbBr3 films (SEM, with grain-size histograms). From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
+education:
+  - "MS + PhD, Electronics and Electrical Engineering, IIT Guwahati (2026)"
+  - "B.E., Electronics and Telecommunication Engineering, Assam Engineering College"
 ---
 
 Abinash made bright green perovskite light-emitting diodes (PeLEDs) from MAPbBr3 and studied why they lose brightness over time. He defended his PhD thesis in November 2026.

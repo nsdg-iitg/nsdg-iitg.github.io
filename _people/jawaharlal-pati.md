@@ -21,6 +21,9 @@ figures:
     caption: "2-terminal, 4-terminal and TLM devices made on single CuO nanowires (FESEM). From J. Pati et al., J. Appl. Phys. 138, 024302 (2025), CC BY-NC-ND 4.0."
   - src: "/assets/img/figures/nanowire-plasma-jv-jap2025.jpg"
     caption: "Current of single-nanowire devices before and after N2 plasma: higher current and lower turn-on voltage after 7 minutes. From J. Pati et al., J. Appl. Phys. 138, 024302 (2025), CC BY-NC-ND 4.0."
+education:
+  - "PhD (ongoing), Centre for Nanotechnology, IIT Guwahati, co-supervised by Prof. D. Pamu, Dept. of Physics"
+  - "M.Tech, Nanotechnology, IIT Patna"
 ---
 
 Jawaharlal makes electrical devices on single metal-oxide nanowires and tunes their surfaces for sensing. He is co-supervised by Prof. D. Pamu.

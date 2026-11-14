@@ -317,3 +317,10 @@ body.lb-lock { overflow: hidden; }
 .person-card .avatar.initials { height: 105px; }
 .avatar.lg { width: 104px; height: 130px; border-radius: 12px; object-position: 50% 20%; }
 .person-card { align-items: flex-start; }
+
+/* Added old-site content */
+.about-grid .prose { max-width: 78ch; }
+.about-grid .prose p { margin: 0 0 14px; }
+ul.edu { padding-left: 1.1em; margin: 6px 0 18px; }
+.course-level { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
+.useful-links { margin-top: 36px; }

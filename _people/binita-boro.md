@@ -11,6 +11,10 @@ links:
   scholar: "https://scholar.google.com/citations?user=M2vFwfH4Ys4C"
   orcid: "https://orcid.org/0000-0001-7133-4671"
 description: "Dr. Binita Boro (IIT Guwahati): Organic light-emitting diodes."
+education:
+  - "PhD, IIT Kharagpur"
+  - "M.Tech, Advanced Materials Science and Technology, NIT Durgapur"
+  - "B.Tech, Instrumentation Engineering, Central Institute of Technology, Kokrajhar"
 ---
 
 Binita works on organic light-emitting diodes (OLEDs).

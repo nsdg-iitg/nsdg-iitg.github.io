@@ -20,6 +20,12 @@ figures:
 
 A memristor is a two-terminal cell whose resistance can be switched between a high and a low state and keeps that state without power. In halide perovskites, mobile ions and vacancies form and break a thin conducting filament between the electrodes. These memories are cheap to make, switch at low voltage, and can be built on flexible substrates. Because their conductance can be tuned in small steps, they can also act like the synapses of a brain.
 
+### Why memristors
+
+A memristor keeps its state without power, shows a pinched hysteresis loop in its I–V curve, and can hold many resistance levels, not only 0 and 1. That allows several bits per cell, computing directly inside the memory, and devices that mimic synaptic weights. Because conductance can be pushed up or down step by step, memristors can show spike-timing-dependent plasticity and Hebbian learning. Switching energies can go down to femtojoules, far below SRAM or DRAM, and the simple two-terminal structure stacks well into dense 3D crossbars.
+
+Uses include non-volatile memory, neuromorphic and in-memory computing, physically unclonable functions (PUFs), analog signal processing and logic-in-memory. Wider directions in the field include 3D memristor arrays (3D RRAM, VRRAM), edge-AI hardware for wearables and IoT, radiation-hard memory for space, and stochastic neuromorphic systems. Our own focus is on crossbar RRAMs made from emerging materials such as perovskites, with high flexibility and endurance.
+
 ### What we have shown
 
 - **Lead-free, flexible and air-stable.** Our Cs3Bi2I9 memristors on PET reach an ON/OFF ratio above 10⁵ and run for 10⁴ cycles. They survive more than 30 days in over 80% relative humidity without encapsulation, and bending to a 5 mm radius. A 4×4 flexible crossbar gave 81% yield. The cells learn and forget like synapses at about 0.1 µJ per event.

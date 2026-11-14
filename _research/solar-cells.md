@@ -20,6 +20,17 @@ figures:
 
 Lead halide perovskites make very efficient solar cells, but the lead is toxic. Tin perovskites avoid lead and have a band gap well suited to the bottom cell of a tandem. However, tin oxidises easily, and the films have many defects. We work on making tin cells better, then use simulation to design tandem and bifacial cells around them.
 
+### Why new solar cells
+
+Crystalline silicon leads today's solar market, and installed PV worldwide has passed one terawatt. Next-generation cells, such as perovskite, organic and quantum-dot cells, add things silicon cannot easily offer: they are light, flexible and printable on plastic or paper by low-cost roll-to-roll methods. This opens uses in wearables, aerospace, building-integrated PV and indoor cells that power IoT devices under room lighting. The open problems are long-term stability, durability outdoors, sustainable large-scale manufacturing, and pushing efficiency further with tandem cells and plasmonics.
+
+Our work covers:
+
+- High-performance, stable absorbers for single-junction and tandem cells
+- Flexible, lightweight tandem cells for portable, wearable and building-integrated use
+- Linking solar cells with catalytic systems for on-demand green hydrogen (solar-to-fuel)
+- Lead-free, environmentally benign materials, with life-cycle assessment to check their real sustainability
+
 ### What we have shown
 
 - **2D/3D tin perovskite cells.** Adding 15% PEAI to FASnI3 nearly doubled efficiency, from 6.41% to 11.03%. These cells lost only 25% in 50 hours, against more than 75% in 16 hours for 3D cells. An 80 nm MgF2 anti-reflection layer brought them to 12.6%.

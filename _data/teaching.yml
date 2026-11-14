@@ -1,19 +1,19 @@
 theory:
-  - { code: EE203, title: "Semiconductor Devices" }
-  - { code: EE213M, title: "Digital Circuits" }
-  - { code: EE314, title: "Flexible and Printable Electronics" }
-  - { code: EE510, title: "Semiconductor Device Modeling" }
-  - { code: EE511, title: "Physics and Modeling of Nanotransistors" }
-  - { code: EE514, title: "Semiconductor IC Technology" }
-  - { code: EE611, title: "Organic Semiconductor Devices" }
-  - { code: EE615, title: "Advanced Photovoltaics" }
-  - { code: EE640, title: "Introduction to Electronic Systems Packaging" }
-  - { code: NT705, title: "Recent Advances in Nanotechnology" }
+  - { code: EE203, title: "Semiconductor Devices", level: "B.Tech 2nd year" }
+  - { code: EE213M, title: "Digital Circuits", level: "B.Tech 2nd year" }
+  - { code: EE314, title: "Flexible and Printable Electronics", level: "B.Tech 3rd year" }
+  - { code: EE510, title: "Semiconductor Device Modeling", level: "M.Tech and PhD" }
+  - { code: EE511, title: "Physics and Modeling of Nanotransistors", level: "M.Tech and PhD" }
+  - { code: EE514, title: "Semiconductor IC Technology", level: "M.Tech and PhD" }
+  - { code: EE611, title: "Organic Semiconductor Devices", level: "B.Tech 4th year, M.Tech, M.Sc and PhD" }
+  - { code: EE615, title: "Advanced Photovoltaics", level: "B.Tech 4th year, M.Tech, M.Sc and PhD" }
+  - { code: EE640, title: "Introduction to Electronic Systems Packaging", level: "B.Tech 4th year, M.Tech, M.Sc and PhD" }
+  - { code: NT705, title: "Recent Advances in Nanotechnology", level: "PhD" }
 lab:
-  - { code: EE102, title: "Basic Electronics Lab" }
-  - { code: EE207, title: "Analog Circuits Lab" }
-  - { code: EE313, title: "Microelectronics Lab" }
-  - { code: EE519, title: "Photonics and Microelectronics Lab" }
-  - { code: NT601, title: "Nano Device Fabrication, Production and Patent Writing" }
+  - { code: EE102, title: "Basic Electronics Lab", level: "B.Tech and B.Des 1st year" }
+  - { code: EE207, title: "Analog Circuits Lab", level: "B.Tech 2nd year" }
+  - { code: EE313, title: "Microelectronics Lab", level: "B.Tech 3rd year" }
+  - { code: EE519, title: "Photonics and Microelectronics Lab", level: "M.Tech" }
+  - { code: NT601, title: "Nano Device: Fabrication, Production and Patent Writing", level: "PhD" }
 tutorial:
-  - { code: EE101, title: "Basic Electronics" }
+  - { code: EE101, title: "Basic Electronics", level: "B.Tech and B.Des 1st year" }

@@ -27,6 +27,7 @@ layout: default
     {{ content }}
     {% include figures.html figs=page.figures %}
     {% if page.thesis and page.category == 'alumni' %}<p class="thesis"><span class="muted">PhD thesis:</span> <em>{{ page.thesis }}</em></p>{% endif %}
+    {% if page.education %}<h3>Education</h3><ul class="edu">{% for e in page.education %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
   </article>
   <aside class="side">
     {% if page.highlights %}

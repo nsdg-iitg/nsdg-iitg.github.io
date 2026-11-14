@@ -1,45 +1,61 @@
 # Funded projects. role: PI or Co-PI. area: optional research area slug.
-- title: "Flexible ReRAM for wearable electronics (part of SWASTHA)"
+- title: "Flexible resistive random-access memories for wearable electronics"
+  part_of: "Smart Wearable Advanced nanoSensing Technologies in Healthcare ASICs (SWASTHA)"
+  unit: "Centre for Nanotechnology, IIT Guwahati"
   role: PI
   amount: "₹42 Cr (programme)"
   agency: "MeitY, DST"
+  duration: "4 years"
   status: Ongoing
   area: memristors
-- title: "INUP-i2i: Indian Nanoelectronics Users Programme, Idea to Innovation"
+- title: "Indian Nanoelectronics Users Programme: Idea to Innovation (INUP-i2i)"
+  unit: "Centre for Nanotechnology, IIT Guwahati"
   role: PI
   amount: "₹31 Cr (programme)"
   agency: "MeitY, DST"
+  duration: "4 years"
   status: Ongoing
-- title: "Wearable IoT devices for pre-disease monitoring, beyond 5G"
+- title: "Wearable IoT-enabled devices for pre-disease condition monitoring and epidemic surveillance in the beyond-5G era"
   role: Co-PI
   amount: "₹8.7 Cr"
   agency: "TTDF, DoT"
+  duration: "3 years"
   status: Ongoing
-- title: "C-band silicon photonic modulator for 400G"
+- title: "Fabrication and demonstration of a state-of-the-art C-band optical modulator in silicon photonics platform for 400G networks"
+  unit: "Dept. of EEE, IIT Guwahati"
   role: Co-PI
   amount: "₹39 L"
   agency: "SERB CRG"
+  duration: "2 years"
   status: Ongoing
-- title: "Silicon Photonics and Microelectronic Devices Lab"
+- title: "Establishment of Silicon Photonics and Microelectronic Devices Laboratory"
+  unit: "Dept. of EEE, IIT Guwahati"
   role: Co-PI
   amount: "₹2.65 Cr"
   agency: "DST-FIST"
+  duration: "5 years"
   status: Completed
-- title: "Flexible memristors with 2D layered hybrid perovskites"
+- title: "Flexible memristors using 2D layered hybrid organic-inorganic perovskites"
+  unit: "Dept. of EEE, IIT Guwahati"
   role: PI
   amount: "₹49.7 L"
   agency: "SERB ECR"
+  duration: "3 years"
   status: Completed
   area: memristors
-- title: "Hybrid perovskites for solar energy conversion"
+- title: "Hybrid organic-inorganic perovskites for solar energy conversion"
+  unit: "Centre for Nanotechnology, IIT Guwahati"
   role: Co-PI
   amount: "₹26.4 L"
   agency: "SPARC, MHRD"
+  duration: "2 years"
   status: Completed
   area: solar-cells
-- title: "Large-area perovskite solar cells"
+- title: "Large-area hybrid perovskite solar cells"
+  unit: "Dept. of EEE, IIT Guwahati"
   role: PI
   amount: "₹5 L"
   agency: "Start-up Grant, IIT Guwahati"
+  duration: "2 years"
   status: Completed
   area: solar-cells

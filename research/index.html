@@ -33,10 +33,10 @@ description: "Research at NSDG, IIT Guwahati: perovskite memristors, lead-free a
 <h2 class="section-title">Funded projects</h2>
 <div class="table-wrap">
 <table>
-  <thead><tr><th>Project</th><th>Role</th><th>Funding</th><th>Agency</th><th>Status</th></tr></thead>
+  <thead><tr><th>Project</th><th>Role</th><th>Funding</th><th>Agency</th><th>Duration</th><th>Status</th></tr></thead>
   <tbody>
   {% for pr in site.data.projects %}
-    <tr><td>{{ pr.title }}</td><td>{{ pr.role }}</td><td>{{ pr.amount }}</td><td>{{ pr.agency }}</td><td><span class="status {{ pr.status | downcase }}">{{ pr.status }}</span></td></tr>
+    <tr><td>{{ pr.title }}{% if pr.part_of %}<br><span class="muted small">Part of {{ pr.part_of }}</span>{% endif %}{% if pr.unit %}<br><span class="muted small">{{ pr.unit }}</span>{% endif %}</td><td>{{ pr.role }}</td><td>{{ pr.amount }}</td><td>{{ pr.agency }}</td><td>{{ pr.duration }}</td><td><span class="status {{ pr.status | downcase }}">{{ pr.status }}</span></td></tr>
   {% endfor %}
   </tbody>
 </table>

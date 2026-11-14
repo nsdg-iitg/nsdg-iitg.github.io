@@ -24,9 +24,13 @@ figures:
     caption: "Synaptic behaviour of the flexible memristor. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
   - src: "/assets/img/figures/flexible-cs3bi2i9-bending-fpe2025.jpg"
     caption: "Switching of the flexible memristor at different bending radii. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
+education:
+  - "PhD (ongoing), IIT Guwahati, co-supervised by Prof. Roy P. Paily, Dept. of EEE"
+  - "M.Tech, VLSI and Embedded Systems, NIT Manipur"
+  - "B.Tech, Electronics and Communication Engineering, NIT Manipur"
 ---
 
-Radharani builds resistive-switching memories (memristors) from all-inorganic, lead-free perovskites, and puts them into crossbar arrays on flexible plastic.
+Radharani builds resistive-switching memories (memristors) from all-inorganic, lead-free perovskites, and puts them into crossbar arrays on flexible plastic. She is co-supervised by Prof. Roy P. Paily, Dept. of EEE.
 
 Her devices use Cs3Bi2I9, a bismuth-based perovskite, in a PET/ITO/PEDOT:PSS/Cs3Bi2I9/PCBM/Ag stack. Unlike most perovskite memristors, the switching layer is deposited by electron-beam evaporation of a hot-pressed pellet, a vacuum process that scales to large areas.
 

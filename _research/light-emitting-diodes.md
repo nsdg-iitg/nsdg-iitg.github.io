@@ -20,6 +20,18 @@ figures:
 
 Halide perovskites emit light with a very narrow linewidth, and their colour can be tuned through the halide. That makes them attractive for displays. Their weak point is lifetime: the same mobile ions that make perovskites easy to process also move under bias and degrade the device. We make green MAPbBr3 LEDs and follow these ions and traps with electrical spectroscopy.
 
+### Our approach
+
+Perovskite LEDs already show high brightness and colour purity, thanks to high photoluminescence quantum yield, a band gap tuned by composition, and cheap solution processing. What still holds them back is operating stability and device-to-device reproducibility. The causes, such as ion migration, trap-assisted recombination and unstable interfaces, are still not fully understood.
+
+We fabricate PeLEDs in the clean room and study them as an electronic device, using:
+
+- Temperature-dependent impedance spectroscopy
+- Current–voltage measurements under bias stress
+- Deep-level transient spectroscopy (DLTS)
+
+These show how ions move, how traps evolve, and how the bulk and interfaces respond while the LED runs. We also study the self-healing of the perovskite when the device is rested, which matters directly for lifetime. The aim is to connect material science with real device engineering, and to give design rules for more stable and efficient PeLEDs.
+
 ### What we have shown
 
 - **Bright, pure green emission.** Up to 13,000 cd/m² at 6 V, with a 533 nm peak and 20 nm FWHM.
