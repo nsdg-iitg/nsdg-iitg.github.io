@@ -27,19 +27,19 @@ description: "Members and alumni of the Nanoelectronics and Semiconductor Device
   {% for m in alumni %}{% include person-card.html person=m %}{% endfor %}
 </div>
 
-<h3>M.Tech</h3>
+<h3 class="sub-title">M.Tech</h3>
 <div class="table-wrap">
 <table class="compact">
   <thead><tr><th>Name</th><th>Year</th><th>Thesis</th></tr></thead>
-  <tbody>{% for a in site.data.alumni.mtech %}<tr><td>{{ a.name }}</td><td>{{ a.year }}</td><td>{{ a.thesis }}</td></tr>{% endfor %}</tbody>
+  <tbody>{% for a in site.data.alumni.mtech %}<tr><td>{{ a.name }}</td><td>{{ a.year | default: "–" }}</td><td>{{ a.thesis }}</td></tr>{% endfor %}</tbody>
 </table>
 </div>
-<h3>B.Tech projects</h3>
+<h3 class="sub-title">B.Tech projects</h3>
 <div class="table-wrap">
 <table class="compact">
   <thead><tr><th>Names</th><th>Year</th><th>Project</th></tr></thead>
-  <tbody>{% for a in site.data.alumni.btech %}<tr><td>{{ a.name }}</td><td>{{ a.year }}</td><td>{{ a.thesis }}</td></tr>{% endfor %}</tbody>
+  <tbody>{% for a in site.data.alumni.btech %}<tr><td>{{ a.name }}</td><td>{{ a.year | default: "–" }}</td><td>{{ a.thesis }}</td></tr>{% endfor %}</tbody>
 </table>
 </div>
-<h3>Interns</h3>
+<h3 class="sub-title">Interns</h3>
 <ul class="plain cols">{% for a in site.data.alumni.interns %}<li>{{ a }}</li>{% endfor %}</ul>

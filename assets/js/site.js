@@ -27,15 +27,17 @@
   var sections = document.querySelectorAll('.pub-section');
   var countEl = document.getElementById('pub-count');
   var type = 'all';
+  // so that typing MAPbI3 finds MAPbI₃
+  function plain(t) { return t.toLowerCase().replace(/[\u2080-\u2089]/g, function (c) { return String(c.charCodeAt(0) - 0x2080); }); }
 
   function apply() {
-    var q = search.value.trim().toLowerCase();
+    var q = plain(search.value.trim());
     var shown = 0;
     sections.forEach(function (sec) {
       var typeOk = type === 'all' || sec.dataset.type === type;
       var any = false;
       sec.querySelectorAll('.pub').forEach(function (li) {
-        var ok = typeOk && (!q || li.textContent.toLowerCase().indexOf(q) !== -1);
+        var ok = typeOk && (!q || plain(li.textContent).indexOf(q) !== -1);
         li.classList.toggle('hidden', !ok);
         if (ok) { any = true; shown++; }
       });

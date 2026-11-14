@@ -1,4 +1,4 @@
-# Newest first. date: YYYY-MM-DD (use 01 for the day if unknown). link is optional.
+# Newest first. date: YYYY-MM-DD. If the day is not known use 01; the site then shows only the month. link is optional.
 - date: 2026-11-10
   title: "Abinash Baruah defends his PhD thesis"
   text: "Abinash's thesis work on bright green perovskite LEDs, their ion migration and trap physics, is complete. Congratulations, Dr. Baruah!"

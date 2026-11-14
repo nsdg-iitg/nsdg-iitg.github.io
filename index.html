@@ -76,7 +76,7 @@ body_class: home
   <div class="photo-strip">
     {% assign strip = "gallery-02.jpg,gallery-21.jpg,gallery-19.jpg,gallery-13.jpg" | split: "," %}
     {% for f in strip %}
-    <a href="{{ '/gallery/' | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: f | relative_url }}" alt="Group photo" loading="lazy"></a>
+    <a href="{{ '/gallery/' | relative_url }}"><img src="{{ '/assets/img/gallery/thumbs/' | append: f | relative_url }}" alt="Group photo" loading="lazy"></a>
     {% endfor %}
   </div>
 </section>

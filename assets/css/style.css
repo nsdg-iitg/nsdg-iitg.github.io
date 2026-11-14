@@ -327,3 +327,28 @@ ul.edu { padding-left: 1.1em; margin: 6px 0 18px; }
 .inst-logo { display: flex; align-items: center; padding-left: 14px; margin-left: 14px; border-left: 1px solid var(--line); margin-right: auto; }
 .inst-logo img { width: 40px; height: 40px; display: block; }
 .footer-inst img { width: 52px; height: 52px; display: block; margin-bottom: 12px; }
+
+/* Refinements */
+html { scroll-padding-top: 80px; }
+h1, h2, h3, .area-title, .pub-title { text-wrap: balance; }
+p, li, figcaption { text-wrap: pretty; }
+::selection { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, border-color .15s; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+/* Home intro: one lead paragraph, then normal reading text */
+.hero .lead { max-width: 42em; }
+.hero .lead + .lead { font-size: 1rem; color: color-mix(in srgb, var(--ink) 82%, var(--muted)); }
+.hero-figure { align-self: start; margin-top: 64px; }
+/* Sub-headings between lists and tables */
+.sub-title { margin: 2em 0 .7em; }
+.people-grid + .section-title, .pi-card + .section-title { margin-top: 2em; }
+/* Facilities: the long list sits on the left, short ones share the right */
+@media (min-width: 900px) {
+  .facility-grid { grid-template-columns: repeat(3, 1fr); }
+  .facility-grid .facility:nth-child(1) { grid-row: span 2; }
+  .facility-grid .facility:nth-child(4) { grid-column: span 2; }
+  .facility-grid .facility:nth-child(4) ul { columns: 2; column-gap: 32px; }
+  .facility li { break-inside: avoid; }
+}
+.contact-grid .useful-links { margin-top: 28px; }
+.contact-grid .useful-links h2 { font-size: 1.25rem; }
