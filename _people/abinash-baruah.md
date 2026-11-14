@@ -31,33 +31,14 @@ education:
   - "B.E., Electronics and Telecommunication Engineering, Assam Engineering College"
 ---
 
-Abinash fabricated green MAPbBr3 perovskite light-emitting diodes (PeLEDs) and investigated the mechanisms responsible for their luminance degradation. His work combines device fabrication with temperature-dependent dielectric spectroscopy and deep-level transient spectroscopy (DLTS) to relate ion migration, dielectric relaxation and trap states to device performance and lifetime. He defended his PhD thesis in November 2026.
+Abinash fabricated green MAPbBr3 perovskite light-emitting diodes (PeLEDs) and investigated the mechanisms responsible for their luminance degradation. He defended his PhD thesis in November 2026.
 
-### Devices
+The devices use an ITO/PEDOT:PSS/MAPbBr3/TPBi/LiF/Al stack, fabricated by solution processing with anti-solvent treatment. They reach a luminance of about 13,000 cd/m², with an emission peak at 533 nm and a linewidth of 20 nm.
 
-The devices use an ITO/PEDOT:PSS/MAPbBr3/TPBi/LiF/Al stack, fabricated by solution processing with chloroform anti-solvent treatment. The MAPbBr3 films have a band gap of 2.3 eV and a photoluminescence peak at 529 nm. The LEDs reach a luminance of about 13,000 cd/m² at 6 V, with an electroluminescence peak at 533 nm, a linewidth of 20 nm, CIE coordinates of (0.22, 0.74) and a turn-on voltage of about 4 V.
+To identify the factors that limit the lifetime, he combined temperature-dependent impedance spectroscopy (77–380 K), electric modulus analysis, deep-level transient spectroscopy (DLTS) and cross-sectional EDX. The main findings are as follows.
 
-### Ion migration and degradation
+- **Bromide-ion migration as the dominant degradation mechanism.** Under bias, Br⁻ ions drift and accumulate at the anode, which gives rise to a very large apparent permittivity at low frequency. The apparent relative permittivity reaches about 2,500 at 1 Hz. From impedance data, the ion diffusion coefficient (3.2 × 10⁻¹² cm²/s), mobility and density (2.0 × 10¹⁶ cm⁻³) were extracted, and these are lower than reported for iodide in MAPbI3. During rest, the ions partially redistribute, and cycled operation approximately doubles the T50 lifetime, from 80 min to 150 min.
+- **Effect of grain size.** Small grains (~62 nm) store more charge at grain boundaries, which lowers the injection barrier and results in a lower turn-on voltage and higher luminance, but also in faster ion redistribution and a shorter lifetime. Large grains (~150 nm) give lower luminance but a higher current efficiency and a longer lifetime (T50 of 252 min compared with 175 min).
+- **Transport and traps.** Conduction is consistent with correlated barrier hopping, and the dielectric relaxation shows two Arrhenius regimes, assigned to dipolar reorientation and defect-assisted ionic hopping. DLTS reveals a shallow trap at 0.30 eV, attributed to bromide-vacancy-related ionic defects.
 
-Impedance spectroscopy shows a giant apparent relative permittivity of about 2,500 at 1 Hz, which falls to about 92 at 79 kHz. This low-frequency polarization is attributed to mobile ions. An equivalent circuit with an interfacial (Helmholtz double-layer) element and a bulk element was used to separate the two contributions, and gives an ion diffusion coefficient of 3.2 × 10⁻¹² cm²/s, an ion mobility of 1.3 × 10⁻¹⁰ cm²/Vs and a mobile-ion density of 2.0 × 10¹⁶ cm⁻³. These values are lower than those reported for iodide in MAPbI3, which is consistent with the higher stability of the bromide perovskite.
-
-Cross-sectional EDX shows that Br⁻ ions accumulate at the anode under bias and partially redistribute after one hour of rest. As a result, cycled operation increases the T50 lifetime from 80 min under continuous operation to 150 min, and the T80 lifetime from 167 min to 300 min.
-
-### Effect of grain size
-
-To study the role of grain boundaries, films with small grains (about 62 nm) and large grains (about 150 nm) were prepared by changing the annealing temperature, and compared over 24 devices from three batches.
-
-| | Small grains | Large grains |
-|---|---|---|
-| Luminance | ~13,000 cd/m² | ~4,500 cd/m² |
-| Turn-on voltage | 3.6 V | 4.0 V |
-| Current efficiency | 3.4 cd/A | 7.0 cd/A |
-| T50 lifetime | 175 min | 252 min |
-
-Dielectric spectroscopy from 100 to 300 K, analysed with the Havriliak–Negami model, shows that the small-grain films have about three times stronger Maxwell–Wagner polarization at grain boundaries. The resulting charge stored at grain boundaries lowers the injection barrier, which explains the lower turn-on voltage and higher luminance, but also accelerates ion redistribution and therefore degradation.
-
-### Transport and traps
-
-The AC conductivity follows Jonscher's universal dielectric response, and its frequency exponent decreases with temperature. Together with a time–temperature superposition that collapses all spectra onto a single master curve, this indicates correlated barrier hopping as the conduction mechanism. The relaxation shows two Arrhenius regimes, assigned to dipolar reorientation at low temperature and defect-assisted ionic hopping at higher temperature. DLTS reveals a shallow trap with an activation energy of 0.30 eV and a capture cross-section of 6.1 × 10⁻¹⁹ cm², attributed to bromide-vacancy-related ionic defects.
-
-These results were published in two papers in *Journal of Physics D: Applied Physics* (2025 and 2026) and presented at IEEE EDTM 2026, IEEE LANANO 2025 and IEEE ICEE 2025.
+This work was published in *Journal of Physics D: Applied Physics* (2025, 2026) and presented at IEEE EDTM 2026, IEEE LANANO 2025 and IEEE ICEE 2025.
