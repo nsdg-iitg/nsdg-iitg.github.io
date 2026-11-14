@@ -1,0 +1,10 @@
+{% assign who = include.person %}
+{% if who.photo %}
+  <img class="avatar {{ include.size }}" src="{{ who.photo | relative_url }}" alt="Photo of {{ who.name }}" loading="lazy">
+{% else %}
+  {% assign clean = who.name | remove: "Dr. " | remove: "Ph. " %}
+  {% assign words = clean | split: " " %}
+  {% assign first = words | first | slice: 0 %}
+  {% assign last = words | last | slice: 0 %}
+  <span class="avatar initials {{ include.size }}" aria-hidden="true">{{ first }}{{ last }}</span>
+{% endif %}

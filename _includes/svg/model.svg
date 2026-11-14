@@ -1,0 +1,15 @@
+<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logarithmic slope of a dark J–V curve: the transition-voltage peak moves to lower voltage when traps are present">
+  <g stroke="var(--fig-ink)" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M34 20 L34 150 L222 150"/>
+  </g>
+  <path d="M38 140 C 90 138, 120 120, 150 44 C 160 24, 172 40, 184 92 C 196 130, 210 132, 220 134" fill="none" stroke="var(--fig-line)" stroke-width="3"/>
+  <path d="M38 140 C 70 136, 90 112, 112 58 C 120 38, 132 52, 142 96 C 154 132, 196 134, 220 136" fill="none" stroke="var(--c-model)" stroke-width="3.5"/>
+  <path d="M150 30 L124 30" stroke="var(--c-model)" stroke-width="2" marker-end="url(#ah)"/>
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--c-model)"/></marker></defs>
+  <g class="fig-label">
+    <text x="40" y="18">d log J / d log V</text>
+    <text x="176" y="168">voltage</text>
+    <text x="156" y="22">trap-free</text>
+    <text x="70" y="44" fill="var(--c-model)">with traps</text>
+  </g>
+</svg>

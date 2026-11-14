@@ -1,0 +1,23 @@
+# Alumni without a personal page. (PhD and postdoc alumni have pages in _people/.)
+mtech:
+  - { name: "Dalesh Gaurishankar Patle", year: 2025, thesis: "Electrical crosstalk between memristors in crossbar circuits using LAOSS" }
+  - { name: "Sayan Ghosh", year: 2025, thesis: "Peripheral circuit design for passive ReRAM crossbars (65 nm)" }
+  - { name: "Varada Sai Sahith", year: 2024, thesis: "Peripheral circuit design for passive ReRAM crossbars (180 nm)" }
+  - { name: "Naveen Jasti", year: 2023, thesis: "Minimization of sneak path currents in crossbar ReRAM architecture" }
+  - { name: "Kunal Kishor", year: 2022, thesis: "Hybrid perovskite tandem solar cells" }
+  - { name: "Himangshu Prakash Mahato", year: 2021, thesis: "TCAD simulation of vertical field effect transistor" }
+  - { name: "Mohit Verma", year: 2020, thesis: "Determination of best possible efficiency of tin perovskite solar cells" }
+  - { name: "Amal Babu P S", year: "", thesis: "Encapsulation and stability testing of bio resistive RAMs for neuromorphic computing applications" }
+btech:
+  - { name: "Shubham Kumar and Aayush", year: 2021, thesis: "A study of perovskite-based memristors" }
+  - { name: "Akhilesh Kumar and Bhaskar Baiplawat", year: 2019, thesis: "Modelling chalcogenide memristor" }
+  - { name: "Mahaveer Singh Gehlot", year: 2018, thesis: "Large-area perovskite solar cell fabrication using doctor blade system" }
+interns:
+  - "Wonjae Lee, Kim Sanghyun and Yeong (Hanyang University, South Korea)"
+  - "Lee Jeong Soo and Kang In (Hanyang University, South Korea)"
+  - "Dhruvajesh Sharma and Esha Manhas (VIT Pune)"
+  - "Abhirup Das (VIT Vellore)"
+  - "Shiv Raj Singh (IISER Bhopal)"
+  - "Aditya Namala (NIT Calicut)"
+  - "Tiya Jaman (NIT Mizoram)"
+  - "Aratrika Saha (HIT Kolkata)"

@@ -1,0 +1,23 @@
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-title">{{ site.group_name }}</p>
+      <p class="muted">{{ site.department }}<br>{{ site.institute }}, Guwahati 781039, Assam, India</p>
+    </div>
+    <div>
+      <p class="footer-title">Contact</p>
+      <p class="muted">Dr. Arun Tej Mallajosyula<br>
+        <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a><br>
+        {{ site.contact_phone }}</p>
+    </div>
+    <div>
+      <p class="footer-title">Links</p>
+      <p class="muted">
+        <a href="https://www.iitg.ac.in/eee/">Department of EEE</a><br>
+        <a href="https://www.iitg.ac.in/cnt/">Centre for Nanotechnology</a><br>
+        <a href="https://www.iitg.ac.in/">IIT Guwahati</a>
+      </p>
+    </div>
+  </div>
+  <div class="wrap footer-base muted">© {{ 'now' | date: "%Y" }} {{ site.group_name }}, IIT Guwahati</div>
+</footer>

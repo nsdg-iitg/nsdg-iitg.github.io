@@ -1,0 +1,29 @@
+<svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three device signatures: a solar cell J–V curve, a light-emitting diode and a memristor's pinched hysteresis loop">
+  <g>
+    <rect x="10" y="10" width="190" height="150" rx="16" fill="var(--surface)" stroke="var(--line)"/>
+    <text x="26" y="36" class="fig-cap">Energy harvesting</text>
+    <path d="M30 140 L186 140 M40 52 L40 150" stroke="var(--fig-ink)" stroke-width="1.6" fill="none"/>
+    <path d="M40 68 L130 70 C 150 72, 160 90, 170 140" stroke="var(--c-energy)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="40" y="70" width="100" height="70" fill="var(--c-energy)" opacity=".15"/>
+    <text x="150" y="155" class="fig-label">V</text><text x="46" y="62" class="fig-label">J</text>
+  </g>
+  <g>
+    <rect x="220" y="10" width="190" height="150" rx="16" fill="var(--surface)" stroke="var(--line)"/>
+    <text x="236" y="36" class="fig-cap">Light emission</text>
+    <rect x="255" y="56" width="120" height="12" rx="2" fill="var(--fig-metal)"/>
+    <rect x="255" y="68" width="120" height="22" fill="var(--c-light)"/>
+    <rect x="255" y="90" width="120" height="14" rx="2" fill="var(--fig-glass)"/>
+    <g stroke="var(--c-light)" stroke-width="3" stroke-linecap="round">
+      <line x1="315" y1="112" x2="315" y2="146"/><line x1="292" y1="112" x2="274" y2="140"/><line x1="338" y1="112" x2="356" y2="140"/>
+    </g>
+  </g>
+  <g>
+    <rect x="10" y="180" width="400" height="150" rx="16" fill="var(--surface)" stroke="var(--line)"/>
+    <text x="26" y="206" class="fig-cap">Memories</text>
+    <path d="M120 258 L360 258 M240 210 L240 312" stroke="var(--fig-ink)" stroke-width="1.6" fill="none"/>
+    <path d="M240 258 C 262 232, 300 216, 340 222 C 330 246, 284 262, 240 258 C 218 284, 180 300, 140 294 C 150 270, 196 254, 240 258 Z" fill="var(--c-memory)" opacity=".18"/>
+    <path d="M240 258 C 262 232, 300 216, 340 222 C 330 246, 284 262, 240 258 C 218 284, 180 300, 140 294 C 150 270, 196 254, 240 258" stroke="var(--c-memory)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <text x="350" y="276" class="fig-label">V</text><text x="246" y="226" class="fig-label">I</text>
+    <text x="26" y="312" class="fig-label">pinched hysteresis loop</text>
+  </g>
+</svg>

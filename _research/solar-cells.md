@@ -1,0 +1,22 @@
+---
+title: "Lead-free and tandem perovskite solar cells"
+short: "Energy harvesting"
+order: 2
+figure: solar
+lead: "Tin-based perovskite solar cells, made in the lab and pushed further by optical and electrical simulation into tandem, triple-junction and bifacial designs, with a full life-cycle assessment of each."
+people: [rabin-paul, abdul-basit-andrabi, guri-thanusha, atanu-purkayastha]
+methods: "Spin coating with anti-solvent · spectroscopic ellipsometry · XRD and AFM · J–V and MPP tracking · Silvaco and Sentaurus TCAD · Lumerical FDTD · MATLAB transfer-matrix codes · life-cycle inventory analysis"
+description: "Lead-free tin perovskite solar cells, all-perovskite tandem and bifacial designs, and life-cycle assessment at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+---
+
+Lead halide perovskites make very efficient solar cells, but the lead is toxic. Tin perovskites avoid lead and have a band gap well suited to the bottom cell of a tandem. However, tin oxidises easily, and the films have many defects. We work on making tin cells better, then use simulation to design tandem and bifacial cells around them.
+
+### What we have shown
+
+- **2D/3D tin perovskite cells.** Adding 15% PEAI to FASnI3 nearly doubled efficiency, from 6.41% to 11.03%. These cells lost only 25% in 50 hours, against more than 75% in 16 hours for 3D cells. An 80 nm MgF2 anti-reflection layer brought them to 12.6%.
+- **Bifacial cells.** Simulated bifacial 2D/3D tin cells reach 26.55% when lit from both sides. Over snow they gain 38.85% over a one-sided cell. Over soil or sea water, they lose output.
+- **All-perovskite tandems.** We designed a lead-free MAGeI3 / 2D-3D FASnI3 two-terminal tandem with a simulated efficiency of 31.34%. Earlier work found ITO the best interlayer for a CsFAPbX3/FASnI3 tandem, and built transfer-matrix algorithms for tandem and triple-junction design (software copyright SW-17416/2023).
+- **Plasmonic light trapping.** 10 nm silver nanoparticles at the PCBM/Ag interface raise absorption by about 8%, for a simulated 23.16% cell.
+- **Life-cycle assessment.** Tin perovskite modules pay back their manufacturing energy in 0.53–0.57 years, at 0.03–0.07 kg CO2 per kWh. That is well below lead perovskite and crystalline silicon modules in India.
+
+Awards: Best Paper, ICAER 2023 (IIT Bombay).

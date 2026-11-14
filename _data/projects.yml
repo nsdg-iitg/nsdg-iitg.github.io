@@ -1,0 +1,45 @@
+# Funded projects. role: PI or Co-PI. area: optional research area slug.
+- title: "Flexible ReRAM for wearable electronics (part of SWASTHA)"
+  role: PI
+  amount: "₹42 Cr (programme)"
+  agency: "MeitY, DST"
+  status: Ongoing
+  area: memristors
+- title: "INUP-i2i: Indian Nanoelectronics Users Programme, Idea to Innovation"
+  role: PI
+  amount: "₹31 Cr (programme)"
+  agency: "MeitY, DST"
+  status: Ongoing
+- title: "Wearable IoT devices for pre-disease monitoring, beyond 5G"
+  role: Co-PI
+  amount: "₹8.7 Cr"
+  agency: "TTDF, DoT"
+  status: Ongoing
+- title: "C-band silicon photonic modulator for 400G"
+  role: Co-PI
+  amount: "₹39 L"
+  agency: "SERB CRG"
+  status: Ongoing
+- title: "Silicon Photonics and Microelectronic Devices Lab"
+  role: Co-PI
+  amount: "₹2.65 Cr"
+  agency: "DST-FIST"
+  status: Completed
+- title: "Flexible memristors with 2D layered hybrid perovskites"
+  role: PI
+  amount: "₹49.7 L"
+  agency: "SERB ECR"
+  status: Completed
+  area: memristors
+- title: "Hybrid perovskites for solar energy conversion"
+  role: Co-PI
+  amount: "₹26.4 L"
+  agency: "SPARC, MHRD"
+  status: Completed
+  area: solar-cells
+- title: "Large-area perovskite solar cells"
+  role: PI
+  amount: "₹5 L"
+  agency: "Start-up Grant, IIT Guwahati"
+  status: Completed
+  area: solar-cells

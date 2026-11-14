@@ -1,0 +1,16 @@
+<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Green perovskite LED stack emitting light through the glass">
+  <rect x="40" y="18" width="160" height="16" rx="2" fill="var(--fig-metal)"/>
+  <rect x="40" y="34" width="160" height="12" fill="var(--fig-soft)"/>
+  <rect x="40" y="46" width="160" height="30" fill="var(--c-light)"/>
+  <rect x="40" y="76" width="160" height="10" fill="var(--fig-soft2)"/>
+  <rect x="40" y="86" width="160" height="10" fill="var(--fig-tco)"/>
+  <rect x="40" y="96" width="160" height="22" rx="2" fill="var(--fig-glass)"/>
+  <g class="fig-label">
+    <text x="206" y="30">LiF/Al</text><text x="206" y="44">TPBi</text><text x="206" y="65">MAPbBr₃</text>
+    <text x="206" y="84">PEDOT</text><text x="206" y="95">ITO</text><text x="206" y="111">glass</text>
+  </g>
+  <g stroke="var(--c-light)" stroke-width="3" stroke-linecap="round">
+    <line x1="120" y1="128" x2="120" y2="170"/><line x1="96" y1="128" x2="76" y2="164"/><line x1="144" y1="128" x2="164" y2="164"/>
+    <line x1="80" y1="126" x2="48" y2="152"/><line x1="160" y1="126" x2="192" y2="152"/>
+  </g>
+</svg>

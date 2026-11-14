@@ -1,0 +1,43 @@
+---
+title: "Research"
+kicker: "Research"
+heading: "What we work on"
+lead: "Five connected themes, held together by one approach: make the device, measure it carefully, and understand it with physics-based models."
+description: "Research at NSDG, IIT Guwahati: perovskite memristors, lead-free and tandem solar cells, perovskite LEDs, defect spectroscopy and device modelling, and nanowire devices."
+---
+<div class="area-list">
+{% assign areas = site.research | sort: "order" %}
+{% for a in areas %}
+<article class="area-row area-{{ a.slug }}">
+  <figure class="area-figure" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</figure>
+  <div>
+    <p class="kicker">{{ a.short }}</p>
+    <h2><a href="{{ a.url | relative_url }}">{{ a.title }}</a></h2>
+    <p>{{ a.lead }}</p>
+    <p class="area-people">
+      {% for s in a.people %}{% assign m = site.people | where: "slug", s | first %}{% if m %}<a href="{{ m.url | relative_url }}">{{ m.name }}</a>{% unless forloop.last %}, {% endunless %}{% endif %}{% endfor %}
+    </p>
+    <a class="more" href="{{ a.url | relative_url }}">Read more →</a>
+  </div>
+</article>
+{% endfor %}
+</div>
+
+<h2 class="section-title">How we work</h2>
+<div class="approach">
+  <div><h3>Fabrication</h3><p>Low-cost, flexible devices from halide perovskites, organic semiconductors and other low-dimensional materials, with a focus on interface engineering. We are starting to use machine learning to predict new device structures.</p></div>
+  <div><h3>Characterisation</h3><p>Carrier generation and recombination, and electronic and ionic transport, measured with nanoscale imaging, DLTS, impedance spectroscopy, and low-temperature I–V and C–V.</p></div>
+  <div><h3>Modelling</h3><p>2D and 3D TCAD, our own drift–diffusion simulator, and analytical and compact models that turn measurements into physical numbers.</p></div>
+</div>
+
+<h2 class="section-title">Funded projects</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Project</th><th>Role</th><th>Funding</th><th>Agency</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for pr in site.data.projects %}
+    <tr><td>{{ pr.title }}</td><td>{{ pr.role }}</td><td>{{ pr.amount }}</td><td>{{ pr.agency }}</td><td><span class="status {{ pr.status | downcase }}">{{ pr.status }}</span></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>

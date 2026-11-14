@@ -1,0 +1,22 @@
+---
+title: "Memristors and neuromorphic hardware"
+short: "Memories"
+order: 1
+figure: memristor
+lead: "Resistive-switching memories from halide perovskites, on glass and on bendable plastic, built into crossbar arrays and artificial synapses for brain-inspired computing."
+people: [radharani-yumlembam, ph-nonglen-meitei, himangshu-jyoti-gogoi]
+methods: "Spin coating and thermal / e-beam evaporation · conductive AFM · DC and pulsed I–V (Keysight B1500A, Keithley 4200) · DLTS · SPICE (Yakopcic) models · ReRAM peripheral circuits at 180 nm and 65 nm"
+description: "Perovskite memristors, flexible ReRAM crossbar arrays and artificial synapses at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+---
+
+A memristor is a two-terminal cell whose resistance can be switched between a high and a low state and keeps that state without power. In halide perovskites, mobile ions and vacancies form and break a thin conducting filament between the electrodes. These memories are cheap to make, switch at low voltage, and can be built on flexible substrates. Because their conductance can be tuned in small steps, they can also act like the synapses of a brain.
+
+### What we have shown
+
+- **Lead-free, flexible and air-stable.** Our Cs3Bi2I9 memristors on PET reach an ON/OFF ratio above 10⁵ and run for 10⁴ cycles. They survive more than 30 days in over 80% relative humidity without encapsulation, and bending to a 5 mm radius. A 4×4 flexible crossbar gave 81% yield. The cells learn and forget like synapses at about 0.1 µJ per event.
+- **Two switching modes in one cell.** In MAPbI3 memristors, the compliance current selects between a field-driven (redox) mode and a Joule-heating mode of opposite polarity. Together they give complementary resistive switching in a single cell, which helps suppress sneak currents in crossbars.
+- **How to measure a memristor properly.** The scan rate, compliance current, pulse settings and device area all change the switching voltages and ON/OFF ratio. We mapped these effects and proposed a standard measurement protocol.
+- **The defects behind switching.** DLTS on flexible MAPbI3 memristors finds methylammonium vacancies (activation energy about 0.48 eV) that help the filament form.
+- **From device to array.** M.Tech projects have designed read/write peripheral circuits for passive ReRAM crossbars at 180 nm and 65 nm, and studied sneak-path currents and crosstalk.
+
+Ongoing work includes larger crossbar arrays with all-inorganic perovskites, and a memristor-based artificial olfactory (smell) system.

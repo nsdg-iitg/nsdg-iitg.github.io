@@ -1,0 +1,20 @@
+<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Memristor crossbar array">
+  <g stroke-linecap="round">
+    <g stroke="var(--fig-line)" stroke-width="7">
+      <line x1="30" y1="45" x2="210" y2="45"/><line x1="30" y1="80" x2="210" y2="80"/>
+      <line x1="30" y1="115" x2="210" y2="115"/><line x1="30" y1="150" x2="210" y2="150"/>
+    </g>
+    <g fill="var(--c-memory)">
+      <rect x="62" y="37" width="16" height="16" rx="3" opacity=".35"/><rect x="102" y="37" width="16" height="16" rx="3"/><rect x="142" y="37" width="16" height="16" rx="3" opacity=".35"/><rect x="182" y="37" width="16" height="16" rx="3" opacity=".35"/>
+      <rect x="62" y="72" width="16" height="16" rx="3"/><rect x="102" y="72" width="16" height="16" rx="3" opacity=".35"/><rect x="142" y="72" width="16" height="16" rx="3"/><rect x="182" y="72" width="16" height="16" rx="3" opacity=".35"/>
+      <rect x="62" y="107" width="16" height="16" rx="3" opacity=".35"/><rect x="102" y="107" width="16" height="16" rx="3" opacity=".35"/><rect x="142" y="107" width="16" height="16" rx="3" opacity=".35"/><rect x="182" y="107" width="16" height="16" rx="3"/>
+      <rect x="62" y="142" width="16" height="16" rx="3" opacity=".35"/><rect x="102" y="142" width="16" height="16" rx="3"/><rect x="142" y="142" width="16" height="16" rx="3" opacity=".35"/><rect x="182" y="142" width="16" height="16" rx="3" opacity=".35"/>
+    </g>
+    <g stroke="var(--fig-ink)" stroke-width="5" opacity=".85">
+      <line x1="70" y1="22" x2="70" y2="168"/><line x1="110" y1="22" x2="110" y2="168"/>
+      <line x1="150" y1="22" x2="150" y2="168"/><line x1="190" y1="22" x2="190" y2="168"/>
+    </g>
+  </g>
+  <text x="20" y="16" class="fig-label">top electrodes</text>
+  <text x="20" y="177" class="fig-label">a memory cell at each crossing</text>
+</svg>

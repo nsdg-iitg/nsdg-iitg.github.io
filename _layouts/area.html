@@ -1,0 +1,45 @@
+---
+layout: default
+---
+{% assign slug = page.slug %}
+<section class="page-head area-head area-{{ slug }}">
+  <div class="wrap area-head-grid">
+    <div>
+      <p class="kicker"><a href="{{ '/research/' | relative_url }}">Research</a> · {{ page.short }}</p>
+      <h1>{{ page.title }}</h1>
+      <p class="lead">{{ page.lead }}</p>
+    </div>
+    <figure class="area-figure" aria-hidden="true">{% include svg/{{ page.figure }}.svg %}</figure>
+  </div>
+</section>
+<div class="wrap two-col">
+  <article class="prose">
+    {{ content }}
+    <h3>Methods and tools</h3>
+    <p class="methods">{{ page.methods }}</p>
+  </article>
+  <aside class="side">
+    <h2 class="side-title">People</h2>
+    <div class="people-stack">
+    {% for s in page.people %}
+      {% assign m = site.people | where: "slug", s | first %}
+      {% if m %}{% include person-card.html person=m %}{% endif %}
+    {% endfor %}
+    </div>
+    {% assign projs = site.data.projects | where: "area", slug %}
+    {% if projs.size > 0 %}
+    <h2 class="side-title">Funding</h2>
+    <ul class="plain small">
+      {% for pr in projs %}<li><strong>{{ pr.title }}</strong><br><span class="muted">{{ pr.agency }} · {{ pr.role }} · {{ pr.status }}</span></li>{% endfor %}
+    </ul>
+    {% endif %}
+  </aside>
+</div>
+<section class="wrap section">
+  <h2>Papers in this area</h2>
+  {% assign pubs = site.data.publications | where_exp: "p", "p.areas contains slug" %}
+  {% assign pubs = pubs | where_exp: "p", "p.type != 'ip'" %}
+  <ol class="pubs">
+    {% for p in pubs %}{% include pub.html p=p %}{% endfor %}
+  </ol>
+</section>

@@ -1,0 +1,23 @@
+---
+title: "News"
+permalink: /news/
+kicker: "News"
+heading: "News"
+lead: "Theses, awards, papers and other milestones."
+description: "News from the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+---
+{% assign byyear = site.data.news | group_by_exp: "n", "n.date | date: '%Y'" %}
+{% for y in byyear %}
+<h2 class="section-title">{{ y.name }}</h2>
+<ul class="news-full">
+  {% for n in y.items %}
+  <li>
+    <time datetime="{{ n.date }}">{{ n.date | date: "%-d %b" }}</time>
+    <div>
+      <h3>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</h3>
+      {% if n.text %}<p>{{ n.text }}</p>{% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}

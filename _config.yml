@@ -1,0 +1,47 @@
+title: "NSDG · IIT Guwahati"
+group_name: "Nanoelectronics and Semiconductor Devices Group"
+short_name: "NSDG"
+tagline: "Energy harvesting, Light emission and Memories"
+description: "The Nanoelectronics and Semiconductor Devices Group (NSDG) at IIT Guwahati works on perovskite memristors, lead-free solar cells, perovskite LEDs, defect spectroscopy and nanowire devices."
+url: "https://nsdg-iitg.github.io"
+baseurl: ""
+lang: en
+timezone: Asia/Kolkata
+
+institute: "Indian Institute of Technology Guwahati"
+department: "Department of Electronics and Electrical Engineering and Centre for Nanotechnology"
+address: "Department of EEE, IIT Guwahati, Guwahati 781039, Assam, India"
+contact_email: "aruntej@iit.ac.in"
+contact_phone: "+91 361 258 3469"
+
+collections:
+  people:
+    output: true
+    permalink: /people/:name/
+  research:
+    output: true
+    permalink: /research/:name/
+
+defaults:
+  - scope: { path: "", type: people }
+    values: { layout: person }
+  - scope: { path: "", type: research }
+    values: { layout: area }
+  - scope: { path: "" }
+    values: { layout: page }
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  smart_quotes: ["apos", "apos", "quot", "quot"]
+
+exclude:
+  - README.md
+  - CONTRIBUTING.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
