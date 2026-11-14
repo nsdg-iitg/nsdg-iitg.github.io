@@ -1,9 +1,9 @@
 ---
 name: "Dr. Abinash Baruah"
-role: "MS + PhD, Electronics and Electrical Engineering"
+role: "MS + PhD, Electronics and Electrical Engineering (2026)"
 photo: /assets/img/people/abinash-baruah.jpg
-category: current
-order: 1
+category: alumni
+order: 0
 topic: "Perovskite light-emitting diodes"
 email: "abaruah@iitg.ac.in"
 areas: [light-emitting-diodes, trap-analysis-modelling]
@@ -12,7 +12,7 @@ highlights:
   - "Showed that Br⁻ ion migration to the anode drives LED degradation, and that rest partly heals it"
   - "Grain-size study: small grains give brighter LEDs, large grains live longer (T50 175 vs 252 min)"
   - "Found a 0.30 eV bromide-vacancy-related trap by DLTS"
-description: "Abinash Baruah (IIT Guwahati) works on perovskite light-emitting diodes: ion migration, dielectric relaxation and trap physics in MAPbBr3 PeLEDs."
+description: "Dr. Abinash Baruah (PhD, IIT Guwahati, 2026) worked on perovskite light-emitting diodes: ion migration, dielectric relaxation and trap physics in MAPbBr3 PeLEDs."
 figures:
   - src: "/assets/img/figures/peled-degradation-jpd2025.jpg"
     caption: "Ion migration and recovery in a perovskite LED. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
@@ -22,7 +22,7 @@ figures:
     caption: "DLTS of a deep trap in a MAPbBr3 LED. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
 ---
 
-Abinash makes bright green perovskite light-emitting diodes (PeLEDs) from MAPbBr3 and studies why they lose brightness over time. He defended his PhD thesis in November 2026.
+Abinash made bright green perovskite light-emitting diodes (PeLEDs) from MAPbBr3 and studied why they lose brightness over time. He defended his PhD thesis in November 2026.
 
 His devices use an ITO/PEDOT:PSS/MAPbBr3/TPBi/LiF/Al stack, made by solution processing with anti-solvent treatment. They reach about 13,000 cd/m² with a narrow 20 nm emission line at 533 nm.
 
