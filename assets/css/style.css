@@ -99,6 +99,8 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 .hero-figure { margin: 0; width: 100%; max-width: 180px; justify-self: end; }
 @media (max-width: 899px) { .hero-figure { display: none; } }
 .hero .cta { margin-top: 28px; }
+.hero .kicker { font-size: 1rem; letter-spacing: .08em; margin-bottom: 14px; }
+@media (min-width: 900px) { .hero .kicker { font-size: 1.08rem; } }
 .hero-figure svg { display: block; width: 100%; height: auto; }
 .fig-cap { font: 600 13px var(--font); fill: var(--ink); }
 .fig-label { font: 500 10.5px var(--font); fill: var(--muted); }
