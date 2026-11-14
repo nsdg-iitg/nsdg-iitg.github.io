@@ -403,3 +403,9 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
   .hero .lead, .hero .lead + .lead { max-width: none; }
   .hero-figure { align-self: center; margin-top: 0; }
 }
+/* Headline on one line across the full width, sketches below it beside the text */
+.hero-head h1 { margin-bottom: 28px; }
+@media (min-width: 900px) {
+  .hero-head h1 { white-space: nowrap; font-size: min(3.1rem, calc((min(100vw, 1180px) - 76px) / 22.6)); }
+  .hero-head { margin-bottom: 4px; }
+}
