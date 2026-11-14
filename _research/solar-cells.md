@@ -4,7 +4,7 @@ short: "Energy harvesting"
 order: 2
 figure: solar
 lead: "Tin-based perovskite solar cells, made in the lab and pushed further by optical and electrical simulation into tandem, triple-junction and bifacial designs, with a full life-cycle assessment of each."
-people: [rabin-paul, abdul-basit-andrabi, guri-thanusha, atanu-purkayastha]
+people: [rabin-paul, guri-thanusha, atanu-purkayastha]
 methods: "Spin coating with anti-solvent · spectroscopic ellipsometry · XRD and AFM · J–V and MPP tracking · Silvaco and Sentaurus TCAD · Lumerical FDTD · MATLAB transfer-matrix codes · life-cycle inventory analysis"
 description: "Lead-free tin perovskite solar cells, all-perovskite tandem and bifacial designs, and life-cycle assessment at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 figures:

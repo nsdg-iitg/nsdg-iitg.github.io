@@ -6,7 +6,7 @@ category: current
 order: 3
 topic: "Device physics and simulation of defects and mobile ions in perovskite devices"
 email: "basit@iitg.ac.in"
-areas: [trap-analysis-modelling, solar-cells]
+areas: [trap-analysis-modelling]
 highlights:
   - "A trap probe that needs only a dark current–voltage curve (Solar Energy, 2023)"
   - "Wrote his own drift–diffusion device simulator with traps and mobile ions"
@@ -32,6 +32,6 @@ Basit works on the device physics of halide perovskite devices. His question is 
 
 **His own simulator.** For this work he wrote a one-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems in one framework. Because it exposes the internal variables of the device, individual physical couplings can be switched off one at a time, which commercial tools do not allow. He validated it against a commercial TCAD simulator.
 
-He has also worked on DLTS of ionic defects in flexible perovskite memristors, and on lead-free perovskite tandem solar cells.
+He has also worked on DLTS of ionic defects in flexible perovskite memristors.
 
 *Thesis (in preparation): Electrical characterisation of ionic and electronic defects in halide perovskite devices: a device-simulation study.*
