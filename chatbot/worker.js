@@ -9,6 +9,7 @@
 
 const DEFAULT_SITE = 'https://nsdg-iitg.github.io';
 const DEFAULT_MODEL = 'gemini-flash-latest';
+const BACKUP_MODELS = ['gemini-flash-lite-latest', 'gemini-2.5-flash'];
 const PER_MINUTE = 6;      // questions per visitor per minute
 const PER_DAY = 400;       // questions from all visitors per day
 const MAX_QUESTION = 500;  // characters
@@ -92,17 +93,29 @@ export default {
     });
     contents.push({ role: 'user', parts: [{ text: question }] });
 
-    const model = env.GEMINI_MODEL || DEFAULT_MODEL;
-    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: contents,
-        generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
-      })
+    // Try the main model, then the backup models, when Gemini is overloaded (500, 503) or over its limit (429).
+    const models = [env.GEMINI_MODEL || DEFAULT_MODEL].concat(BACKUP_MODELS);
+    const payload = JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: contents,
+      generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
     });
+    let r = null;
+    for (let i = 0; i < models.length; i++) {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + models[i] + ':generateContent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+          body: payload
+        });
+        if (r.ok || (r.status !== 500 && r.status !== 503)) break;
+        await new Promise(function (done) { setTimeout(done, 1200); });
+      }
+      if (r.ok) break;
+      if (r.status !== 500 && r.status !== 503 && r.status !== 429 && r.status !== 404) break;
+    }
     if (r.status === 429) return reply({ error: 'The assistant is busy or has reached its free limit. Please try again later.' }, 429, allowOrigin);
+    if (r.status === 500 || r.status === 503) return reply({ error: 'The AI model is overloaded just now. Please ask again in a minute.' }, 503, allowOrigin);
     if (!r.ok) return reply({ error: 'The assistant could not answer just now (model error ' + r.status + ').' }, 502, allowOrigin);
     const j = await r.json();
     const parts = (((j.candidates || [])[0] || {}).content || {}).parts || [];
