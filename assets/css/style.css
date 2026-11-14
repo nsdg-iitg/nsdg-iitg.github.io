@@ -129,9 +129,9 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 .area-nanowire-devices { --c: var(--c-nano); }
 
 /* Stats */
-.stats-band { background: #14171f; color: #f4f2ec; }
-:root[data-mode="dark"] .stats-band { background: var(--surface-2); color: var(--ink); }
-.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; padding-top: 36px; padding-bottom: 36px; }
+.stats-band { padding: 8px 0 0; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; padding: 26px 28px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.stats > div:nth-child(1) .stat-num { color: var(--c-memory); } .stats > div:nth-child(2) .stat-num { color: var(--c-energy); } .stats > div:nth-child(3) .stat-num { color: var(--c-light); } .stats > div:nth-child(4) .stat-num { color: var(--accent); }
 @media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
 .stat-num { display: block; font: 600 2.4rem/1 var(--serif); }
 .stat-label { font-size: .9rem; opacity: .75; }
