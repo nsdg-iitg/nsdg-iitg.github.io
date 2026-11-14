@@ -8,8 +8,18 @@ people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed]
 methods: "Sentaurus and Silvaco TCAD · in-house 1D drift–diffusion simulator · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"
 description: "Trap and mobile-ion characterisation, DLTS, drift–diffusion device simulation and compact modelling at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 figures:
+  - src: "/assets/img/figures/transition-voltage-solen2023.jpg"
+    caption: "The transition voltage: where the slope of log J against log V peaks, current changes from diffusion to drift. From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
+  - src: "/assets/img/figures/transition-voltage-traps-solen2023.jpg"
+    caption: "TCAD: the transition peak moves and weakens as trap density rises. From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
   - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
     caption: "C–V, doping profile and DLTS of a flexible perovskite memristor, showing ionic defect levels. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
+  - src: "/assets/img/figures/peled-dlts-jpd2026.jpg"
+    caption: "DLTS rate-window scan and Arrhenius plot of a deep trap in a perovskite LED. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
+  - src: "/assets/img/figures/dgmosfet-structure-physscr2025.jpg"
+    caption: "Double-gate MOSFET used for our compact model. From R. U. Ahmed and A. T. Mallajosyula, Phys. Scr. 100, 085414 (2025)."
+  - src: "/assets/img/figures/dgmosfet-potential-physscr2025.jpg"
+    caption: "Surface potential along the channel: model against TCAD simulation. From R. U. Ahmed and A. T. Mallajosyula, Phys. Scr. 100, 085414 (2025)."
 ---
 
 Every perovskite device we make, whether a memory, a solar cell or an LED, is shaped by defects: deep and shallow traps, and ions that move. Measuring them is hard, because their signals overlap in ordinary electrical measurements. We develop methods that separate them, check those methods against device simulation, and say when each reading can be trusted.

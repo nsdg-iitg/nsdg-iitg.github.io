@@ -13,6 +13,11 @@ highlights:
   - "Perspective on flexible perovskite memristors in J. Phys. Chem. Lett."
   - "Best Poster, PSIM 2023, IIT Roorkee"
 description: "Dr. Himangshu Jyoti Gogoi (PhD, IIT Guwahati, 2023) worked on hybrid perovskite memristors: switching modes, measurement protocols, SPICE models and defect spectroscopy."
+figures:
+  - src: "/assets/img/figures/complementary-switching-aelm2022.jpg"
+    caption: "Type A (redox) and Type B (Joule heating) switching in one MAPbI3 cell. From H. J. Gogoi and A. T. Mallajosyula, ACS Appl. Electron. Mater. 4, 1039 (2022)."
+  - src: "/assets/img/figures/switching-modes-aelm2022.jpg"
+    caption: "Complementary resistive switching and its two mechanisms. From H. J. Gogoi and A. T. Mallajosyula, ACS Appl. Electron. Mater. 4, 1039 (2022)."
 ---
 
 Himangshu established the group's work on hybrid perovskite memristors.

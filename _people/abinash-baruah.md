@@ -18,6 +18,8 @@ figures:
     caption: "Ion migration and recovery in a perovskite LED. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
   - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
     caption: "Green MAPbBr3 LED: stack, emission, luminance and lifetime. From J. Phys. D 58, 205105 (2025)."
+  - src: "/assets/img/figures/peled-dlts-jpd2026.jpg"
+    caption: "DLTS of a deep trap in a MAPbBr3 LED. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
 ---
 
 Abinash makes bright green perovskite light-emitting diodes (PeLEDs) from MAPbBr3 and studies why they lose brightness over time. He defended his PhD thesis in November 2026.

@@ -12,6 +12,8 @@ figures:
     caption: "How ion migration degrades a perovskite LED, and how it partly recovers at rest. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
   - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
     caption: "Device stack, electroluminescence, colour coordinates, luminance and lifetime of green MAPbBr3 LEDs. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
+  - src: "/assets/img/figures/peled-grain-size-jpd2026.jpg"
+    caption: "Small-grain versus large-grain MAPbBr3 LEDs: permittivity, emission, J–V and lifetime. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
 ---
 
 Halide perovskites emit light with a very narrow linewidth, and their colour can be tuned through the halide. That makes them attractive for displays. Their weak point is lifetime: the same mobile ions that make perovskites easy to process also move under bias and degrade the device. We make green MAPbBr3 LEDs and follow these ions and traps with electrical spectroscopy.

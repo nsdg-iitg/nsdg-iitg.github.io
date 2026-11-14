@@ -12,6 +12,10 @@ figures:
     caption: "Hybrid perovskite memristors: memories, synapses and logic from inorganic, organic and hybrid materials."
   - src: "/assets/img/figures/flexible-memristor-aem2023.jpg"
     caption: "Flexible perovskite memristor on PET, its switching and synaptic plasticity. From M. Patel et al., Adv. Electron. Mater. 9, 2200908 (2023)."
+  - src: "/assets/img/figures/flexible-cs3bi2i9-synapse-fpe2025.jpg"
+    caption: "A flexible Cs3Bi2I9 memristor acting as a synapse: paired-pulse facilitation, learning and forgetting. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
+  - src: "/assets/img/figures/complementary-switching-aelm2022.jpg"
+    caption: "Compliance current selects between two opposite switching modes in a MAPbI3 memristor. From H. J. Gogoi and A. T. Mallajosyula, ACS Appl. Electron. Mater. 4, 1039 (2022)."
 ---
 
 A memristor is a two-terminal cell whose resistance can be switched between a high and a low state and keeps that state without power. In halide perovskites, mobile ions and vacancies form and break a thin conducting filament between the electrodes. These memories are cheap to make, switch at low voltage, and can be built on flexible substrates. Because their conductance can be tuned in small steps, they can also act like the synapses of a brain.

@@ -13,6 +13,13 @@ highlights:
   - "Flexible 4×4 crossbar with 81% device yield"
   - "Synapse-like learning and forgetting at about 0.1 µJ per event"
 description: "Radharani Yumlembam (IIT Guwahati) works on flexible, air-stable, lead-free Cs3Bi2I9 perovskite memristors, crossbar arrays and artificial synapses."
+figures:
+  - src: "/assets/img/figures/flexible-cs3bi2i9-device-fpe2025.jpg"
+    caption: "Cs3Bi2I9 crystal, device stack on PET, and a bent flexible sample. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
+  - src: "/assets/img/figures/flexible-cs3bi2i9-switching-fpe2025.jpg"
+    caption: "Bipolar switching, retention and endurance of the flexible memristor. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
+  - src: "/assets/img/figures/flexible-cs3bi2i9-synapse-fpe2025.jpg"
+    caption: "Synaptic behaviour of the flexible memristor. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
 ---
 
 Radharani builds resistive-switching memories (memristors) from all-inorganic, lead-free perovskites, and puts them into crossbar arrays on flexible plastic.

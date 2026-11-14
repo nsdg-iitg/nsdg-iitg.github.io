@@ -12,6 +12,10 @@ highlights:
   - "DLTS of ionic defects in flexible perovskite memristors"
 description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written his own drift–diffusion simulator."
 figures:
+  - src: "/assets/img/figures/transition-voltage-solen2023.jpg"
+    caption: "Band diagram and J–V with its log-slope G–V; the peak marks the transition voltage. From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
+  - src: "/assets/img/figures/transition-voltage-traps-solen2023.jpg"
+    caption: "How trap density shifts the transition peak (TCAD). From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
   - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
     caption: "DLTS of ionic defects in a flexible perovskite memristor. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
 ---

@@ -7,6 +7,15 @@ lead: "Tin-based perovskite solar cells, made in the lab and pushed further by o
 people: [rabin-paul, abdul-basit-andrabi, guri-thanusha, atanu-purkayastha]
 methods: "Spin coating with anti-solvent · spectroscopic ellipsometry · XRD and AFM · J–V and MPP tracking · Silvaco and Sentaurus TCAD · Lumerical FDTD · MATLAB transfer-matrix codes · life-cycle inventory analysis"
 description: "Lead-free tin perovskite solar cells, all-perovskite tandem and bifacial designs, and life-cycle assessment at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
+figures:
+  - src: "/assets/img/figures/tin-psc-band-jpv2025.jpg"
+    caption: "Bifacial 2D/3D tin perovskite cell: layer stack and simulated band diagram. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
+  - src: "/assets/img/figures/bifacial-albedo-jpv2025.jpg"
+    caption: "Simulated J–V of the bifacial cell lit from the rear under different ground albedos. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
+  - src: "/assets/img/figures/tandem-band-solmat2026.jpg"
+    caption: "Band diagram of a lead-free all-perovskite tandem: MAGeI3 top cell on a 2D/3D FASnI3 bottom cell. From A. Purkayastha and A. T. Mallajosyula, Sol. Energy Mater. Sol. Cells 297, 114100 (2026)."
+  - src: "/assets/img/figures/mgf2-arc-solmat2026.jpg"
+    caption: "Measured J–V and efficiency of 2D/3D tin cells with MgF2 anti-reflection layers of different thickness. From A. Purkayastha and A. T. Mallajosyula, Sol. Energy Mater. Sol. Cells 297, 114100 (2026)."
 ---
 
 Lead halide perovskites make very efficient solar cells, but the lead is toxic. Tin perovskites avoid lead and have a band gap well suited to the bottom cell of a tandem. However, tin oxidises easily, and the films have many defects. We work on making tin cells better, then use simulation to design tandem and bifacial cells around them.

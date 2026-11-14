@@ -13,6 +13,15 @@ highlights:
   - "Life-cycle assessment: energy payback under 0.6 years"
   - "Best Paper, ICAER 2023; Rice University MRESP fellow, 2024; software copyright SW-17416/2023"
 description: "Dr. Atanu Purkayastha (PhD, IIT Guwahati, 2025) worked on lead-free tin perovskite solar cells, tandem and bifacial designs, and their life-cycle assessment."
+figures:
+  - src: "/assets/img/figures/tin-psc-band-jpv2025.jpg"
+    caption: "Bifacial 2D/3D tin perovskite cell: stack and band diagram. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
+  - src: "/assets/img/figures/bifacial-thickness-jpv2025.jpg"
+    caption: "Efficiency against absorber thickness, simulation and experiment. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
+  - src: "/assets/img/figures/mgf2-arc-solmat2026.jpg"
+    caption: "MgF2 anti-reflection layer on 2D/3D tin cells: J–V and efficiency against thickness. From A. Purkayastha and A. T. Mallajosyula, Sol. Energy Mater. Sol. Cells 297, 114100 (2026)."
+  - src: "/assets/img/figures/tandem-band-solmat2026.jpg"
+    caption: "Lead-free all-perovskite tandem band diagram. From A. Purkayastha and A. T. Mallajosyula, Sol. Energy Mater. Sol. Cells 297, 114100 (2026)."
 ---
 
 Atanu worked on solar cells made from lead-free tin perovskites. He combined device fabrication with optical and electrical simulation, and checked the environmental cost of each design with a full life-cycle assessment.
