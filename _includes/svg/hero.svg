@@ -1,4 +1,4 @@
-<svg viewBox="0 0 480 136" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three device signatures: a solar cell J–V curve, a light-emitting diode and a memristor's pinched hysteresis loop">
+<svg viewBox="0 0 156 408" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three device signatures: a solar cell J–V curve, a light-emitting diode and a memristor's pinched hysteresis loop">
   <g>
     <rect x="4" y="4" width="148" height="128" rx="14" fill="var(--surface)" stroke="var(--line)"/>
     <text x="18" y="28" class="fig-cap">Energy harvesting</text>
@@ -7,7 +7,7 @@
     <rect x="30" y="56" width="76" height="56" fill="var(--c-energy)" opacity=".15"/>
     <text x="132" y="126" class="fig-label">V</text><text x="35" y="50" class="fig-label">J</text>
   </g>
-  <g>
+  <g transform="translate(-162 136)">
     <rect x="166" y="4" width="148" height="128" rx="14" fill="var(--surface)" stroke="var(--line)"/>
     <text x="180" y="28" class="fig-cap">Light emission</text>
     <rect x="195" y="44" width="90" height="10" rx="2" fill="var(--fig-metal)"/>
@@ -17,7 +17,7 @@
       <line x1="240" y1="90" x2="240" y2="118"/><line x1="222" y1="90" x2="208" y2="114"/><line x1="258" y1="90" x2="272" y2="114"/>
     </g>
   </g>
-  <g>
+  <g transform="translate(-324 272)">
     <rect x="328" y="4" width="148" height="128" rx="14" fill="var(--surface)" stroke="var(--line)"/>
     <text x="342" y="28" class="fig-cap">Memories</text>
     <path d="M346 82 L462 82 M402 40 L402 124" stroke="var(--fig-ink)" stroke-width="1.4" fill="none"/>
