@@ -5,7 +5,7 @@ role: "PhD Scholar, Electronics and Electrical Engineering"
 category: current
 order: 3
 topic: "Device physics and simulation of defects and mobile ions in perovskite devices"
-email: ""
+email: "basit@iitg.ac.in"
 areas: [trap-analysis-modelling, solar-cells]
 highlights:
   - "A trap probe that needs only a dark current–voltage curve (Solar Energy, 2023)"
