@@ -29,12 +29,21 @@ Arun Tej Mallajosyula is an Associate Professor in the Department of Electronics
 
 The group works across the full chain, from material growth and device fabrication to defect spectroscopy, device simulation and circuits. Current work covers flexible perovskite memristors and crossbar memories for brain-inspired computing, lead-free and tandem perovskite solar cells, perovskite light-emitting diodes, single-nanowire devices, and supercapacitors. The group is now expanding into semiconductor packaging and heterogeneous integration.
 
+### Research interests
+
+- Artificial synapses and neuromorphic computing
+- Emerging memories and crossbar ReRAMs
+- Nano-scale device modelling
+- Photovoltaics and supercapacitors
+- Flexible, wearable and organic electronics
+- Semiconductor packaging and heterogeneous integration
+
 ### Background
 
 - PhD, Indian Institute of Technology Kanpur
-- Los Alamos National Laboratory, USA (2013–2015)
-- National University of Singapore (2013)
-- TSMC, Taiwan (2011–2012)
+- Research Associate, Los Alamos National Laboratory, USA (2013–2015)
+- Research Fellow, National University of Singapore (2013)
+- Principal Engineer, Taiwan Semiconductor Manufacturing Company (TSMC), Taiwan (2011–2012)
 
 ### Service
 
