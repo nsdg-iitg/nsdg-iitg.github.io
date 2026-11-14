@@ -1,5 +1,6 @@
 ---
 name: "Abdul Basit Andrabi"
+photo: /assets/img/people/abdul-basit-andrabi.jpg
 role: "PhD Scholar, Electronics and Electrical Engineering"
 category: current
 order: 3
