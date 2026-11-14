@@ -59,3 +59,71 @@
   search.addEventListener('input', apply);
   apply();
 })();
+
+// Lightbox for gallery photos, lab photos and paper figures
+(function () {
+  var groups = document.querySelectorAll('.gallery, .figs, .lab-photos');
+  if (!groups.length) return;
+  var box = document.createElement('div');
+  box.className = 'lb';
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  box.setAttribute('aria-label', 'Image viewer');
+  box.innerHTML = '<button class="lb-close" aria-label="Close">&times;</button>' +
+    '<button class="lb-prev" aria-label="Previous">&#8249;</button>' +
+    '<button class="lb-next" aria-label="Next">&#8250;</button>' +
+    '<img alt=""><p class="lb-cap"></p><p class="lb-count"></p>';
+  document.body.appendChild(box);
+  var img = box.querySelector('img'), cap = box.querySelector('.lb-cap'), cnt = box.querySelector('.lb-count');
+  var items = [], idx = 0, lastFocus = null;
+
+  function show(i) {
+    idx = (i + items.length) % items.length;
+    var it = items[idx];
+    img.src = it.src; img.alt = it.alt;
+    cap.textContent = it.cap;
+    cnt.textContent = items.length > 1 ? (idx + 1) + ' / ' + items.length : '';
+    box.querySelector('.lb-prev').style.display = items.length > 1 ? '' : 'none';
+    box.querySelector('.lb-next').style.display = items.length > 1 ? '' : 'none';
+  }
+  function open(list, i) {
+    items = list; lastFocus = document.activeElement;
+    show(i); box.classList.add('open'); document.body.classList.add('lb-lock');
+    box.querySelector('.lb-close').focus();
+  }
+  function close() {
+    box.classList.remove('open'); document.body.classList.remove('lb-lock');
+    img.removeAttribute('src');
+    if (lastFocus) lastFocus.focus();
+  }
+  box.querySelector('.lb-close').addEventListener('click', close);
+  box.querySelector('.lb-prev').addEventListener('click', function () { show(idx - 1); });
+  box.querySelector('.lb-next').addEventListener('click', function () { show(idx + 1); });
+  box.addEventListener('click', function (e) { if (e.target === box) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (!box.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(idx - 1);
+    else if (e.key === 'ArrowRight') show(idx + 1);
+  });
+  var x0 = null;
+  box.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+  });
+
+  Array.prototype.forEach.call(groups, function (g) {
+    var figs = g.querySelectorAll('figure');
+    var list = Array.prototype.map.call(figs, function (f) {
+      var a = f.querySelector('a'), im = f.querySelector('img'), fc = f.querySelector('figcaption');
+      return { src: a ? a.getAttribute('href') : im.getAttribute('src'), alt: im ? im.alt : '', cap: fc ? fc.textContent.trim() : '' };
+    });
+    Array.prototype.forEach.call(figs, function (f, i) {
+      var t = f.querySelector('a') || f.querySelector('img');
+      if (!t) return;
+      t.addEventListener('click', function (e) { e.preventDefault(); open(list, i); });
+    });
+  });
+})();

@@ -8,7 +8,7 @@ description: "Photos of the Nanoelectronics and Semiconductor Devices Group, IIT
 ---
 <div class="gallery">
   {% for g in site.data.gallery %}
-  <figure>
+  <figure class="g-item{% if forloop.first %} g-feature{% endif %}">
     <a href="{{ '/assets/img/gallery/' | append: g.src | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: g.src | relative_url }}" alt="{{ g.caption | default: 'Group photo' }}" loading="lazy"></a>
     {% if g.caption %}<figcaption>{{ g.caption }}</figcaption>{% endif %}
   </figure>
