@@ -9,15 +9,21 @@
     });
   }
 
-  // Every page opens in light; the toggle switches the current page only
+  // Light is the default. The visitor's choice is remembered and applies to every page.
   var tt = document.querySelector('.theme-toggle');
   if (tt) {
     tt.addEventListener('click', function () {
       var root = document.documentElement;
-      var current = root.getAttribute('data-mode') || 'light';
-      var next = current === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-mode', next);
+      var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+      if (next === 'dark') root.setAttribute('data-mode', 'dark'); else root.removeAttribute('data-mode');
+      try { localStorage.setItem('nsdg-mode', next); } catch (e) {}
     });
+  }
+
+  var head = document.querySelector('.site-header');
+  if (head) {
+    var onScroll = function () { head.classList.toggle('scrolled', window.scrollY > 8); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
   }
 
   // Publications filter

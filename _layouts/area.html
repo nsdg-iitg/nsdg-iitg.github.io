@@ -44,3 +44,10 @@ layout: default
     {% for p in pubs %}{% include pub.html p=p %}{% endfor %}
   </ol>
 </section>
+<nav class="wrap other-areas" aria-label="Other research areas">
+  <h2 class="side-title">Other research areas</h2>
+  <div class="other-areas-list">
+    {% assign others = site.research | sort: "order" %}
+    {% for a in others %}{% unless a.slug == slug %}<a class="area-{{ a.slug }}" href="{{ a.url | relative_url }}"><span class="area-short">{{ a.short }}</span>{{ a.title }}</a>{% endunless %}{% endfor %}
+  </div>
+</nav>

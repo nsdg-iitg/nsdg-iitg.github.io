@@ -1,0 +1,16 @@
+{
+  "collection": "ms_nsdg_iitg_github_io_80787a97",
+  "failed_files": [],
+  "last_completed_at": "2026-11-14T14:01:36.161098Z",
+  "last_error": "ProxyError: 403 Forbidden",
+  "last_failed_at": "2026-11-14T14:01:36.161098Z",
+  "last_started_at": "2026-11-14T14:01:35.755672Z",
+  "milvus_uri": "~/.memsearch/milvus.db",
+  "operation": "index",
+  "paths": [
+    "/home/user/nsdg-iitg.github.io/.memsearch/memory"
+  ],
+  "schema_version": 1,
+  "status": "error",
+  "updated_at": "2026-11-14T14:01:36.161098Z"
+}
