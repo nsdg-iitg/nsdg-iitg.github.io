@@ -14,6 +14,6 @@ education:
   - "B.E., Electronics and Communication Engineering, Malnad College of Engineering, Hassan"
 ---
 
-Imrongmenla works on nanodevices that both generate and store energy in one structure.
+Imrongmenla works on nanodevices that combine energy generation and storage in a single structure.
 
-*A fuller profile, with selected results and papers, is coming soon.*
+*A detailed profile with selected results and publications will be added.*

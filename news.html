@@ -3,9 +3,10 @@ title: "News"
 permalink: /news/
 kicker: "News"
 heading: "News"
-lead: "Theses, awards, papers and other milestones."
+lead: "Thesis defences, awards, publications and other announcements."
 description: "News from the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 ---
+<p class="feed-link"><a href="{{ '/feed.xml' | relative_url }}">Follow the news feed (RSS)</a></p>
 {% assign sorted = site.data.news | sort: "date" | reverse %}
 {% assign byyear = sorted | group_by_exp: "n", "n.date | date: '%Y'" %}
 {% for y in byyear %}
@@ -13,7 +14,7 @@ description: "News from the Nanoelectronics and Semiconductor Devices Group, IIT
 <ul class="news-full">
   {% for n in y.items %}
   <li{% if n.image %} class="has-img"{% endif %}>
-    <time datetime="{{ n.date }}">{{ n.date | date: "%-d %b" }}</time>
+    {% assign day = n.date | date: "%-d" %}<time datetime="{% if day == "1" %}{{ n.date | date: '%Y-%m' }}{% else %}{{ n.date | date: '%Y-%m-%d' }}{% endif %}">{% if day == "1" %}{{ n.date | date: "%b" }}{% else %}{{ n.date | date: "%-d %b" }}{% endif %}</time>
     <div>
       <h3>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</h3>
       {% if n.text %}<p>{{ n.text }}</p>{% endif %}

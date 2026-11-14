@@ -19,4 +19,4 @@ education:
 
 Rabin works on the design and modelling of third- and fourth-generation solar cells.
 
-*A fuller profile, with selected results and papers, is coming soon.*
+*A detailed profile with selected results and publications will be added.*

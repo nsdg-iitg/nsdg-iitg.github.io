@@ -1,17 +1,17 @@
-# Newest first. date: YYYY-MM-DD (use 01 for the day if unknown). link is optional.
+# Newest first. date: YYYY-MM-DD. If the day is not known use 01; the site then shows only the month. link is optional.
 - date: 2026-11-10
   title: "Abinash Baruah defends his PhD thesis"
-  text: "Abinash's thesis work on bright green perovskite LEDs, their ion migration and trap physics, is complete. Congratulations, Dr. Baruah!"
+  text: "Thesis: Multiscale phenomena in perovskite LEDs: coupled interplay of ion migration, dielectric relaxation, and trap-assisted degradation."
   link: /people/abinash-baruah/
 
   image: /assets/img/news/abinash-phd.jpg
 - date: 2026-10-30
   title: "IIT Guwahati and Tata Electronics sign MoU on semiconductor packaging"
-  text: "The group is expanding into semiconductor packaging and heterogeneous integration."
+  text: "The group is extending its research to semiconductor packaging and heterogeneous integration."
 
 - date: 2025-12-01
   title: "New paper in J. Phys. D on grain size in perovskite LEDs"
-  text: "Small grains give brighter LEDs, large grains give longer life. Dielectric spectroscopy and DLTS explain why."
+  text: "Smaller grains yield higher luminance, whereas larger grains yield longer operating lifetime. Dielectric spectroscopy and DLTS are used to explain this trade-off."
   link: /research/light-emitting-diodes/
 
 - date: 2025-06-30
@@ -22,12 +22,12 @@
   image: /assets/img/news/atanu-phd.jpg
 - date: 2025-06-01
   title: "Nanowire paper in Journal of Applied Physics"
-  text: "A short nitrogen plasma treatment makes a single CuO nanowire about 10 times more conductive."
+  text: "A short nitrogen plasma treatment increases the conductivity of a single CuO nanowire by about an order of magnitude."
   link: /research/nanowire-devices/
 
 - date: 2025-02-01
   title: "Flexible lead-free memristor synapses published"
-  text: "Air-stable Cs3Bi2I9 memristors on plastic, built into a 4×4 crossbar, in Flexible and Printed Electronics."
+  text: "Air-stable Cs3Bi2I9 memristors on a flexible PET substrate, integrated into a 4×4 crossbar array, published in Flexible and Printed Electronics."
   link: /research/memristors/
 
 - date: 2024-06-11
@@ -37,7 +37,7 @@
 
 - date: 2024-01-01
   title: "Atanu Purkayastha awarded Rice University MRESP fellowship"
-  text: "A research visit to Rice University, USA, from January to April 2024."
+  text: "Research visit to Rice University, USA, from January to April 2024."
 
 - date: 2023-12-01
   title: "Best Paper Award at ICAER 2023, IIT Bombay"
@@ -50,7 +50,7 @@
 
 - date: 2023-11-01
   title: "Software copyright granted"
-  text: "For a model for the optical simulation of triple-junction solar cells (SW-17416/2023)."
+  text: "Granted for an optical simulation model of triple-junction solar cells (SW-17416/2023)."
 
   image: /assets/img/news/copyright.jpg
 - date: 2023-05-12

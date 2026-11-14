@@ -19,4 +19,4 @@ education:
 
 Binita works on organic light-emitting diodes (OLEDs).
 
-*A fuller profile, with selected results and papers, is coming soon.*
+*A detailed profile with selected results and publications will be added.*

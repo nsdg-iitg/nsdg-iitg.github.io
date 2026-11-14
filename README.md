@@ -39,6 +39,10 @@ links:
 
 **Figures.** Use your own figures (original plots or schematics). Figures copied from published papers are usually the publisher's copyright.
 
+**Gallery photos.** Put the photo in `assets/img/gallery/` and a small copy with the same file name (about 720 px on the long side) in `assets/img/gallery/thumbs/`, then add it to `_data/gallery.yml`. The page shows the small copy and the viewer opens the full photo.
+
+**Chemical formulas.** Type them plainly, for example `MAPbI3`. The site shows them with subscripts. To add a new formula, add it to the list in `_layouts/default.html`.
+
 ## Preview locally (optional)
 
 ```bash

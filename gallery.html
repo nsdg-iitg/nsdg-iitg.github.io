@@ -3,13 +3,14 @@ title: "Gallery"
 permalink: /gallery/
 kicker: "Gallery"
 heading: "Gallery"
-lead: "Conferences, workshops, visitors and everyday life in the group."
+lead: "Conferences, workshops, visits and group activities."
 description: "Photos of the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati: conferences, workshops and lab life."
 ---
 <div class="gallery">
   {% for g in site.data.gallery %}
+  {% if forloop.first %}{% assign thumb = "" %}{% else %}{% assign thumb = "thumbs/" %}{% endif %}
   <figure class="g-item{% if forloop.first %} g-feature{% endif %}">
-    <a href="{{ '/assets/img/gallery/' | append: g.src | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: g.src | relative_url }}" alt="{{ g.caption | default: 'Group photo' }}" loading="lazy"></a>
+    <a href="{{ '/assets/img/gallery/' | append: g.src | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: thumb | append: g.src | relative_url }}" alt="{{ g.caption | default: 'Group photo' }}" loading="lazy"></a>
     {% if g.caption %}<figcaption>{{ g.caption }}</figcaption>{% endif %}
   </figure>
   {% endfor %}

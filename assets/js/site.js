@@ -9,15 +9,21 @@
     });
   }
 
-  // Every page opens in light; the toggle switches the current page only
+  // Light is the default. The visitor's choice is remembered and applies to every page.
   var tt = document.querySelector('.theme-toggle');
   if (tt) {
     tt.addEventListener('click', function () {
       var root = document.documentElement;
-      var current = root.getAttribute('data-mode') || 'light';
-      var next = current === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-mode', next);
+      var next = root.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
+      if (next === 'dark') root.setAttribute('data-mode', 'dark'); else root.removeAttribute('data-mode');
+      try { localStorage.setItem('nsdg-mode', next); } catch (e) {}
     });
+  }
+
+  var head = document.querySelector('.site-header');
+  if (head) {
+    var onScroll = function () { head.classList.toggle('scrolled', window.scrollY > 8); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
   }
 
   // Publications filter
@@ -27,15 +33,17 @@
   var sections = document.querySelectorAll('.pub-section');
   var countEl = document.getElementById('pub-count');
   var type = 'all';
+  // so that typing MAPbI3 finds MAPbI₃
+  function plain(t) { return t.toLowerCase().replace(/[\u2080-\u2089]/g, function (c) { return String(c.charCodeAt(0) - 0x2080); }); }
 
   function apply() {
-    var q = search.value.trim().toLowerCase();
+    var q = plain(search.value.trim());
     var shown = 0;
     sections.forEach(function (sec) {
       var typeOk = type === 'all' || sec.dataset.type === type;
       var any = false;
       sec.querySelectorAll('.pub').forEach(function (li) {
-        var ok = typeOk && (!q || li.textContent.toLowerCase().indexOf(q) !== -1);
+        var ok = typeOk && (!q || plain(li.textContent).indexOf(q) !== -1);
         li.classList.toggle('hidden', !ok);
         if (ok) { any = true; shown++; }
       });
@@ -125,5 +133,167 @@
       if (!t) return;
       t.addEventListener('click', function (e) { e.preventDefault(); open(list, i); });
     });
+  });
+})();
+
+
+// Site root, worked out from this script's own address, so links work wherever the site is hosted
+var NSDG_ROOT = (function () {
+  var s = document.querySelector('script[src*="assets/js/site.js"]');
+  return s ? s.getAttribute('src').replace(/assets\/js\/site\.js.*$/, '') : '/';
+})();
+var NSDG_INDEX = '';
+
+// Search: one box that looks through people, research pages, papers and news
+(function () {
+  var btn = document.querySelector('.search-open');
+  if (!btn) return;
+  var data = null, box, input, list, active = -1;
+  function plain(t) { return (t || '').toLowerCase().replace(/[₀-₉]/g, function (c) { return String(c.charCodeAt(0) - 0x2080); }); }
+  function href(u) { if (/^https?:/.test(u)) return u; u = NSDG_ROOT + u.replace(/^\//, ''); return /\/$/.test(u) || u === '' ? u + NSDG_INDEX : u; }
+  function build() {
+    box = document.createElement('div'); box.className = 'sr'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Search');
+    box.innerHTML = '<div class="sr-box"><input type="search" placeholder="Search people, research, papers and news" aria-label="Search this site"><ul class="sr-list"></ul></div>';
+    document.body.appendChild(box);
+    input = box.querySelector('input'); list = box.querySelector('.sr-list');
+    box.addEventListener('click', function (e) { if (e.target === box) close(); });
+    input.addEventListener('input', run);
+    input.addEventListener('keydown', function (e) {
+      var links = list.querySelectorAll('a');
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!links.length) return; active = (active + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length; links.forEach(function (a, i) { a.classList.toggle('active', i === active); }); links[active].scrollIntoView({ block: 'nearest' }); }
+      else if (e.key === 'Enter' && links.length) { e.preventDefault(); links[Math.max(active, 0)].click(); }
+    });
+  }
+  function esc(t) { var d = document.createElement('span'); d.textContent = t || ''; return d.innerHTML; }
+  function run() {
+    var words = plain(input.value).split(/\s+/).filter(Boolean); active = -1;
+    if (!words.length) { list.innerHTML = ''; return; }
+    if (!data) { list.innerHTML = '<li class="sr-empty">Loading…</li>'; return; }
+    var hits = [];
+    data.forEach(function (d) {
+      var score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i], s = 0;
+        if (d._t.indexOf(w) !== -1) s += 6;
+        if (d._s.indexOf(w) !== -1) s += 3;
+        if (d._x.indexOf(w) !== -1) s += 1;
+        if (!s) return;
+        score += s;
+      }
+      if (d.k === 'Person' || d.k === 'Research') score += 2;
+      hits.push([score, d]);
+    });
+    hits.sort(function (a, b) { return b[0] - a[0]; });
+    list.innerHTML = hits.length ? hits.slice(0, 12).map(function (h) { var d = h[1]; return '<li><a href="' + esc(href(d.u)) + '"><span class="sr-kind">' + esc(d.k) + '</span><span class="sr-title">' + esc(d.t) + '</span><span class="sr-sub">' + esc(d.s) + '</span></a></li>'; }).join('') : '<li class="sr-empty">Nothing found. Try a name, a material or a method.</li>';
+  }
+  function open() {
+    if (!box) build();
+    box.classList.add('open'); input.value = ''; list.innerHTML = ''; input.focus();
+    if (!data) fetch(NSDG_ROOT + 'search.json').then(function (r) { return r.json(); }).then(function (j) {
+      j.forEach(function (d) { d._t = plain(d.t); d._s = plain(d.s); d._x = plain(d.x); }); data = j; run();
+    }).catch(function () { list.innerHTML = '<li class="sr-empty">Search could not be loaded.</li>'; });
+  }
+  function close() { if (box) box.classList.remove('open'); btn.focus(); }
+  btn.addEventListener('click', open);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && box && box.classList.contains('open')) close();
+    else if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); }
+  });
+})();
+
+// Copy a citation or a BibTeX entry
+(function () {
+  function bibtex(d) {
+    var authors = d.authors.replace(/\*/g, '').split(/,\s*/).join(' and ');
+    var last = (d.authors.split(',')[0].replace(/\*/g, '').trim().split(' ').pop() || 'nsdg').toLowerCase().replace(/[^a-z]/g, '');
+    var word = (d.title.toLowerCase().match(/[a-z]{4,}/) || ['paper'])[0];
+    var f = [['author', authors], ['title', d.title], ['year', d.year]], kind = 'misc';
+    if (d.type === 'journal') {
+      kind = 'article'; f.push(['journal', d.venue]);
+      var m = d.details.match(/^(\d+)(?:\((\d+)\))?,\s*(.+)$/);
+      if (m) { f.push(['volume', m[1]]); if (m[2]) f.push(['number', m[2]]); f.push(['pages', m[3].replace('–', '--')]); }
+    } else if (d.type === 'conference' || d.type === 'talk') {
+      kind = 'inproceedings'; f.push(['booktitle', d.venue]); if (d.details) f.push(['pages', d.details.replace('–', '--')]);
+    } else { f.push(['howpublished', d.venue + (d.details ? ', ' + d.details : '')]); }
+    if (d.doi) f.push(['doi', d.doi]);
+    return '@' + kind + '{' + last + d.year + word + ',\n' + f.map(function (x) { return '  ' + x[0] + ' = {' + x[1] + '}'; }).join(',\n') + '\n}';
+  }
+  function text(d) {
+    return d.authors.replace(/\*/g, '') + ', "' + d.title + '," ' + d.venue + (d.details ? ' ' + d.details : '') + ' (' + d.year + ')' + (d.doi ? '. https://doi.org/' + d.doi : '.');
+  }
+  function copy(t) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+    var a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select();
+    try { document.execCommand('copy'); } finally { a.remove(); } return Promise.resolve();
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.cite-btn') : null;
+    if (!b) return;
+    var d = b.parentNode.dataset, label = b.textContent;
+    copy(b.dataset.kind === 'bibtex' ? bibtex(d) : text(d)).then(function () {
+      b.textContent = 'Copied'; b.classList.add('done');
+      setTimeout(function () { b.textContent = label; b.classList.remove('done'); }, 1400);
+    });
+  });
+})();
+
+// Chat assistant: shown only when chat_endpoint is set in _config.yml. It answers from the website text.
+(function () {
+  var tag = document.querySelector('script[src*="assets/js/site.js"]');
+  var endpoint = tag && tag.getAttribute('data-chat');
+  if (!endpoint) return;
+  var history = [], busy = false;
+  function el(t, c, txt) { var e = document.createElement(t); if (c) e.className = c; if (txt) e.textContent = txt; return e; }
+
+  var open = el('button', 'chat-open'); open.type = 'button'; open.setAttribute('aria-expanded', 'false');
+  open.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Ask about the group</span>';
+  var panel = el('section', 'chat-panel'); panel.hidden = true; panel.setAttribute('aria-label', 'Website assistant');
+  var head = el('div', 'chat-head'); head.appendChild(el('strong', '', 'Website assistant'));
+  var close = el('button', 'chat-close', '×'); close.type = 'button'; close.setAttribute('aria-label', 'Close'); head.appendChild(close);
+  var log = el('div', 'chat-log'); log.setAttribute('aria-live', 'polite');
+  var form = el('form', 'chat-form');
+  var input = el('input'); input.type = 'text'; input.maxLength = 500; input.placeholder = 'Type a question'; input.setAttribute('aria-label', 'Your question');
+  var send = el('button', '', 'Send'); send.type = 'submit';
+  form.appendChild(input); form.appendChild(send);
+  var note = el('p', 'chat-note', 'Answers are generated by AI from the text of this website. Please check the linked page.');
+  panel.appendChild(head); panel.appendChild(log); panel.appendChild(form); panel.appendChild(note);
+  document.body.appendChild(open); document.body.appendChild(panel);
+
+  // Show plain text, and turn [label](link) and bare links into real links. Nothing else is treated as HTML.
+  function fill(node, text) {
+    var re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s)]+)/g, last = 0, m;
+    while ((m = re.exec(text))) {
+      node.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = el('a', '', m[1] || m[3]); a.href = m[2] || m[3];
+      if (a.host !== location.host) { a.target = '_blank'; a.rel = 'noopener'; }
+      node.appendChild(a); last = re.lastIndex;
+    }
+    node.appendChild(document.createTextNode(text.slice(last)));
+  }
+  function add(role, text) {
+    var b = el('div', 'chat-msg chat-' + role);
+    fill(b, text.replace(/\*\*/g, '')); log.appendChild(b); log.scrollTop = log.scrollHeight; return b;
+  }
+  function toggle(show) {
+    panel.hidden = !show; open.setAttribute('aria-expanded', show ? 'true' : 'false');
+    if (show) { if (!log.firstChild) add('bot', 'Ask a question about the group, its research, people or publications.'); input.focus(); }
+  }
+  open.addEventListener('click', function () { toggle(panel.hidden); });
+  close.addEventListener('click', function () { toggle(false); open.focus(); });
+  panel.addEventListener('keydown', function (e) { if (e.key === 'Escape') { toggle(false); open.focus(); } });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = input.value.trim(); if (!q || busy) return;
+    busy = true; send.disabled = true; input.value = '';
+    add('user', q); var wait = add('bot', 'Looking through the website…'); wait.classList.add('chat-wait');
+    fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q, history: history }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        wait.remove();
+        if (j.answer) { add('bot', j.answer); history.push({ role: 'user', text: q }, { role: 'bot', text: j.answer }); }
+        else add('bot', j.error || 'The assistant could not answer just now.');
+      })
+      .catch(function () { wait.remove(); add('bot', 'The assistant could not be reached. Please try again later.'); })
+      .then(function () { busy = false; send.disabled = false; input.focus(); });
   });
 })();
