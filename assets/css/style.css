@@ -409,3 +409,4 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
   .hero-head h1 { white-space: nowrap; font-size: min(3.1rem, calc((min(100vw, 1180px) - 76px) / 22.6)); }
   .hero-head { margin-bottom: 4px; }
 }
+.prose table { margin: 1em 0 1.4em; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
