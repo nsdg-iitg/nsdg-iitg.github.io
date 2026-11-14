@@ -14,6 +14,10 @@ figures:
     caption: "Double-gate MOSFET structure. From R. U. Ahmed and A. T. Mallajosyula, Phys. Scr. 100, 085414 (2025)."
   - src: "/assets/img/figures/dgmosfet-iv-physscr2025.jpg"
     caption: "Transfer and output characteristics: model against TCAD, at several temperatures. From R. U. Ahmed and A. T. Mallajosyula, Phys. Scr. 100, 085414 (2025)."
+  - src: "/assets/img/figures/dgmosfet-potential-physscr2025.jpg"
+    caption: "Surface potential along the channel: model against TCAD. From R. U. Ahmed and A. T. Mallajosyula, Phys. Scr. 100, 085414 (2025)."
+  - src: "/assets/img/figures/dgmosfet-accuracy-physscr2025.jpg"
+    caption: "Accuracy (R²) of this model against earlier models. From R. U. Ahmed and A. T. Mallajosyula, Phys. Scr. 100, 085414 (2025)."
 ---
 
 Rekib developed an efficient analytical model of double-gate MOSFETs for the channel potential, subthreshold current and drain current, accurate enough for circuit simulation at low computing cost. He also designed, by simulation, a pore-confined phase-change memory cell that uses current crowding to cut programming energy.

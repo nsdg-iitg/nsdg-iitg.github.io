@@ -22,6 +22,10 @@ figures:
     caption: "Type A (redox) and Type B (Joule heating) switching in one MAPbI3 cell. From H. J. Gogoi and A. T. Mallajosyula, ACS Appl. Electron. Mater. 4, 1039 (2022)."
   - src: "/assets/img/figures/switching-modes-aelm2022.jpg"
     caption: "Complementary resistive switching and its two mechanisms. From H. J. Gogoi and A. T. Mallajosyula, ACS Appl. Electron. Mater. 4, 1039 (2022)."
+  - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
+    caption: "C–V, doping profile and DLTS of ionic defects in a flexible perovskite memristor. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
+  - src: "/assets/img/figures/memristor-overview.jpg"
+    caption: "Hybrid perovskite memristors: memories, synapses and logic."
 ---
 
 Himangshu established the group's work on hybrid perovskite memristors.

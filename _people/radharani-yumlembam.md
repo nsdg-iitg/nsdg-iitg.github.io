@@ -22,6 +22,8 @@ figures:
     caption: "Bipolar switching, retention and endurance of the flexible memristor. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
   - src: "/assets/img/figures/flexible-cs3bi2i9-synapse-fpe2025.jpg"
     caption: "Synaptic behaviour of the flexible memristor. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
+  - src: "/assets/img/figures/flexible-cs3bi2i9-bending-fpe2025.jpg"
+    caption: "Switching of the flexible memristor at different bending radii. From R. Yumlembam et al., Flex. Print. Electron. 10, 015007 (2025)."
 ---
 
 Radharani builds resistive-switching memories (memristors) from all-inorganic, lead-free perovskites, and puts them into crossbar arrays on flexible plastic.

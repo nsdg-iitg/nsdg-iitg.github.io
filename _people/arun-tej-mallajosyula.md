@@ -14,6 +14,15 @@ links:
   orcid: "https://orcid.org/0000-0003-4112-4344"
   irins: "https://iitg.irins.org/profile/128319"
 description: "Dr. Arun Tej Mallajosyula, Associate Professor at IIT Guwahati, leads the Nanoelectronics and Semiconductor Devices Group working on perovskite memristors, lead-free solar cells and perovskite LEDs."
+figures:
+  - src: "/assets/img/figures/memristor-overview.jpg"
+    caption: "Hybrid perovskite memristors: memories, synapses and logic."
+  - src: "/assets/img/figures/tin-psc-band-jpv2025.jpg"
+    caption: "Bifacial 2D/3D tin perovskite solar cell: stack and band diagram. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
+  - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
+    caption: "Green MAPbBr3 LED: stack, emission, luminance and lifetime. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
+  - src: "/assets/img/figures/nanowire-process-jap2025.jpg"
+    caption: "Single-nanowire devices with N2 plasma treatment. From J. Pati et al., J. Appl. Phys. 138, 024302 (2025), CC BY-NC-ND 4.0."
 ---
 
 Arun Tej Mallajosyula is an Associate Professor in the Department of Electronics and Electrical Engineering and the Centre for Nanotechnology at IIT Guwahati. He leads the Nanoelectronics and Semiconductor Devices Group (NSDG).
