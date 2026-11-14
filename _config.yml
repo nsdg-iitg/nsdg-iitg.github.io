@@ -14,6 +14,10 @@ address: "Department of EEE, IIT Guwahati, Guwahati 781039, Assam, India"
 contact_email: "aruntej@iitg.ac.in"
 contact_phone: "+91 361 258 3469"
 
+# Visitor statistics (optional, free). Create a site at https://www.goatcounter.com,
+# then put its code here, e.g. goatcounter: "nsdg-iitg". Leave empty to switch off.
+goatcounter: ""
+
 collections:
   people:
     output: true

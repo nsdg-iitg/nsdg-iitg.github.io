@@ -1,0 +1,21 @@
+---
+layout: null
+sitemap: false
+---
+[
+{%- assign first = true -%}
+{%- assign docs = site.people | concat: site.research -%}
+{%- for d in docs -%}
+{%- unless first %},{% endunless -%}{%- assign first = false -%}
+{"t":{% if d.collection == "people" %}{{ d.name | jsonify }}{% else %}{{ d.title | jsonify }}{% endif %},"k":{% if d.collection == "people" %}"Person"{% else %}"Research"{% endif %},"u":{{ d.url | jsonify }},"s":{{ d.topic | default: d.lead | jsonify }},"x":{{ d.content | strip_html | normalize_whitespace | append: " " | append: d.role | append: " " | append: d.methods | jsonify }}}
+{%- endfor -%}
+{%- for p in site.html_pages -%}{%- if p.heading and p.url != "/404.html" -%}
+,{"t":{{ p.heading | jsonify }},"k":"Page","u":{{ p.url | jsonify }},"s":{{ p.lead | jsonify }},"x":{{ p.content | strip_html | normalize_whitespace | truncate: 4000, "" | jsonify }}}
+{%- endif -%}{%- endfor -%}
+{%- for p in site.data.publications -%}
+,{"t":{{ p.title | jsonify }},"k":{% if p.type == "journal" %}"Paper"{% elsif p.type == "conference" %}"Conference paper"{% elsif p.type == "talk" %}"Talk"{% elsif p.type == "ip" %}"Patent or copyright"{% else %}"Preprint"{% endif %},"u":{% if p.doi %}{{ "https://doi.org/" | append: p.doi | jsonify }}{% else %}"/publications/"{% endif %},"s":{{ p.authors | append: " · " | append: p.venue | append: " (" | append: p.year | append: ")" | jsonify }},"x":""}
+{%- endfor -%}
+{%- for n in site.data.news -%}
+,{"t":{{ n.title | jsonify }},"k":"News","u":{{ n.link | default: "/news/" | jsonify }},"s":{{ n.text | jsonify }},"x":{{ n.date | date: "%B %Y" | jsonify }}}
+{%- endfor -%}
+]

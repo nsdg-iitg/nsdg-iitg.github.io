@@ -6,6 +6,7 @@ heading: "News"
 lead: "Thesis defences, awards, publications and other announcements."
 description: "News from the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 ---
+<p class="feed-link"><a href="{{ '/feed.xml' | relative_url }}">Follow the news feed (RSS)</a></p>
 {% assign sorted = site.data.news | sort: "date" | reverse %}
 {% assign byyear = sorted | group_by_exp: "n", "n.date | date: '%Y'" %}
 {% for y in byyear %}

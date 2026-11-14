@@ -409,3 +409,38 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
   .hero-head h1 { white-space: nowrap; font-size: min(3.1rem, calc((min(100vw, 1180px) - 76px) / 22.6)); }
   .hero-head { margin-bottom: 4px; }
 }
+
+/* Search */
+.search-open { margin-left: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+.search-label { display: none; }
+@media (max-width: 940px) { .search-open { width: auto; padding: 0 14px 0 10px; gap: 8px; display: inline-flex; align-items: center; align-self: flex-start; border-radius: 99px; font: 500 .9rem var(--font); margin: 8px 0 0 .6em; } .search-label { display: inline; } }
+.sr { position: fixed; inset: 0; z-index: 900; display: none; background: rgba(12,14,20,.55); padding: 9vh 16px 16px; }
+.sr.open { display: block; }
+.sr-box { max-width: 680px; margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; display: flex; flex-direction: column; max-height: 78vh; }
+.sr-box input { font: inherit; font-size: 1.1rem; padding: 18px 20px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); outline: none; width: 100%; }
+.sr-list { list-style: none; margin: 0; padding: 6px; overflow-y: auto; }
+.sr-list a { display: block; padding: 10px 14px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+.sr-list a:hover, .sr-list a.active { background: var(--surface-2); }
+.sr-kind { font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; color: var(--accent); }
+.sr-title { display: block; font-weight: 600; line-height: 1.35; }
+.sr-sub { display: block; font-size: .88rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sr-empty { padding: 18px 20px; color: var(--muted); margin: 0; }
+/* Citation buttons */
+.pub-actions { display: flex; gap: 6px; margin-top: 6px; }
+.pubs.compact .pub-actions { display: none; }
+.cite-btn { font: 500 .78rem var(--font); padding: .25em .7em; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.cite-btn:hover { color: var(--ink); border-color: var(--muted); }
+.cite-btn.done { color: var(--c-light); border-color: var(--c-light); }
+/* Papers per year */
+.pub-chart { margin: 0 0 22px; padding: 16px 20px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.pub-chart figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: .9rem; margin-bottom: 10px; }
+.pc-legend { color: var(--muted); font-size: .85rem; }
+.pc-key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 5px 0 12px; }
+.pc-j { background: var(--accent); } .pc-c { background: color-mix(in srgb, var(--accent) 38%, var(--surface)); }
+.pc-bars { display: flex; align-items: flex-end; gap: clamp(4px, 1.4vw, 14px); }
+.pc-col { flex: 1; display: flex; flex-direction: column; align-items: stretch; gap: 2px; text-align: center; }
+.pc-bar { display: block; height: calc(var(--n) * 13px); border-radius: 3px; }
+.pc-total { font-size: .8rem; font-weight: 600; }
+.pc-year { font-size: .78rem; color: var(--muted); padding-top: 4px; border-top: 1px solid var(--line); margin-top: 1px; }
+.feed-link { margin: 0 0 4px; font-size: .92rem; }
+@media print { .pub-actions, .pub-chart, .search-open { display: none !important; } }

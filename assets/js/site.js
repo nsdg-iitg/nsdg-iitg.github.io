@@ -135,3 +135,104 @@
     });
   });
 })();
+
+
+// Site root, worked out from this script's own address, so links work wherever the site is hosted
+var NSDG_ROOT = (function () {
+  var s = document.querySelector('script[src*="assets/js/site.js"]');
+  return s ? s.getAttribute('src').replace(/assets\/js\/site\.js.*$/, '') : '/';
+})();
+var NSDG_INDEX = '';
+
+// Search: one box that looks through people, research pages, papers and news
+(function () {
+  var btn = document.querySelector('.search-open');
+  if (!btn) return;
+  var data = null, box, input, list, active = -1;
+  function plain(t) { return (t || '').toLowerCase().replace(/[₀-₉]/g, function (c) { return String(c.charCodeAt(0) - 0x2080); }); }
+  function href(u) { if (/^https?:/.test(u)) return u; u = NSDG_ROOT + u.replace(/^\//, ''); return /\/$/.test(u) || u === '' ? u + NSDG_INDEX : u; }
+  function build() {
+    box = document.createElement('div'); box.className = 'sr'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Search');
+    box.innerHTML = '<div class="sr-box"><input type="search" placeholder="Search people, research, papers and news" aria-label="Search this site"><ul class="sr-list"></ul></div>';
+    document.body.appendChild(box);
+    input = box.querySelector('input'); list = box.querySelector('.sr-list');
+    box.addEventListener('click', function (e) { if (e.target === box) close(); });
+    input.addEventListener('input', run);
+    input.addEventListener('keydown', function (e) {
+      var links = list.querySelectorAll('a');
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!links.length) return; active = (active + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length; links.forEach(function (a, i) { a.classList.toggle('active', i === active); }); links[active].scrollIntoView({ block: 'nearest' }); }
+      else if (e.key === 'Enter' && links.length) { e.preventDefault(); links[Math.max(active, 0)].click(); }
+    });
+  }
+  function esc(t) { var d = document.createElement('span'); d.textContent = t || ''; return d.innerHTML; }
+  function run() {
+    var words = plain(input.value).split(/\s+/).filter(Boolean); active = -1;
+    if (!words.length) { list.innerHTML = ''; return; }
+    if (!data) { list.innerHTML = '<li class="sr-empty">Loading…</li>'; return; }
+    var hits = [];
+    data.forEach(function (d) {
+      var score = 0;
+      for (var i = 0; i < words.length; i++) {
+        var w = words[i], s = 0;
+        if (d._t.indexOf(w) !== -1) s += 6;
+        if (d._s.indexOf(w) !== -1) s += 3;
+        if (d._x.indexOf(w) !== -1) s += 1;
+        if (!s) return;
+        score += s;
+      }
+      if (d.k === 'Person' || d.k === 'Research') score += 2;
+      hits.push([score, d]);
+    });
+    hits.sort(function (a, b) { return b[0] - a[0]; });
+    list.innerHTML = hits.length ? hits.slice(0, 12).map(function (h) { var d = h[1]; return '<li><a href="' + esc(href(d.u)) + '"><span class="sr-kind">' + esc(d.k) + '</span><span class="sr-title">' + esc(d.t) + '</span><span class="sr-sub">' + esc(d.s) + '</span></a></li>'; }).join('') : '<li class="sr-empty">Nothing found. Try a name, a material or a method.</li>';
+  }
+  function open() {
+    if (!box) build();
+    box.classList.add('open'); input.value = ''; list.innerHTML = ''; input.focus();
+    if (!data) fetch(NSDG_ROOT + 'search.json').then(function (r) { return r.json(); }).then(function (j) {
+      j.forEach(function (d) { d._t = plain(d.t); d._s = plain(d.s); d._x = plain(d.x); }); data = j; run();
+    }).catch(function () { list.innerHTML = '<li class="sr-empty">Search could not be loaded.</li>'; });
+  }
+  function close() { if (box) box.classList.remove('open'); btn.focus(); }
+  btn.addEventListener('click', open);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && box && box.classList.contains('open')) close();
+    else if (e.key === '/' && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); }
+  });
+})();
+
+// Copy a citation or a BibTeX entry
+(function () {
+  function bibtex(d) {
+    var authors = d.authors.replace(/\*/g, '').split(/,\s*/).join(' and ');
+    var last = (d.authors.split(',')[0].replace(/\*/g, '').trim().split(' ').pop() || 'nsdg').toLowerCase().replace(/[^a-z]/g, '');
+    var word = (d.title.toLowerCase().match(/[a-z]{4,}/) || ['paper'])[0];
+    var f = [['author', authors], ['title', d.title], ['year', d.year]], kind = 'misc';
+    if (d.type === 'journal') {
+      kind = 'article'; f.push(['journal', d.venue]);
+      var m = d.details.match(/^(\d+)(?:\((\d+)\))?,\s*(.+)$/);
+      if (m) { f.push(['volume', m[1]]); if (m[2]) f.push(['number', m[2]]); f.push(['pages', m[3].replace('–', '--')]); }
+    } else if (d.type === 'conference' || d.type === 'talk') {
+      kind = 'inproceedings'; f.push(['booktitle', d.venue]); if (d.details) f.push(['pages', d.details.replace('–', '--')]);
+    } else { f.push(['howpublished', d.venue + (d.details ? ', ' + d.details : '')]); }
+    if (d.doi) f.push(['doi', d.doi]);
+    return '@' + kind + '{' + last + d.year + word + ',\n' + f.map(function (x) { return '  ' + x[0] + ' = {' + x[1] + '}'; }).join(',\n') + '\n}';
+  }
+  function text(d) {
+    return d.authors.replace(/\*/g, '') + ', "' + d.title + '," ' + d.venue + (d.details ? ' ' + d.details : '') + ' (' + d.year + ')' + (d.doi ? '. https://doi.org/' + d.doi : '.');
+  }
+  function copy(t) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(t);
+    var a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select();
+    try { document.execCommand('copy'); } finally { a.remove(); } return Promise.resolve();
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.cite-btn') : null;
+    if (!b) return;
+    var d = b.parentNode.dataset, label = b.textContent;
+    copy(b.dataset.kind === 'bibtex' ? bibtex(d) : text(d)).then(function () {
+      b.textContent = 'Copied'; b.classList.add('done');
+      setTimeout(function () { b.textContent = label; b.classList.remove('done'); }, 1400);
+    });
+  });
+})();

@@ -1,0 +1,23 @@
+---
+layout: null
+sitemap: false
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.group_name | xml_escape }}, IIT Guwahati: News</title>
+  <link href="{{ '/feed.xml' | absolute_url }}" rel="self"/>
+  <link href="{{ '/news/' | absolute_url }}"/>
+  <id>{{ '/news/' | absolute_url }}</id>
+  {%- assign sorted = site.data.news | sort: "date" | reverse %}
+  <updated>{{ sorted.first.date | date: "%Y-%m-%dT00:00:00Z" }}</updated>
+  <author><name>{{ site.group_name | xml_escape }}</name></author>
+  {%- for n in sorted limit: 30 %}
+  <entry>
+    <title>{{ n.title | xml_escape }}</title>
+    <link href="{{ n.link | default: '/news/' | absolute_url }}"/>
+    <id>{{ '/news/' | absolute_url }}#{{ n.date | date: "%Y-%m-%d" }}-{{ n.title | slugify }}</id>
+    <updated>{{ n.date | date: "%Y-%m-%dT00:00:00Z" }}</updated>
+    <summary>{{ n.text | xml_escape }}</summary>
+  </entry>
+  {%- endfor %}
+</feed>
