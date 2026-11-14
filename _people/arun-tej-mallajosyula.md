@@ -1,7 +1,7 @@
 ---
 name: "Dr. Arun Tej Mallajosyula"
 short_name: "Arun Tej M."
-role: "Associate Professor and Principal Investigator"
+role: "Associate Professor and Group Head"
 photo: /assets/img/people/arun-tej-mallajosyula.jpg
 category: pi
 order: 0
