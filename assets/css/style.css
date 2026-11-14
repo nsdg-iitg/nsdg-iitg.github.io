@@ -290,3 +290,9 @@ tr:last-child td { border-bottom: 0; }
 .photo-strip { display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); }
 .photo-strip img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; display: block; }
 @media (max-width: 720px) { .photo-strip { grid-template-columns: repeat(2, 1fr); } }
+
+/* Team photos: rounded rectangles in a portrait frame, so heads are not clipped */
+.person-card .avatar { width: 84px; height: 105px; border-radius: 10px; object-position: 50% 20%; }
+.person-card .avatar.initials { height: 105px; }
+.avatar.lg { width: 104px; height: 130px; border-radius: 12px; object-position: 50% 20%; }
+.person-card { align-items: flex-start; }
