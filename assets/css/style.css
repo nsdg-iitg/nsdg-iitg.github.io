@@ -26,7 +26,7 @@
   --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --maxw: 1160px;
 }
-:root[data-theme="dark"] {
+:root[data-mode="dark"] {
   --bg: #0e1015; --surface: #161a22; --surface-2: #1d222c; --ink: #eceef3; --muted: #a1a8b6; --line: #2a303b;
   --accent: #93a0ff; --accent-ink: #0e1015; --c-energy: #f2bd45; --c-light: #3cc98b; --c-memory: #8b98ff; --c-model: #fb8a4c; --c-nano: #38b2cf;
   --fig-ink: #c9ced8; --fig-line: #3a4150; --fig-metal: #7d8592; --fig-soft: #3b3f48; --fig-soft2: #3a4566; --fig-tco: #2f5f70; --fig-glass: #232a35;
@@ -128,7 +128,7 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 
 /* Stats */
 .stats-band { background: #14171f; color: #f4f2ec; }
-:root[data-theme="dark"] .stats-band { background: var(--surface-2); color: var(--ink); }
+:root[data-mode="dark"] .stats-band { background: var(--surface-2); color: var(--ink); }
 .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; padding-top: 36px; padding-bottom: 36px; }
 @media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
 .stat-num { display: block; font: 600 2.4rem/1 var(--serif); }

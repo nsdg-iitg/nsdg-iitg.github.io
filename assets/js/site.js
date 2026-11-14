@@ -9,15 +9,14 @@
     });
   }
 
-  // Light is the default; visitors can switch to dark (remembered per visitor)
+  // Every page opens in light; the toggle switches the current page only
   var tt = document.querySelector('.theme-toggle');
   if (tt) {
     tt.addEventListener('click', function () {
       var root = document.documentElement;
-      var current = root.getAttribute('data-theme') || 'light';
+      var current = root.getAttribute('data-mode') || 'light';
       var next = current === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem('theme', next); } catch (e) {}
+      root.setAttribute('data-mode', next);
     });
   }
 
