@@ -1,5 +1,6 @@
 ---
 name: "Dr. Himangshu Jyoti Gogoi"
+photo: /assets/img/people/himangshu-jyoti-gogoi.jpg
 role: "PhD, Electronics and Electrical Engineering (2023)"
 category: alumni
 order: 2

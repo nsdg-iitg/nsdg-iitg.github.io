@@ -1,5 +1,6 @@
 ---
 name: "Dr. Atanu Purkayastha"
+photo: /assets/img/people/atanu-purkayastha.jpg
 role: "MS + PhD, Electronics and Electrical Engineering (2025)"
 category: alumni
 order: 1
