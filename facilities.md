@@ -47,7 +47,7 @@ description: "Fabrication, electrical characterisation, materials characterisati
 - Synopsys Sentaurus TCAD
 - Silvaco TCAD
 - Ansys Lumerical
-- In-house drift–diffusion simulator
+- CEISIM: Coupled Electronic–Ionic Transport Semiconductor Device Simulator (in-house)
 </div>
 
 </div>

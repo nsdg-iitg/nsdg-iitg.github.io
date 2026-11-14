@@ -9,15 +9,15 @@ email: "basit@iitg.ac.in"
 areas: [trap-analysis-modelling]
 highlights:
   - "A trap probe that needs only a dark current–voltage curve (Solar Energy, 2023)"
-  - "Wrote his own drift–diffusion device simulator with traps and mobile ions"
+  - "Wrote CEISIM, a drift–diffusion device simulator with traps and mobile ions"
   - "DLTS of ionic defects in flexible perovskite memristors"
 links:
   scholar: "https://scholar.google.com/citations?user=uiO_8fkAAAAJ"
   orcid: "https://orcid.org/0000-0002-4036-1789"
-description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written his own drift–diffusion simulator."
+description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written CEISIM, a drift–diffusion device simulator."
 figures:
   - src: "/assets/img/figures/basit-thesis-simulator.jpg"
-    caption: "His 1D drift–diffusion simulator: one discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers."
+    caption: "CEISIM, his 1D drift–diffusion simulator: one discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers."
   - src: "/assets/img/figures/basit-thesis-anode-mechanism.jpg"
     caption: "How slow trapped charge at the hole-injecting contact lowers the injection barrier and gives negative capacitance: the five-step loop."
   - src: "/assets/img/figures/transition-voltage-traps-solen2023.jpg"
@@ -32,7 +32,7 @@ Basit works on the device physics of halide perovskite devices. His question is 
 
 **Slow charge at the contact.** His thesis also studies how slow charge near the injecting contact, held either in interface traps or in mobile ions, changes the injection barrier. He looks at what this does to impedance and capacitance measurements, including the "negative capacitance" often reported in perovskite devices, and how trap and ionic effects can be told apart.
 
-**His own simulator.** For this work he wrote a one-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems in one framework. Because it exposes the internal variables of the device, individual physical couplings can be switched off one at a time, which commercial tools do not allow. He validated it against a commercial TCAD simulator.
+**CEISIM, his own simulator.** For this work he wrote CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator), a one-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems in one framework. Because it exposes the internal variables of the device, individual physical couplings can be switched off one at a time, which commercial tools do not allow. He validated it against a commercial TCAD simulator.
 
 He has also worked on DLTS of ionic defects in flexible perovskite memristors.
 
