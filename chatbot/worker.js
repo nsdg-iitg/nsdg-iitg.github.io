@@ -5,11 +5,12 @@
 // Settings (Worker > Settings > Variables and Secrets):
 //   GEMINI_API_KEY  (Secret, required)  the key from https://aistudio.google.com/apikey
 //   SITE_URL        (Text, optional)    default https://nsdg-iitg.github.io
-//   GEMINI_MODEL    (Text, optional)    default gemini-flash-latest
+//   GEMINI_MODEL    (Text, optional)    default gemini-flash-lite-latest
 
 const DEFAULT_SITE = 'https://nsdg-iitg.github.io';
-const DEFAULT_MODEL = 'gemini-flash-latest';
-const BACKUP_MODELS = ['gemini-flash-lite-latest', 'gemini-2.5-flash'];
+const DEFAULT_MODEL = 'gemini-flash-lite-latest';
+const BACKUP_MODELS = ['gemini-flash-latest', 'gemini-2.5-flash-lite'];
+const TRY_SECONDS = 20;    // time limit for one try
 const PER_MINUTE = 6;      // questions per visitor per minute
 const PER_DAY = 400;       // questions from all visitors per day
 const MAX_QUESTION = 500;  // characters
@@ -93,29 +94,31 @@ export default {
     });
     contents.push({ role: 'user', parts: [{ text: question }] });
 
-    // Try the main model, then the backup models, when Gemini is overloaded (500, 503) or over its limit (429).
+    // Try the fast model first, then the backups. Each try has a time limit, so a slow or
+    // overloaded model is skipped instead of making the visitor wait.
     const models = [env.GEMINI_MODEL || DEFAULT_MODEL].concat(BACKUP_MODELS);
-    const payload = JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents: contents,
-      generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
-    });
+    function ask(model, quick) {
+      const config = { temperature: 0.2, maxOutputTokens: 2048 };
+      if (quick) config.thinkingConfig = { thinkingBudget: 0 };   // answer directly, which is much faster
+      const stop = new AbortController();
+      const timer = setTimeout(function () { stop.abort(); }, TRY_SECONDS * 1000);
+      return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: contents, generationConfig: config }),
+        signal: stop.signal
+      }).catch(function () { return new Response('{}', { status: 504 }); })
+        .then(function (res) { clearTimeout(timer); return res; });
+    }
     let r = null;
     for (let i = 0; i < models.length; i++) {
-      for (let attempt = 0; attempt < 2; attempt++) {
-        r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + models[i] + ':generateContent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-          body: payload
-        });
-        if (r.ok || (r.status !== 500 && r.status !== 503)) break;
-        await new Promise(function (done) { setTimeout(done, 1200); });
-      }
+      r = await ask(models[i], true);
+      if (r.status === 400) r = await ask(models[i], false);   // this model does not accept the quick setting
       if (r.ok) break;
-      if (r.status !== 500 && r.status !== 503 && r.status !== 429 && r.status !== 404) break;
+      if (r.status < 500 && r.status !== 429 && r.status !== 404) break;
     }
     if (r.status === 429) return reply({ error: 'The assistant is busy or has reached its free limit. Please try again later.' }, 429, allowOrigin);
-    if (r.status === 500 || r.status === 503) return reply({ error: 'The AI model is overloaded just now. Please ask again in a minute.' }, 503, allowOrigin);
+    if (r.status >= 500) return reply({ error: 'The AI model is slow or overloaded just now. Please ask again in a minute.' }, 503, allowOrigin);
     if (!r.ok) return reply({ error: 'The assistant could not answer just now (model error ' + r.status + ').' }, 502, allowOrigin);
     const j = await r.json();
     const parts = (((j.candidates || [])[0] || {}).content || {}).parts || [];
