@@ -322,3 +322,8 @@ body.lb-lock { overflow: hidden; }
 ul.edu { padding-left: 1.1em; margin: 6px 0 18px; }
 .course-level { display: block; color: var(--muted); font-size: .85rem; margin-top: 2px; }
 .useful-links { margin-top: 36px; }
+
+/* IIT Guwahati logo */
+.inst-logo { display: flex; align-items: center; padding-left: 14px; margin-left: 14px; border-left: 1px solid var(--line); margin-right: auto; }
+.inst-logo img { width: 40px; height: 40px; display: block; }
+.footer-inst img { width: 52px; height: 52px; display: block; margin-bottom: 12px; }
