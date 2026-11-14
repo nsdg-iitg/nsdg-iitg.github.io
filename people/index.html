@@ -2,7 +2,7 @@
 title: "People"
 kicker: "People"
 heading: "The team"
-lead: "Postdocs, PhD, M.Tech and B.Tech students working with Dr. Arun Tej Mallajosyula at IIT Guwahati."
+lead: "Postdoctoral researchers and PhD, M.Tech and B.Tech students working with Dr. Arun Tej Mallajosyula at IIT Guwahati."
 description: "Members and alumni of the Nanoelectronics and Semiconductor Devices Group (NSDG), IIT Guwahati."
 ---
 {% assign pi = site.people | where: "category", "pi" | first %}
@@ -15,7 +15,7 @@ description: "Members and alumni of the Nanoelectronics and Semiconductor Device
   </div>
 </a>
 
-<h2 class="section-title">Current members</h2>
+<h2 class="section-title">Members</h2>
 <div class="people-grid">
   {% assign current = site.people | where: "category", "current" | sort: "order" %}
   {% for m in current %}{% include person-card.html person=m %}{% endfor %}

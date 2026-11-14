@@ -3,40 +3,40 @@ title: "Perovskite and organic light-emitting diodes"
 short: "Light emission"
 order: 3
 figure: led
-lead: "Bright, colour-pure green perovskite LEDs, and the ion migration and trap physics that limit how long they last."
+lead: "High-luminance, colour-pure green perovskite LEDs, and the ion migration and trap physics that limit their operational lifetime."
 people: [binita-boro, abinash-baruah]
 methods: "Solution processing · electroluminescence and luminance (Konica Minolta CS-2000) · temperature-dependent impedance (77–380 K) · electric modulus and universal dielectric response analysis · DLTS · FESEM and cross-section EDX"
 description: "Perovskite light-emitting diodes (PeLEDs), ion migration, dielectric relaxation and DLTS at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 figures:
   - src: "/assets/img/figures/peled-degradation-jpd2025.jpg"
-    caption: "How ion migration degrades a perovskite LED, and how it partly recovers at rest. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
+    caption: "Ion-migration-induced degradation of a perovskite LED and its partial recovery at rest. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
   - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
     caption: "Device stack, electroluminescence, colour coordinates, luminance and lifetime of green MAPbBr3 LEDs. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
   - src: "/assets/img/figures/peled-grain-size-jpd2026.jpg"
-    caption: "Small-grain versus large-grain MAPbBr3 LEDs: permittivity, emission, J–V and lifetime. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
+    caption: "Permittivity, emission, J–V characteristics and lifetime of small-grain and large-grain MAPbBr3 LEDs. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
   - src: "/assets/img/figures/peled-grains-sem-jpd2026.jpg"
     caption: "Small-grain and large-grain MAPbBr3 films used to study grain size in LEDs. From A. Baruah and A. T. Mallajosyula, J. Phys. D 59, 015112 (2026)."
 ---
 
-Halide perovskites emit light with a very narrow linewidth, and their colour can be tuned through the halide. That makes them attractive for displays. Their weak point is lifetime: the same mobile ions that make perovskites easy to process also move under bias and degrade the device. We make green MAPbBr3 LEDs and follow these ions and traps with electrical spectroscopy.
+Halide perovskites emit light with a narrow linewidth, and the emission wavelength can be tuned through the halide composition, which makes them attractive for display applications. Their principal limitation is operational lifetime. The mobile ions that facilitate low-temperature processing also migrate under bias and degrade the device. We fabricate green MAPbBr3 LEDs and investigate the role of mobile ions and traps using electrical spectroscopy.
 
-### Our approach
+### Approach
 
-Perovskite LEDs already show high brightness and colour purity, thanks to high photoluminescence quantum yield, a band gap tuned by composition, and cheap solution processing. What still holds them back is operating stability and device-to-device reproducibility. The causes, such as ion migration, trap-assisted recombination and unstable interfaces, are still not fully understood.
+Perovskite LEDs already exhibit high luminance and colour purity, owing to a high photoluminescence quantum yield, a composition-tunable band gap and low-cost solution processing. Their development is, however, limited by operational stability and device-to-device reproducibility. The underlying causes, including ion migration, trap-assisted recombination and interfacial instability, are not yet fully understood.
 
-We fabricate PeLEDs in the clean room and study them as an electronic device, using:
+PeLEDs are fabricated in the clean room and characterised as electronic devices using:
 
 - Temperature-dependent impedance spectroscopy
 - Current–voltage measurements under bias stress
 - Deep-level transient spectroscopy (DLTS)
 
-These show how ions move, how traps evolve, and how the bulk and interfaces respond while the LED runs. We also study the self-healing of the perovskite when the device is rested, which matters directly for lifetime. The aim is to connect material science with real device engineering, and to give design rules for more stable and efficient PeLEDs.
+These measurements reveal ion migration, the evolution of trap states and the response of the bulk and interfaces during operation. We also study the self-healing of the perovskite layer when the device is rested, which is directly relevant to lifetime. The aim is to relate materials science to device engineering and to establish design guidelines for more stable and efficient PeLEDs.
 
-### What we have shown
+### Key results
 
-- **Bright, pure green emission.** Up to 13,000 cd/m² at 6 V, with a 533 nm peak and 20 nm FWHM.
-- **Ion migration causes degradation.** Br⁻ ions pile up at the anode under bias, as cross-section EDX confirms. This gives a giant apparent permittivity at low frequency. When the LED rests, the ions partly spread back, so cycled operation doubles the T50 lifetime. We extracted the ion diffusion coefficient, mobility and density from impedance data.
-- **Grain size trade-off.** Small grains (~62 nm) give brighter LEDs with a lower turn-on voltage, but a shorter life (T50 175 min). Large grains (~150 nm) last longer (T50 252 min). Grain boundaries store mobile charge, which both eases injection and speeds up degradation.
-- **Transport and traps.** Conduction follows correlated barrier hopping. DLTS shows a shallow trap at 0.30 eV of bromide-vacancy-related, ionic origin.
+- **Green emission with high colour purity.** A luminance of up to 13,000 cd/m² at 6 V, with an emission peak at 533 nm and a FWHM of 20 nm.
+- **Ion migration as the degradation mechanism.** Under bias, Br⁻ ions accumulate at the anode, as confirmed by cross-sectional EDX. This accumulation gives rise to a giant apparent permittivity at low frequency. During rest, the ions partially redistribute, and cycled operation approximately doubles the T50 lifetime. The ion diffusion coefficient, mobility and density were extracted from impedance data.
+- **Effect of grain size.** Small grains (~62 nm) yield higher luminance and a lower turn-on voltage but a shorter lifetime (T50 175 min), whereas large grains (~150 nm) yield a longer lifetime (T50 252 min). Mobile charge stored at grain boundaries is found to facilitate carrier injection and to accelerate degradation.
+- **Transport and traps.** Conduction is consistent with correlated barrier hopping. DLTS reveals a shallow trap at 0.30 eV, attributed to bromide-vacancy-related ionic defects.
 
-Work on organic LEDs is also under way.
+Work on organic LEDs is in progress.

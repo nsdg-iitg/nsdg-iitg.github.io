@@ -4,7 +4,7 @@ role: "Visvesvaraya Postdoctoral Fellow"
 photo: /assets/img/people/ph-nonglen-meitei.jpg
 category: current
 order: 5
-topic: "Memristor-based neuromorphic olfactory (artificial smell) system"
+topic: "Memristor-based neuromorphic olfactory system"
 email: "nonglenm@iitg.ac.in"
 areas: [memristors]
 links:
@@ -17,6 +17,6 @@ education:
   - "B.Tech, Electronics and Communication Engineering, Sri Siddhartha Institute of Technology, Tumkur"
 ---
 
-Nonglen works on a neuromorphic olfactory system: an artificial sense of smell that uses memristors to process signals from gas sensors in a brain-like way.
+Nonglen works on a neuromorphic olfactory system, an artificial sense of smell in which memristors process signals from gas sensors in a manner inspired by biological neural networks.
 
-*A fuller profile, with selected results and papers, is coming soon.*
+*A detailed profile with selected results and publications will be added.*

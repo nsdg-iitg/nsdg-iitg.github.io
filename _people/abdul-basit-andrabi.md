@@ -8,8 +8,8 @@ topic: "Device physics and simulation of defects and mobile ions in perovskite d
 email: "basit@iitg.ac.in"
 areas: [trap-analysis-modelling]
 highlights:
-  - "A trap probe that needs only a dark current–voltage curve (Solar Energy, 2023)"
-  - "Wrote CEISIM, a drift–diffusion device simulator with traps and mobile ions"
+  - "A trap-characterisation method based on dark J–V characteristics (Solar Energy, 2023)"
+  - "Developed CEISIM, a drift–diffusion device simulator with traps and mobile ions"
   - "DLTS of ionic defects in flexible perovskite memristors"
 links:
   scholar: "https://scholar.google.com/citations?user=uiO_8fkAAAAJ"
@@ -17,23 +17,23 @@ links:
 description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written CEISIM, a drift–diffusion device simulator."
 figures:
   - src: "/assets/img/figures/basit-thesis-simulator.jpg"
-    caption: "CEISIM, his 1D drift–diffusion simulator: one discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers."
+    caption: "Structure of CEISIM, a 1D drift–diffusion simulator in which a single discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers."
   - src: "/assets/img/figures/basit-thesis-anode-mechanism.jpg"
-    caption: "How slow trapped charge at the hole-injecting contact lowers the injection barrier and gives negative capacitance: the five-step loop."
+    caption: "Proposed five-step mechanism by which slow trapped charge at the hole-injecting contact lowers the injection barrier and gives rise to negative capacitance."
   - src: "/assets/img/figures/transition-voltage-traps-solen2023.jpg"
-    caption: "How trap density shifts the transition peak (TCAD). From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
+    caption: "Shift of the transition peak with trap density (TCAD). From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
   - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
     caption: "DLTS of ionic defects in a flexible perovskite memristor. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
 ---
 
-Basit works on the device physics of halide perovskite devices. His question is simple to state: what do ordinary electrical measurements, such as dark J–V, capacitance–frequency, impedance and current transients, actually tell us about the traps and mobile ions inside a perovskite film? He also asks when each reading can be trusted.
+Basit works on the device physics of halide perovskite devices. His research examines what information conventional electrical measurements, such as dark J–V, capacitance–frequency, impedance and current transients, provide about traps and mobile ions in perovskite films, and under which conditions each interpretation is reliable.
 
-**A trap probe from a dark J–V curve.** In a perovskite diode, current changes from diffusion-limited to drift-limited at a transition voltage, which shows up as a peak in the logarithmic slope d(log J)/d(log V). Trapped charge near the injecting contact bends the bands and shifts this peak to lower voltage. Using Sentaurus TCAD, he showed that the shift tracks trap density and depth, survives in the presence of mobile ions and doping, and is a better trap indicator than V<sub>OC</sub> in complete solar cells. This work is published in *Solar Energy* (2023). His thesis turns it into a quantitative extraction method.
+**Trap characterisation from dark J–V characteristics.** In a perovskite diode, the current changes from diffusion-limited to drift-limited at a transition voltage, which appears as a peak in the logarithmic slope d(log J)/d(log V). Trapped charge near the injecting contact causes band bending and shifts this peak to lower voltages. Using Sentaurus TCAD simulations, he showed that the shift follows trap density and depth, remains applicable in the presence of mobile ions and doping, and is a more sensitive indicator of traps than V<sub>OC</sub> in complete solar cells. This work was published in *Solar Energy* (2023). His thesis extends it to a quantitative extraction method.
 
-**Slow charge at the contact.** His thesis also studies how slow charge near the injecting contact, held either in interface traps or in mobile ions, changes the injection barrier. He looks at what this does to impedance and capacitance measurements, including the "negative capacitance" often reported in perovskite devices, and how trap and ionic effects can be told apart.
+**Slow charge at the contact.** His thesis also examines how slow charge near the injecting contact, held either in interface traps or as mobile ions, modifies the injection barrier. He analyses the resulting signatures in impedance and capacitance measurements, including the negative capacitance frequently reported in perovskite devices, and how trap-related and ionic contributions can be distinguished.
 
-**CEISIM, his own simulator.** For this work he wrote CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator), a one-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems in one framework. Because it exposes the internal variables of the device, individual physical couplings can be switched off one at a time, which commercial tools do not allow. He validated it against a commercial TCAD simulator.
+**CEISIM.** For this work he developed CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator), a one-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems within a single framework. Since the internal variables of the device are accessible, individual physical couplings can be disabled one at a time, which, to our knowledge, is not possible in established commercial tools. The simulator has been validated against a commercial TCAD simulator.
 
-He has also worked on DLTS of ionic defects in flexible perovskite memristors.
+He has also contributed to DLTS studies of ionic defects in flexible perovskite memristors.
 
 *Thesis (in preparation): Electrical characterisation of ionic and electronic defects in halide perovskite devices: a device-simulation study.*

@@ -16,18 +16,18 @@ links:
 description: "Dr. Arun Tej Mallajosyula, Associate Professor at IIT Guwahati, leads the Nanoelectronics and Semiconductor Devices Group working on perovskite memristors, lead-free solar cells and perovskite LEDs."
 figures:
   - src: "/assets/img/figures/memristor-overview.jpg"
-    caption: "Hybrid perovskite memristors: memories, synapses and logic."
+    caption: "Applications of hybrid perovskite memristors in memory, synaptic and logic devices."
   - src: "/assets/img/figures/tin-psc-band-jpv2025.jpg"
-    caption: "Bifacial 2D/3D tin perovskite solar cell: stack and band diagram. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
+    caption: "Layer stack and band diagram of a bifacial 2D/3D tin perovskite solar cell. From A. Purkayastha and A. T. Mallajosyula, IEEE J. Photovolt. 15, 54 (2025)."
   - src: "/assets/img/figures/peled-performance-jpd2025.jpg"
-    caption: "Green MAPbBr3 LED: stack, emission, luminance and lifetime. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
+    caption: "Device stack, emission, luminance and lifetime of a green MAPbBr3 LED. From A. Baruah et al., J. Phys. D 58, 205105 (2025)."
   - src: "/assets/img/figures/nanowire-process-jap2025.jpg"
     caption: "Single-nanowire devices with N2 plasma treatment. From J. Pati et al., J. Appl. Phys. 138, 024302 (2025), CC BY-NC-ND 4.0."
 ---
 
 Arun Tej Mallajosyula is an Associate Professor in the Department of Electronics and Electrical Engineering and the Centre for Nanotechnology at IIT Guwahati. He leads the Nanoelectronics and Semiconductor Devices Group (NSDG).
 
-The group works across the full chain, from material growth and device fabrication to defect spectroscopy, device simulation and circuits. Current work covers flexible perovskite memristors and crossbar memories for brain-inspired computing, lead-free and tandem perovskite solar cells, perovskite light-emitting diodes, single-nanowire devices, and supercapacitors. The group is now expanding into semiconductor packaging and heterogeneous integration.
+The research of the group extends from material growth and device fabrication to defect spectroscopy, device simulation and circuit design. Current work addresses flexible perovskite memristors and crossbar memories for neuromorphic computing, lead-free and tandem perovskite solar cells, perovskite light-emitting diodes, single-nanowire devices and supercapacitors. The group is also extending its research to semiconductor packaging and heterogeneous integration.
 
 ### Research interests
 

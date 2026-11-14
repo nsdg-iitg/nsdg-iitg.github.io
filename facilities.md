@@ -3,7 +3,7 @@ title: "Facilities"
 permalink: /facilities/
 kicker: "Facilities"
 heading: "Lab facilities"
-lead: "We have a full chain from substrate cleaning to packaged device, spread across five IIT Guwahati facilities: the Silicon Photonics and Microelectronics Lab, the VLSI Lab, the Centre for Nanotechnology, the Centre for Organic Electronics and the Central Instruments Facility."
+lead: "The group has access to a complete process chain, from substrate cleaning to device packaging, across five IIT Guwahati facilities, namely the Silicon Photonics and Microelectronics Lab, the VLSI Lab, the Centre for Nanotechnology, the Centre for Organic Electronics and the Central Instruments Facility."
 description: "Fabrication, electrical characterisation, materials characterisation and simulation facilities used by NSDG at IIT Guwahati."
 ---
 <div class="facility-grid" markdown="1">
