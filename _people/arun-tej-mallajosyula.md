@@ -5,7 +5,7 @@ role: "Associate Professor and Principal Investigator"
 category: pi
 order: 0
 topic: "Perovskite and organic devices: memories, solar cells and light emitters"
-email: "aruntej@iit.ac.in"
+email: "aruntej@iitg.ac.in"
 phone: "+91 361 258 3469"
 areas: [memristors, solar-cells, light-emitting-diodes, trap-analysis-modelling, nanowire-devices]
 links:
