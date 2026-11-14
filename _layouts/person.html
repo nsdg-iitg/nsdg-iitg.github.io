@@ -6,7 +6,7 @@ layout: default
   <div class="wrap person-head-grid">
     {% include avatar.html person=page size="xl" %}
     <div>
-      <p class="kicker"><a href="{{ '/people/' | relative_url }}">People</a> · {% if page.category == 'alumni' %}Alumni{% elsif page.category == 'pi' %}Group head{% else %}Current member{% endif %}</p>
+      <p class="kicker"><a href="{{ '/people/' | relative_url }}">People</a> · {% if page.category == 'alumni' %}Alumni{% elsif page.category == 'pi' %}Principal investigator{% else %}Current member{% endif %}</p>
       <h1>{{ page.name }}</h1>
       <p class="person-role-lg">{{ page.role }}</p>
       <p class="lead">{{ page.topic }}</p>
