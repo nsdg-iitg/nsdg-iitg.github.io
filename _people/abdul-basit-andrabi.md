@@ -17,9 +17,9 @@ links:
 description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written his own drift–diffusion simulator."
 figures:
   - src: "/assets/img/figures/basit-thesis-simulator.jpg"
-    caption: "His 1D drift–diffusion simulator: one discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers. From his PhD thesis."
+    caption: "His 1D drift–diffusion simulator: one discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers."
   - src: "/assets/img/figures/basit-thesis-anode-mechanism.jpg"
-    caption: "How slow trapped charge at the hole-injecting contact lowers the injection barrier and gives negative capacitance: the five-step loop. From his PhD thesis."
+    caption: "How slow trapped charge at the hole-injecting contact lowers the injection barrier and gives negative capacitance: the five-step loop."
   - src: "/assets/img/figures/transition-voltage-traps-solen2023.jpg"
     caption: "How trap density shifts the transition peak (TCAD). From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
   - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
