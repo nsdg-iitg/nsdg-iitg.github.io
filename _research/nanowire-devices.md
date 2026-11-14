@@ -1,7 +1,7 @@
 ---
 title: "Nanowire devices and sensors"
 short: "Nanodevices"
-order: 5
+order: 4
 figure: nanowire
 lead: "Electrical devices on single metal-oxide nanowires, with surfaces tuned by plasma for sensing, and nanodevices that both generate and store energy."
 people: [jawaharlal-pati, imrongmenla-ozukum]
