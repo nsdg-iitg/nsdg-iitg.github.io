@@ -29,6 +29,7 @@ figures:
 education:
   - "MS + PhD, Electronics and Electrical Engineering, IIT Guwahati (2026)"
   - "B.E., Electronics and Telecommunication Engineering, Assam Engineering College"
+now: "Project Engineer at Samtel Centre for Display Technologies, IIT Kanpur"
 ---
 
 Abinash fabricated green MAPbBr3 perovskite light-emitting diodes (PeLEDs) and investigated the mechanisms responsible for their luminance degradation. He defended his PhD thesis in November 2026.
