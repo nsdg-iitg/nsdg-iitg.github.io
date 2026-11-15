@@ -365,8 +365,9 @@ const MATERIAL_LIBRARY = {
           src:'LUMO ≈ 3.9–4.1, HOMO ≈ 6.0 eV.', note:'Organic ETL; effective values.'},
   P3HT:  {name:'P3HT', kind:'semi', chi:3.00, Eg:2.00, epsr:3.0, Nc:1e20, Nv:1e20, defType:'p', defN:1e16, color:PAL.orange, hatch:'hlines',
           src:'HOMO ≈ 5.0, LUMO ≈ 3.0 eV.', note:'Optical gap ≈ 1.9 eV; transport gap used here.'},
-  PEDOT: {name:'PEDOT:PSS', kind:'metal', phi:5.10, color:PAL.green, hatch:'hlines',
-          src:'Work function 4.9–5.2 eV (UPS/Kelvin probe).', note:'Degenerate conducting polymer: treated as a metal-like contact.'},
+  PEDOT: {name:'PEDOT:PSS', kind:'semi', chi:3.55, Eg:1.60, epsr:2.58, Nc:2.1e21, Nv:2.0e21, defType:'p', defN:3e20, color:PAL.green, hatch:'hlines',
+          src:'SCAPS-1D set of Mondal et al., Superlattices Microstruct. 152, 106853 (2021), as used by Deepika et al., Beilstein J. Nanotechnol. 16, 119 (2025).',
+          note:'Heavily p-doped polymer HTL. With N_A = 3e20 cm⁻³ the Fermi level sits about 0.05 eV above E_v, which gives φ_s ≈ 5.1 eV, the measured work function (4.9–5.2 eV). Literature sets differ widely (E_g 1.6–2.8 eV, χ 2.2–3.6 eV); edit for your grade.'},
   ITO:   {name:'ITO',  kind:'metal', phi:4.70, color:PAL.tco, hatch:'dots',
           src:'Work function 4.4–4.8 eV, strongly dependent on cleaning (UV-ozone raises it).', note:'Degenerate TCO treated as a metal.'},
   FTO:   {name:'FTO',  kind:'metal', phi:4.40, color:PAL.tco, hatch:'dots',
@@ -1589,6 +1590,8 @@ const DD_LIBRARY = {
           src:'SCAPS perovskite literature: μ = 2e-4 cm²/Vs (doped Spiro-OMeTAD); N_t 1e15 → τ = 1e-7 s.'},
   PCBM:  {mun:2e-3, mup:2e-3, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'analytic', alpha0:1e5, rng:{mun:[1e-4,1e-1], mup:[1e-4,1e-1], tau:[1e-10,1e-5]},
           src:'Organic ETL: μ ≈ 1e-3 cm²/Vs (SCAPS p-i-n papers use 2e-3 to 1e-2).'},
+  PEDOT: {mun:1, mup:20, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'none', rng:{mun:[1e-5,10], mup:[1e-4,50], tau:[1e-10,1e-5]},
+          src:'Mondal et al., Superlattices Microstruct. 152, 106853 (2021): μ_n = 1, μ_p = 20 cm²/Vs, N_t = 1e14 cm⁻³. High-conductivity grade; for AI 4083 use a much lower μ_p. Treated as non-absorbing: its parasitic absorption is not counted.'},
   P3HT:  {mun:1e-3, mup:1e-3, taun:1e-8, taup:1e-8, B:0, Cn:0, Cp:0, alpha:'analytic', alpha0:1e5, rng:{mun:[1e-5,1e-2], mup:[1e-5,1e-2], tau:[1e-10,1e-6]},
           src:'Organic semiconductor: μ ~1e-3 cm²/Vs (SCLC/OFET literature); τ order of magnitude.'},
 };
@@ -2126,7 +2129,7 @@ const TEMPLATES = [
   {name:'Heterojunction — p-GaAs / n-Al₀.₃Ga₀.₇As', key:'hetero', layers:()=>[L('GaAs',1000,'p',1e17), L('AlGaAs',1000,'n',1e17,{x:0.3})], fig:{biasTerm:'left'}},
   {name:'MOS capacitor — Al / SiO₂ / p-Si', key:'mos', layers:()=>[L('Al',100,'i',0), L('SiO2',10,'i',0), L('Si',1000,'p',1e17)], fig:{biasTerm:'left', mode:'bias', V:0, showEvac:true}},
   {name:'n-i-p perovskite cell — FTO / TiO₂ / MAPbI₃ / Spiro / Au', key:'nip', layers:()=>[L('FTO',400,'i',0), L('TiO2',50,'n',1e17), L('MAPbI3',500,'i',1e13), L('Spiro',200,'p',1e18), L('Au',80,'i',0)], fig:{biasTerm:'right', gamma:0.5}, xs:{substrate:true, light:'bottom'}},
-  {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',40,'i',0), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e17), L('Al',100,'i',0)], fig:{biasTerm:'left'}, xs:{substrate:true, light:'bottom'}},
+  {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',40,'p',3e20), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e17), L('Al',100,'i',0)], fig:{biasTerm:'left'}, xs:{substrate:true, light:'bottom'}},
   {name:'Ohmic contact — n-Si / Al (accumulation)', key:'ohmic', layers:()=>[L('Si',1000,'n',1e16), L('Mg',100,'i',0)], fig:{biasTerm:'right'}},
 ];
 
@@ -2154,7 +2157,8 @@ function refreshLayerInfo(){ if (!comp) return; $$('#layers .layer').forEach((di
 let lastSnap='';
 function undo(){ if (!history.length) return; future.push(snapshot()); const s=history.pop(); loadSnapshot(s); lastSnap=s; recompute(); rebuildAll(); updateUndo(); }
 function redo(){ if (!future.length) return; history.push(snapshot()); const s=future.pop(); loadSnapshot(s); lastSnap=s; recompute(); rebuildAll(); updateUndo(); }
-function loadSnapshot(s){ const o=JSON.parse(s); state = { stack:o.stack, fig:Object.assign({},DEFAULT_FIG,o.fig), xs:Object.assign({},DEFAULT_XS,o.xs), sim:Object.assign(JSON.parse(JSON.stringify(DEFAULT_SIM)),o.sim||{}), template:o.template }; try{ localStorage.setItem('fermi.project', snapshot()); }catch(e){} }
+function loadSnapshot(s){ const o=JSON.parse(s); (o.stack&&o.stack.layers||[]).forEach(l=>{ if (l.mat==='PEDOT' && (!l.dop||l.dop==='i')){ l.dop='p'; l.N=3e20; } });   // projects saved when PEDOT:PSS was a metal
+  state = { stack:o.stack, fig:Object.assign({},DEFAULT_FIG,o.fig), xs:Object.assign({},DEFAULT_XS,o.xs), sim:Object.assign(JSON.parse(JSON.stringify(DEFAULT_SIM)),o.sim||{}), template:o.template }; try{ localStorage.setItem('fermi.project', snapshot()); }catch(e){} }
 function updateUndo(){ $('#undoBtn').disabled = !history.length; $('#redoBtn').disabled = !future.length; }
 
 function recompute(){
@@ -2608,7 +2612,7 @@ function helpHTML(){ return `
   <h3>Statistics</h3>
   <ul><li>Boltzmann statistics with complete ionization; n₀ from charge neutrality with n_i = √(N_c N_v) exp(−E_g/2kT). N_c, N_v scale as T^{3/2}.</li>
   <li>A layer whose Fermi level sits within kT ln 2 of a band edge is flagged degenerate; the Fermi level there is approximate (Fermi–Dirac would move it by tens of meV).</li>
-  <li>Transparent conductors (ITO, FTO) and PEDOT:PSS are treated as metals with a work function.</li></ul>
+  <li>Transparent conductors (ITO, FTO) are treated as metals with a work function. PEDOT:PSS is a heavily p-doped semiconductor (hole transport layer).</li></ul>
   <h3>Electrostatics</h3>
   <ul><li>Nonlinear Poisson equation solved by damped Newton iteration on a clustered grid (320 nodes per semiconductor layer). Thick layers are truncated to a quasi-neutral domain (marked with a break symbol) so the junction region is resolved.</li>
   <li>Depletion width W, E_max and the hetero-partition x_n/x_p in the readouts use the depletion approximation with the solver’s band bending; the drawn curve is the exact Boltzmann solution and therefore has a tail of a few Debye lengths.</li>
