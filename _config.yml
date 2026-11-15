@@ -18,6 +18,9 @@ contact_phone: "+91 361 258 3469"
 # then put its code here, e.g. goatcounter: "nsdg-iitg". Leave empty to switch off.
 goatcounter: "nsdg-iitg"
 
+# Address that receives requests for access to the CEISIM simulator (the form on /ceisim/)
+ceisim_email: "basit@iitg.ac.in"
+
 # Chat assistant (optional). Address of the Cloudflare Worker described in chatbot/README.md,
 # e.g. chat_endpoint: "https://nsdg-chat.example.workers.dev". Leave empty to switch off.
 chat_endpoint: "https://nsdg-chat.nsdg-iitg.workers.dev/"
