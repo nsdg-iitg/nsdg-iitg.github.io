@@ -16,6 +16,16 @@ The chat button appears on the site only when `chat_endpoint` is set. The Worker
 answers requests that come from the website address (`SITE_URL`, default
 https://nsdg-iitg.github.io). Limits per visitor and per day are at the top of `worker.js`.
 
+## Fermi device assistant
+
+The Fermi tool has a **Describe device** button. The visitor writes a device in plain
+words, and the Worker asks Gemini to turn it into a list of layers. Gemini may only pick
+materials from the list that Fermi sends, and it never supplies material parameters. Fermi
+checks every layer again before loading it. It uses the same `GEMINI_API_KEY` and the same
+limits per visitor and per day as the chat. No extra setting is needed, but the Worker
+code must be updated: open **Edit code**, replace everything with the current `worker.js`,
+and press **Deploy**.
+
 ## Private edit links
 
 The same Worker lets members propose changes to their own page from a private link, with

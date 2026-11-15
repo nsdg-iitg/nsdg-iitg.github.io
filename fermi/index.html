@@ -8,4 +8,4 @@ heading: "Fermi"
 lead: "Band diagrams, device cross-sections, 3D device views and spatial profiles in the browser."
 description: "Fermi: energy-band diagrams, device cross-sections, 3D device views and spatial profiles for semiconductor devices, running in the browser. A tool from NSDG, IIT Guwahati."
 ---
-<iframe class="app-frame" src="{{ '/fermi/app.html' | relative_url }}" title="Fermi: band diagram, cross-section, 3D view and spatial profile tool"></iframe>
+<iframe class="app-frame" src="{{ '/fermi/app.html' | relative_url }}{% if site.chat_endpoint and site.chat_endpoint != '' %}?api={{ site.chat_endpoint | url_encode }}{% endif %}" title="Fermi: band diagram, cross-section, 3D view and spatial profile tool"></iframe>
