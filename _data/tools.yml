@@ -4,3 +4,6 @@
 - name: "CEISIM"
   url: /ceisim/
   note: "Coupled electronic–ionic device simulator"
+- name: "Fermi"
+  url: /fermi/
+  note: "Band diagrams, device cross-sections and J–V simulation"
