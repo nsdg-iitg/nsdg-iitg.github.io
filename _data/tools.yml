@@ -1,9 +1,11 @@
 # Items in the "Tools" menu of the header. Add a new tool as a new entry.
 #   name: shown in the menu     url: page on this site or a full https:// address
-#   note: short line under the name (optional)
+#   note: short line under the name (optional)     logo: name of a logo in _includes/tool-logo.html (optional)
 - name: "CEISIM"
   url: /ceisim/
   note: "Coupled electronic–ionic device simulator"
+  logo: ceisim
 - name: "Fermi"
   url: /fermi/
   note: "Band diagrams, cross-sections, 3D device views and spatial profiles"
+  logo: fermi
