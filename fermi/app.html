@@ -56,7 +56,7 @@ kbd{font:11px var(--mono);border:1px solid var(--line);border-bottom-width:2px;b
 a{color:var(--accent)}
 
 /* ---------- app frame ---------- */
-#app{display:grid;grid-template-rows:46px 1fr;height:100%}
+#app{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:46px minmax(0,1fr);height:100%}
 header{display:flex;align-items:center;gap:14px;padding:0 14px;background:var(--panel);border-bottom:1px solid var(--line)}
 .wordmark{display:flex;align-items:baseline;gap:8px;min-width:140px}
 .wordmark .name{font-size:19px;font-weight:600;letter-spacing:-.01em}
@@ -89,13 +89,21 @@ main{display:grid;grid-template-columns:330px minmax(0,1fr) 312px;min-height:0}
 .center{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;background:var(--bg)}
 .fig-toolbar{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
 .fig-toolbar .grow{flex:1}
-.preview{position:relative;overflow:hidden;cursor:grab;background:
-  radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 1.2px) 0 0/22px 22px}
+.preview{position:relative;overflow:hidden;cursor:grab;background:#fff;touch-action:none}
 .preview.dragging{cursor:grabbing}
-.preview .stage{position:absolute;left:0;top:0;transform-origin:0 0;display:flex;flex-direction:column;gap:18px;align-items:flex-start}
-.preview .sheet{background:#fff;box-shadow:var(--shadow);outline:1px solid var(--line)}
-.preview .sheet svg{display:block}
-.preview .note{position:absolute;left:12px;bottom:10px;font-size:11px;color:var(--ink-3);background:var(--panel);padding:3px 8px;border-radius:3px;border:1px solid var(--line);pointer-events:none}
+.preview.rot{cursor:move}
+.preview .stage{position:absolute;left:0;top:0;transform-origin:0 0}
+.preview .stage svg{display:block}
+.preview .note{position:absolute;left:12px;bottom:10px;font-size:11px;color:var(--ink-3);background:var(--panel);padding:3px 8px;border-radius:3px;border:1px solid var(--line);pointer-events:none;max-width:calc(100% - 24px)}
+.navbtn{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:54px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:var(--radius);font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);z-index:3;padding:0}
+.navbtn:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line)}
+.navbtn[hidden]{display:none}
+.navbtn.prev{left:10px}.navbtn.next{right:10px}
+.figbar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:11.5px;color:var(--ink-2);z-index:3;white-space:nowrap;max-width:calc(100% - 24px)}
+.figbar[hidden]{display:none}
+.figbar .dots{display:flex;gap:5px}
+.figbar .dots button{width:7px;height:7px;border-radius:50%;border:0;padding:0;background:var(--line)}
+.figbar .dots button[aria-current="true"]{background:var(--accent)}
 .readouts{border-top:1px solid var(--line);background:var(--panel);padding:8px 12px;display:flex;gap:8px;overflow-x:auto;min-height:62px;align-items:stretch}
 .ro{flex:none;border:1px solid var(--line);border-radius:var(--radius);padding:6px 10px;min-width:150px;background:var(--panel);cursor:pointer;text-align:left}
 .ro:hover{border-color:var(--accent-line)}
@@ -194,8 +202,12 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
 /* ---------- mobile ---------- */
 .mobile-nav{display:none}
 @media (max-width:960px){
-  #app{grid-template-rows:46px 1fr 44px}
-  main{grid-template-columns:1fr}
+  #app{grid-template-rows:46px minmax(0,1fr) 44px}
+  main{grid-template-columns:minmax(0,1fr)}
+  .center{min-width:0}
+  .fig-toolbar{flex-wrap:wrap;gap:6px}
+  #solverStatus{display:none}
+  .seg button{white-space:nowrap;padding:5px 8px}
   .pane{display:none;border:0}
   .pane[data-active="true"]{display:flex}
   .center{display:none}
@@ -255,7 +267,7 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
       <div class="seg" id="figSeg" role="group" aria-label="Figure">
         <button data-fig="band" aria-pressed="true">Band diagram</button>
         <button data-fig="xsec" aria-pressed="false">Cross-section</button>
-        <button data-fig="both" aria-pressed="false">Both</button>
+        <button data-fig="d3" aria-pressed="false">3D</button>
         <button data-fig="sim" aria-pressed="false">Simulate</button>
       </div>
       <div class="grow"></div>
@@ -268,7 +280,10 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
     </div>
     <div class="preview" id="preview">
       <div class="stage" id="stage"></div>
-      <div class="note" id="previewNote">Drag to pan &middot; Ctrl/Cmd + wheel to zoom</div>
+      <button class="navbtn prev" id="figPrev" title="Previous plot (left arrow key)" aria-label="Previous plot" hidden>&#8249;</button>
+      <button class="navbtn next" id="figNext" title="Next plot (right arrow key)" aria-label="Next plot" hidden>&#8250;</button>
+      <div class="figbar" id="figBar" hidden></div>
+      <div class="note" id="previewNote"></div>
     </div>
     <div class="readouts" id="readouts"></div>
   </section>
@@ -1398,6 +1413,92 @@ function renderXsec(comp, fig, xs, mats){
   out += `</svg>`;
   return out;
 }
+
+/* ===================== 3D DEVICE VIEW =====================
+   The stack is one-dimensional; this view extrudes it into slabs and draws them in an orthographic
+   projection, in the manner of the device schematics used in device papers: flat-shaded slabs,
+   optionally stepped back or exploded so that every layer shows, a patterned top electrode,
+   and labels on leader lines. The output is plain SVG, like every other Fermi figure. */
+const METAL3D = { Au:'#dcae3c', Ag:'#cdd2d9', Al:'#bcc3cc', Mg:'#c6cacf', Cu:'#c98052', Pt:'#b7bbc2', Ni:'#abb0b7', Ti:'#9da4ac', Mo:'#939ca7', Ca:'#d2d6d9', Cr:'#a7adb5', W:'#8e959e', Pd:'#bfc3c8' };
+function hexRGB(h){ h=String(h||'#cccccc').replace('#',''); if (h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h.slice(0,6),16); return isFinite(n)?[n>>16&255,n>>8&255,n&255]:[204,204,204]; }
+function shadeHex(h, f){ const c=hexRGB(h).map(v=> f<=1 ? v*f : v+(255-v)*(f-1)); return '#'+c.map(v=>Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,'0')).join(''); }
+function renderDevice3D(comp, fig, xs, mats){
+  const C=figColors(fig.figTheme); const fs=fig.fontSize||7, lw=fig.lineWt||1, lwa=Math.max(0.35,lw*0.5);
+  const W=(fig.widthMm||85)/25.4*72; const font=FONTS[fig.font||'sans'];
+  const R=comp.R.slice(); if (!R.length) return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}pt" height="${W*0.5}pt" viewBox="0 0 ${W} ${W*0.5}"><rect width="${W}" height="${W*0.5}" fill="${C.bg}"/></svg>`;
+  let seq=R.map((r,i)=>({r,i})); if (xs.firstAt==='top') seq=seq.reverse();
+  if (xs.substrate){ const sub={r:{name:xs.substrateLabel||'Glass', kind:'ins', t:0, t_nm:0, color:'#dfe9f1', isSub:true}, i:-1}; if (xs.firstAt==='top') seq.push(sub); else seq.unshift(sub); }
+  const n=seq.length;
+  // slab heights, in units of the footprint width
+  let hs=seq.map(({r})=> r.isSub ? 0.17 : 0.05+0.15*Math.max(0, Math.min(1, Math.log10(Math.max(r.t_nm||1,1)/5)/Math.log10(1e5/5))));
+  if (xs.toScale){ const tot=seq.reduce((a,q)=>a+(q.r.isSub?0:q.r.t),0)||1; hs=seq.map(q=> q.r.isSub ? 0.17 : Math.max(0.012, q.r.t/tot*0.62)); }
+  // view
+  const az=Math.max(-80, Math.min(80, xs.d3Az==null?35:+xs.d3Az)), el=Math.max(8, Math.min(80, xs.d3El==null?26:+xs.d3El));
+  const A=az*Math.PI/180, E=el*Math.PI/180, cA=Math.cos(A), sA=Math.sin(A), cE=Math.cos(E), sE=Math.sin(E);
+  const proj=(x,y,z)=>{ const xr=x*cA+y*sA, yr=-x*sA+y*cA; return [xr, -(z*cE+yr*sE), yr]; };
+  const style=xs.d3Style||'stepped', D=Math.max(0.3, Math.min(2, +xs.d3Depth||1));
+  const step= style==='stepped' ? Math.min(0.075, 0.45/Math.max(1,n-1)) : 0, gap= style==='exploded' ? Math.max(0, xs.d3Gap==null?0.12:+xs.d3Gap) : 0;
+  const boxes=[]; let z=0;
+  seq.forEach(({r},k)=>{ const h=hs[k], d=step*k; let x0=0,x1=1,y0=0,y1=D; if (sA>=0) x1-=d; else x0+=d; y0+=d*D;
+    let col=r.color||'#cccccc'; if (xs.d3Real!==false && METAL3D[r.mat]) col=METAL3D[r.mat];
+    boxes.push({k, r, x0,x1,y0,y1, z0:z, z1:z+h, col, op:r.isSub?0.8:1}); z+=h+gap; });
+  // patterned top electrode
+  let topMode=xs.d3Top||'auto'; const top=boxes[boxes.length-1];
+  if (topMode==='auto') topMode=(top.r.kind==='metal' && n>=3) ? 'pads' : 'full';
+  if (top.r.isSub || n<2) topMode='full';
+  if (topMode!=='full'){ boxes.pop(); const w=top.x1-top.x0, d=top.y1-top.y0; const parts=[];
+    const mk=(a0,a1,b0,b1)=>parts.push(Object.assign({}, top, {x0:top.x0+a0*w, x1:top.x0+a1*w, y0:top.y0+b0*d, y1:top.y0+b1*d}));
+    if (topMode==='pads'){ for (let j=0;j<2;j++) for (let i=0;i<3;i++) mk(0.1+i*0.29, 0.32+i*0.29, 0.14+j*0.42, 0.44+j*0.42); }
+    else if (topMode==='stripes'){ for (let i=0;i<3;i++) mk(0.1+i*0.29, 0.32+i*0.29, 0, 1); }
+    else if (topMode==='fingers'){ mk(0.05,0.95,0.80,0.94); for (let i=0;i<5;i++) mk(0.09+i*0.195, 0.13+i*0.195, 0.06, 0.80); }
+    else mk(0.3,0.7,0.3,0.7);
+    parts.sort((a,b)=>proj((b.x0+b.x1)/2,(b.y0+b.y1)/2,0)[2]-proj((a.x0+a.x1)/2,(a.y0+a.y1)/2,0)[2]);   // far parts first
+    parts.forEach(p=>boxes.push(p)); }
+  // light
+  const zTop=boxes.reduce((m,b)=>Math.max(m,b.z1),0); const arrows=[];
+  if (xs.light && xs.light!=='none'){ const fromTop=xs.light==='top'; const ref=fromTop?top:boxes[0];
+    for (let i=0;i<3;i++){ const ax=ref.x0+(ref.x1-ref.x0)*(0.28+0.22*i), ay=fromTop ? (ref.y0+ref.y1)/2 : ref.y0-0.1; /* from below: in front of the stack, so the arrows stay visible */ arrows.push(fromTop ? [proj(ax,ay,zTop+0.42), proj(ax,ay,zTop+0.06)] : [proj(ax,ay,-0.42), proj(ax,ay,-0.06)]); } }
+  // faces
+  const shadeOn=xs.d3Shade!==false, edge=xs.d3Edge||'soft'; const polys=[]; const P=[];
+  boxes.forEach(b=>{ const f=[];
+    if (sA>1e-9) f.push({s:0.72, q:[[b.x1,b.y0,b.z0],[b.x1,b.y1,b.z0],[b.x1,b.y1,b.z1],[b.x1,b.y0,b.z1]]});
+    else if (sA<-1e-9) f.push({s:0.72, q:[[b.x0,b.y0,b.z0],[b.x0,b.y1,b.z0],[b.x0,b.y1,b.z1],[b.x0,b.y0,b.z1]]});
+    f.push({s:0.87, q:[[b.x0,b.y0,b.z0],[b.x1,b.y0,b.z0],[b.x1,b.y0,b.z1],[b.x0,b.y0,b.z1]]});
+    f.push({s:1.05, q:[[b.x0,b.y0,b.z1],[b.x1,b.y0,b.z1],[b.x1,b.y1,b.z1],[b.x0,b.y1,b.z1]]});
+    f.forEach(fc=>{ const pts=fc.q.map(v=>proj(v[0],v[1],v[2])); pts.forEach(p=>P.push(p)); polys.push({pts, fill:shadeOn?shadeHex(b.col, fc.s):b.col, col:b.col, op:b.op}); }); });
+  arrows.forEach(a=>{ P.push(a[0]); P.push(a[1]); });
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity; P.forEach(p=>{ if (p[0]<minX) minX=p[0]; if (p[0]>maxX) maxX=p[0]; if (p[1]<minY) minY=p[1]; if (p[1]>maxY) maxY=p[1]; });
+  // labels
+  const showLab=xs.d3Labels!==false; const labs=[];
+  if (showLab){ seq.forEach(({r},k)=>{ const bs=boxes.filter(b=>b.k===k); if (!bs.length) return; let best=null;
+      bs.forEach(b=>{ const zm=(b.z0+b.z1)/2; const a= sA>1e-9 ? proj(b.x1,(b.y0+b.y1)/2,zm) : proj(b.x1-(b.x1-b.x0)*0.08,b.y0,zm); if (!best||a[0]>best[0]) best=a; });
+      const nm=(r.kind==='semi'&&r.dop&&r.dop!=='i' ? r.dop+'-'+r.name : r.name) + (xs.showThickness!==false && !r.isSub && r.t>0 ? '  ('+fmtLen(r.t)+')' : '');
+      labs.push({a:best, txt:nm}); }); }
+  const labW=showLab ? Math.max(...labs.map(l=>textW(l.txt, fs)), fs*2) : 0;
+  const mL=fs*1.4, mR=showLab ? fs*3.0+labW+fs*0.6 : fs*1.4, mT=fs*1.6, mB=fs*1.6+(xs.toScale?0:fs*1.0);
+  let s=(W-mL-mR)/Math.max(maxX-minX,1e-6); const Hmax=W*1.15-mT-mB; if ((maxY-minY)*s>Hmax) s=Hmax/(maxY-minY);
+  const offX=mL+((W-mL-mR)-(maxX-minX)*s)/2;
+  let H=mT+(maxY-minY)*s+mB; const need=mT+mB+labs.length*fs*1.35; if (H<need) H=need;
+  const offY=mT+((H-mT-mB)-(maxY-minY)*s)/2;
+  const SX=p=>offX+(p[0]-minX)*s, SY=p=>offY+(p[1]-minY)*s;
+  let body='';
+  const lightCol=fig.figTheme==='dark' ? '#ffc04d' : '#d98200';
+  const drawArrows=()=>{ let o=''; arrows.forEach(a=>{ o+=`<line x1="${SX(a[0]).toFixed(2)}" y1="${SY(a[0]).toFixed(2)}" x2="${SX(a[1]).toFixed(2)}" y2="${SY(a[1]).toFixed(2)}" stroke="${lightCol}" stroke-width="${(lw*1.1).toFixed(2)}" marker-end="url(#ahl)"/>`; });
+    if (arrows.length){ const a=arrows[arrows.length-1]; o+=label(SX(a[0])+fs*0.7, (SY(a[0])+SY(a[1]))/2+fs*0.35, 'hν', {fs, fill:C.ink, italic:true}); } return o; };
+  polys.forEach(pl=>{ const d='M'+pl.pts.map(p=>SX(p).toFixed(2)+' '+SY(p).toFixed(2)).join('L')+'Z';
+    const st= edge==='ink' ? C.ink : edge==='none' ? pl.fill : shadeHex(pl.col, 0.5);
+    body+=`<path d="${d}" fill="${pl.fill}"${pl.op<1?` fill-opacity="${pl.op}"`:''} stroke="${st}" stroke-width="${(edge==='none'?0.25:lw*0.45).toFixed(2)}" stroke-linejoin="round"/>`; });
+  body+=drawArrows();
+  if (showLab){ const lx=offX+(maxX-minX)*s+fs*2.6; const L=labs.map(l=>({l, ax:SX(l.a), ay:SY(l.a), y:SY(l.a)})).sort((p,q)=>p.y-q.y); const gapL=fs*1.35;
+    for (let i=1;i<L.length;i++) if (L[i].y<L[i-1].y+gapL) L[i].y=L[i-1].y+gapL;
+    const yLim=H-fs*1.2; if (L.length && L[L.length-1].y>yLim){ L[L.length-1].y=yLim; for (let i=L.length-2;i>=0;i--) if (L[i].y>L[i+1].y-gapL) L[i].y=L[i+1].y-gapL; }
+    L.forEach(o=>{ body+=`<circle cx="${o.ax.toFixed(2)}" cy="${o.ay.toFixed(2)}" r="${(fs*0.14).toFixed(2)}" fill="${C.ink}"/>`+
+        `<path d="M${o.ax.toFixed(2)} ${o.ay.toFixed(2)}L${(lx-fs*1.3).toFixed(2)} ${o.y.toFixed(2)}L${(lx-fs*0.4).toFixed(2)} ${o.y.toFixed(2)}" fill="none" stroke="${C.ink}" stroke-width="${lwa.toFixed(2)}" stroke-linejoin="round"/>`+
+        label(lx, o.y+fs*0.35, o.l.txt, {fs, fill:C.ink}); }); }
+  if (!xs.toScale) body+=label(mL, H-fs*0.5, 'schematic, thickness not to scale', {fs:fs*0.75, fill:C.ink2, italic:true});
+  const defs=`<marker id="ahl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" markerUnits="strokeWidth" orient="auto"><path d="M0 0.5 L10 5 L0 9.5 z" fill="${lightCol}"/></marker>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}"><title>Device structure (3D schematic): ${esc(R.map(r=>r.name).join(' / '))}</title><defs>${defs}</defs><rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/>${body}</svg>`;
+}
 </script>
 <script id="fermi-dd">
 /* =====================================================================
@@ -2011,8 +2112,13 @@ const $ = (s, el=document)=>el.querySelector(s); const $$=(s, el=document)=>Arra
 const uid = ()=>Math.random().toString(36).slice(2,9);
 const DEFAULT_FIG = { mode:'eq', V:0, biasTerm:'right', T:300, schematic:false, showEvac:true, showEi:false, showLabels:true, showNumbers:true, showLayerNames:true,
   annEg:true, annPhiB:true, annVbi:true, annW:true, annOffsets:true, annAxis:true, axisRef:'EF', imageForce:false, gamma:0.5,
-  eWin:'auto', eMin:-2, eMax:2, widthMm:85, aspect:0.62, font:'sans', fontSize:7, lineWt:1, figTheme:'paper', fillBands:false, insHatch:true };
-const DEFAULT_XS = { firstAt:'bottom', toScale:false, substrate:false, substrateLabel:'Glass', light:'none', fingers:false, showThickness:true };
+  eWin:'auto', eMin:-2, eMax:2, widthMm:85, aspect:0.62, font:'sans', fontSize:7, lineWt:1, figTheme:'paper', fillBands:false, insHatch:true,
+  // plots (Simulate view)
+  pFrame:'box', pTicks:'in', pMinor:true, pGrid:false, pLegend:'direct', pMarkers:false, pShowPV:true, pShowMPP:true, pShowFit:true,
+  pColLight:'#000000', pColDark:'#0072b2', pAspect:0.72, pXauto:'auto', pXmin:-0.2, pXmax:1.3, pYauto:'auto', pYmin:-5, pYmax:25, pXlabel:'Voltage (V)', pYlabel:'Current density (mA cm^{-2})' };
+const DEFAULT_XS = { firstAt:'bottom', toScale:false, substrate:false, substrateLabel:'Glass', light:'none', fingers:false, showThickness:true,
+  // 3D device view
+  d3Style:'stepped', d3Top:'auto', d3Az:35, d3El:26, d3Depth:1, d3Gap:0.12, d3Shade:true, d3Real:true, d3Labels:true, d3Edge:'soft' };
 const L = (mat, t_nm, dop, N, extra={})=>Object.assign({id:uid(), mat, t_nm, dop, N}, extra);
 const TEMPLATES = [
   {name:'Schottky diode — n-Si / Au', key:'schottky', layers:()=>[L('Si',2000,'n',1e16), L('Au',100,'i',0)], fig:{biasTerm:'right', imageForce:true}},
@@ -2025,7 +2131,8 @@ const TEMPLATES = [
 ];
 
 let state = null, history=[], future=[], mats=null, comp=null, selectedLayer=null, currentFig='band';
-const view = { scale:1, tx:20, ty:20 };
+const view = { scale:1, tx:20, ty:20, w:0, h:0, auto:true };
+const figIdx = {}; let shownFigs = [];   // one figure is shown at a time; figIdx remembers which, per view
 
 /* ---------- materials persistence ---------- */
 function loadMats(){ let custom={}; try{ custom = JSON.parse(localStorage.getItem('fermi.materials')||'{}'); }catch(e){}
@@ -2062,17 +2169,27 @@ function recompute(){
 }
 
 /* ---------- preview ---------- */
-function currentSVGs(){ const out=[]; if (currentFig==='sim') return simFigures(); if (currentFig==='band'||currentFig==='both') out.push({name:'band-diagram', svg:renderBand(comp, state.fig)}); if (currentFig==='xsec'||currentFig==='both') out.push({name:'cross-section', svg:renderXsec(comp, state.fig, state.xs, mats)}); return out; }
+function currentSVGs(){ if (currentFig==='sim') return simFigures();
+  if (currentFig==='xsec') return [{name:'cross-section', title:'Cross-section', svg:renderXsec(comp, state.fig, state.xs, mats)}];
+  if (currentFig==='d3') return [{name:'device-3d', title:'Device, 3D view', svg:renderDevice3D(comp, state.fig, state.xs, mats)}];
+  return [{name:'band-diagram', title:'Band diagram', svg:renderBand(comp, state.fig)}]; }
+function shownIndex(){ const n=shownFigs.length; let i=figIdx[currentFig]||0; if (i>n-1) i=n-1; if (i<0) i=0; figIdx[currentFig]=i; return i; }
+/* The figure fills the centre pane, one at a time; with several plots (Simulate) the arrows, the dots or the arrow keys change the plot. */
 function renderPreview(){
-  const stage=$('#stage'); stage.innerHTML=''; stage.style.flexDirection = currentFig==='sim' ? 'row' : 'column'; stage.style.flexWrap = currentFig==='sim' ? 'wrap' : 'nowrap'; stage.style.width = currentFig==='sim' ? (2*(state.fig.widthMm||85)/25.4*96+40)+'px' : '';
-  for (const f of currentSVGs()){ const d=document.createElement('div'); d.className='sheet'; d.innerHTML=f.svg; const svg=d.firstElementChild; svg.style.width = (parseFloat(svg.getAttribute('width'))*96/72)+'px'; svg.style.height=(parseFloat(svg.getAttribute('height'))*96/72)+'px'; stage.appendChild(d); }
-  applyView();
+  shownFigs=currentSVGs(); const n=shownFigs.length, i=shownIndex(), f=shownFigs[i]; const stage=$('#stage'); stage.innerHTML=f?f.svg:''; const svg=stage.firstElementChild;
+  const pv=$('#preview'); pv.style.background=figColors(state.fig.figTheme).bg; pv.classList.toggle('rot', currentFig==='d3');
+  if (svg){ view.w=parseFloat(svg.getAttribute('width'))*96/72; view.h=parseFloat(svg.getAttribute('height'))*96/72; }
+  const many=n>1; $('#figPrev').hidden=!many; $('#figNext').hidden=!many; const bar=$('#figBar'); bar.hidden=!many;
+  if (many) bar.innerHTML=`<span>${esc(f.title||f.name)}</span><span class="mono muted">${i+1} / ${n}</span><span class="dots">${shownFigs.map((g,k)=>`<button data-go="${k}" aria-current="${k===i}" aria-label="${esc(g.title||g.name)}" title="${esc(g.title||g.name)}"></button>`).join('')}</span>`;
+  $('#previewNote').textContent=(currentFig==='d3' ? 'Drag to rotate · Shift + drag to move' : 'Drag to move')+' · Ctrl/Cmd + wheel to zoom'+(many?' · ← → to change plot':'');
+  if (view.auto) zoomFit(); else applyView();
 }
-function applyView(){ $('#stage').style.transform = `translate(${view.tx}px,${view.ty}px) scale(${view.scale})`; }
-function zoomFit(){ const pv=$('#preview'); const st=$('#stage'); st.style.transform='none'; const r=st.getBoundingClientRect(); const pr=pv.getBoundingClientRect();
-  const s = Math.min((pr.width-40)/Math.max(r.width,1), (pr.height-40)/Math.max(r.height,1), 2.5); view.scale = s; view.tx = (pr.width - r.width*s)/2; view.ty = Math.max(20,(pr.height - r.height*s)/2); applyView(); }
+function applyView(){ const st=$('#stage'), svg=st.firstElementChild; if (svg){ svg.style.width=(view.w*view.scale)+'px'; svg.style.height=(view.h*view.scale)+'px'; } st.style.transform=`translate(${view.tx}px,${view.ty}px)`; }
+function zoomFit(){ const pr=$('#preview').getBoundingClientRect(); view.auto=true; if (!pr.width||!pr.height||!view.w){ applyView(); return; } const many=shownFigs.length>1; const padX=many?54:18, padT=many?44:16, padB=36;
+  const s=Math.min((pr.width-2*padX)/view.w, (pr.height-padT-padB)/view.h, 10); view.scale=Math.max(0.1, s); view.tx=(pr.width-view.w*view.scale)/2; view.ty=padT+((pr.height-padT-padB)-view.h*view.scale)/2; applyView(); }
 function zoomBy(f, cx, cy){ const pv=$('#preview').getBoundingClientRect(); cx = cx==null ? pv.width/2 : cx; cy = cy==null ? pv.height/2 : cy;
-  const ns = Math.min(8, Math.max(0.2, view.scale*f)); view.tx = cx - (cx-view.tx)*(ns/view.scale); view.ty = cy - (cy-view.ty)*(ns/view.scale); view.scale=ns; applyView(); }
+  const ns = Math.min(12, Math.max(0.2, view.scale*f)); view.tx = cx - (cx-view.tx)*(ns/view.scale); view.ty = cy - (cy-view.ty)*(ns/view.scale); view.scale=ns; view.auto=false; applyView(); }
+function showFig(k, relative){ const n=shownFigs.length; if (n<2) return; figIdx[currentFig]= relative ? ((shownIndex()+k)%n+n)%n : Math.max(0, Math.min(n-1, k)); view.auto=true; renderPreview(); if ($('#pngInfo')) updatePngInfo(); }
 
 /* ---------- readouts ---------- */
 function renderReadouts(){
@@ -2213,6 +2330,45 @@ function chk(key, label, obj='fig'){ return `<label class="check"><input type="c
 function renderFigurePanel(){
   const p=$('#tab-figure');
   p.innerHTML = `
+    <div data-for="sim">
+    <div class="sec">Plot</div>
+    ${ctl('Frame', `<select data-obj="fig" data-key="pFrame"><option value="box">closed box</option><option value="open">left and bottom axes only</option></select>`)}
+    ${ctl('Ticks', `<select data-obj="fig" data-key="pTicks"><option value="in">pointing in</option><option value="out">pointing out</option></select>`)}
+    ${chk('pMinor','Minor ticks')}${chk('pGrid','Grid lines')}${chk('pMarkers','Marker at every data point')}
+    ${ctl('Curve names', `<select data-obj="fig" data-key="pLegend"><option value="direct">written next to each curve</option><option value="box">legend above the plot</option><option value="none">none</option></select>`)}
+    ${ctl('Light curve', `<input type="color" data-obj="fig" data-key="pColLight" aria-label="Colour of the light curve">`)}
+    ${ctl('Dark curve', `<input type="color" data-obj="fig" data-key="pColDark" aria-label="Colour of the dark curve">`)}
+    ${chk('pShowPV','J_sc, V_oc, FF and PCE on the plot')}${chk('pShowMPP','Mark the maximum power point')}${chk('pShowFit','Ideality factor fits (semilog plot)')}
+    ${ctl('Plot shape (h/w)', `<input type="number" step="0.02" min="0.4" max="1.4" data-obj="fig" data-key="pAspect">`)}
+    ${ctl('Voltage axis', `<select data-obj="fig" data-key="pXauto"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
+    <div id="pXRow">${ctl('V min, max (V)', `<div class="row"><input type="number" step="0.1" data-obj="fig" data-key="pXmin"><input type="number" step="0.1" data-obj="fig" data-key="pXmax"></div>`)}</div>
+    ${ctl('Current axis', `<select data-obj="fig" data-key="pYauto"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
+    <div id="pYRow">${ctl('J min, max', `<div class="row"><input type="number" step="1" data-obj="fig" data-key="pYmin"><input type="number" step="1" data-obj="fig" data-key="pYmax"></div>`)}</div>
+    ${ctl('x axis title', `<input type="text" data-obj="fig" data-key="pXlabel">`)}
+    ${ctl('y axis title', `<input type="text" data-obj="fig" data-key="pYlabel" title="Use ^{-2} for a superscript and _{sc} for a subscript">`)}
+    <div class="muted small">The run settings (bias range, illumination, contacts) are in the Simulate tab.</div>
+    </div>
+    <div data-for="d3">
+    <div class="sec">3D view</div>
+    ${ctl('Layout', `<select data-obj="xs" data-key="d3Style"><option value="stepped">stepped (each layer shows)</option><option value="flush">flush stack</option><option value="exploded">exploded</option></select>`)}
+    ${ctl('Top electrode', `<select data-obj="xs" data-key="d3Top"><option value="auto">auto</option><option value="full">full layer</option><option value="pads">contact pads</option><option value="stripes">stripes</option><option value="fingers">grid fingers and busbar</option></select>`)}
+    ${ctl('Rotation', `<input type="range" min="-80" max="80" step="1" data-obj="xs" data-key="d3Az" data-live="1">`)}
+    ${ctl('Tilt', `<input type="range" min="8" max="80" step="1" data-obj="xs" data-key="d3El" data-live="1">`)}
+    ${ctl('Depth', `<input type="range" min="0.4" max="1.6" step="0.05" data-obj="xs" data-key="d3Depth" data-live="1">`)}
+    <div id="d3GapRow">${ctl('Layer spacing', `<input type="range" min="0" max="0.4" step="0.01" data-obj="xs" data-key="d3Gap" data-live="1">`)}</div>
+    ${ctl('Edges', `<select data-obj="xs" data-key="d3Edge"><option value="soft">soft (darker shade)</option><option value="ink">black outline</option><option value="none">none</option></select>`)}
+    ${chk('d3Shade','Shaded faces','xs')}${chk('d3Real','Metallic colours for metal contacts','xs')}${chk('d3Labels','Layer labels','xs')}
+    <div class="muted small">You can also drag the figure to rotate it. Layer colours are set in the Materials tab.</div>
+    </div>
+    <div data-for="xsec d3">
+    <div class="sec">Device</div>
+    ${ctl('First layer at', `<select data-obj="xs" data-key="firstAt"><option value="bottom">bottom (substrate side)</option><option value="top">top</option></select>`)}
+    ${chk('toScale','Thickness to scale','xs')}${chk('showThickness','Thickness values','xs')}${chk('substrate','Substrate block','xs')}
+    ${ctl('Substrate label', `<input type="text" data-obj="xs" data-key="substrateLabel">`)}
+    ${ctl('Illumination', `<select data-obj="xs" data-key="light"><option value="none">none</option><option value="top">hν from top</option><option value="bottom">hν from bottom</option></select>`)}
+    <div data-for="xsec">${chk('fingers','Top-contact grid fingers','xs')}</div>
+    </div>
+    <div data-for="band sim">
     <div class="sec">Physics</div>
     ${ctl('Mode', `<select data-obj="fig" data-key="mode"><option value="eq">Equilibrium</option><option value="bias">Applied bias</option></select>`)}
     <div id="biasRow">${ctl('V (V)', `<div class="row"><input type="range" min="-3" max="3" step="0.01" data-obj="fig" data-key="V" data-live="1"><input type="number" step="0.01" data-obj="fig" data-key="V" style="width:72px"></div>`)}
@@ -2220,7 +2376,7 @@ function renderFigurePanel(){
     ${ctl('T (K)', `<input type="number" step="1" min="50" max="1000" data-obj="fig" data-key="T">`)}
     ${chk('imageForce','Image-force lowering inset (Schottky)')}
     ${chk('schematic','Schematic: flat bands aligned at E_F (no bending)')}
-    <div class="sec">Content</div>
+    <div class="sec">Band diagram content</div>
     ${chk('showEvac','Vacuum level E_vac')}${chk('showEi','Intrinsic level E_i')}${chk('showLayerNames','Layer names and doping')}${chk('showLabels','Band labels (E_c, E_v, E_F)')}${chk('showNumbers','Numeric values in annotations')}
     ${chk('annEg','E_g arrows')}${chk('annPhiB','Barrier height φ_B')}${chk('annVbi','Band bending qV_bi / qψ_s')}${chk('annW','Depletion width W')}${chk('annOffsets','Band offsets ΔE_c, ΔE_v')}${chk('annAxis','Energy axis')}
     ${ctl('Axis zero', `<select data-obj="fig" data-key="axisRef"><option value="EF">E_F (left contact)</option><option value="Evac">E_vac (far left)</option></select>`)}
@@ -2229,21 +2385,16 @@ function renderFigurePanel(){
     ${ctl('x compression', `<div class="row"><input type="range" min="0" max="1" step="0.05" data-obj="fig" data-key="gamma" data-live="1" title="0 = equal layer widths, 1 = to scale"><span class="mono small" id="gammaVal"></span></div>`)}
     ${ctl('Energy window', `<select data-obj="fig" data-key="eWin"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
     <div id="eWinRow">${ctl('E_min, E_max (eV)', `<div class="row"><input type="number" step="0.1" data-obj="fig" data-key="eMin"><input type="number" step="0.1" data-obj="fig" data-key="eMax"></div>`)}</div>
+    </div>
     <div class="sec">Style</div>
     ${ctl('Preset', `<select id="stylePreset"><option value="nature">Nature / Science (sans, 7 pt)</option><option value="elsevier">Elsevier / IEEE (serif, 8 pt)</option><option value="acs">ACS (sans, 7 pt, 0.75 pt lines)</option><option value="custom">custom</option><optgroup label="My presets" id="myPresets"></optgroup></select>`)}
-    ${ctl('Save style as', `<div class="row"><input type="text" id="presetName" placeholder="preset name" aria-label="Preset name"><button class="btn sm" id="savePreset" title="Save width, aspect, font, size, line weight and colours as a named preset (Pro)">Save</button><button class="btn sm" id="delPreset" hidden title="Delete the selected preset">Delete</button></div>`)}
+    ${ctl('Save style as', `<div class="row"><input type="text" id="presetName" placeholder="preset name" aria-label="Preset name"><button class="btn sm" id="savePreset" title="Save the figure and plot style as a named preset">Save</button><button class="btn sm" id="delPreset" hidden title="Delete the selected preset">Delete</button></div>`)}
     ${ctl('Width', `<select data-obj="fig" data-key="widthMm"><option value="85">85 mm (single column)</option><option value="120">120 mm (1.5 column)</option><option value="180">180 mm (double column)</option></select>`)}
-    ${ctl('Aspect (h/w)', `<input type="number" step="0.02" min="0.3" max="1.5" data-obj="fig" data-key="aspect">`)}
+    <div data-for="band">${ctl('Aspect (h/w)', `<input type="number" step="0.02" min="0.3" max="1.5" data-obj="fig" data-key="aspect">`)}</div>
     ${ctl('Font', `<select data-obj="fig" data-key="font"><option value="sans">Helvetica / Arial</option><option value="serif">Times</option></select>`)}
     ${ctl('Font size (pt)', `<input type="number" step="0.5" min="5" max="14" data-obj="fig" data-key="fontSize">`)}
     ${ctl('Line weight (pt)', `<input type="number" step="0.25" min="0.25" max="3" data-obj="fig" data-key="lineWt">`)}
     ${ctl('Figure colours', `<select data-obj="fig" data-key="figTheme"><option value="paper">white background, black text</option><option value="dark">dark background (slides)</option></select>`)}
-    <div class="sec">Cross-section</div>
-    ${ctl('First layer at', `<select data-obj="xs" data-key="firstAt"><option value="bottom">bottom (substrate side)</option><option value="top">top</option></select>`)}
-    ${chk('toScale','Thickness to scale','xs')}${chk('showThickness','Thickness annotations','xs')}${chk('substrate','Substrate block','xs')}
-    ${ctl('Substrate label', `<input type="text" data-obj="xs" data-key="substrateLabel">`)}
-    ${ctl('Illumination', `<select data-obj="xs" data-key="light"><option value="none">none</option><option value="top">hν from top</option><option value="bottom">hν from bottom</option></select>`)}
-    ${chk('fingers','Top-contact grid fingers','xs')}
   `;
   bindPanel(p);
   $('#stylePreset').addEventListener('change', e=>{ const v=e.target.value; const prev=snapshot(); const f=state.fig;
@@ -2256,7 +2407,7 @@ function renderFigurePanel(){
   $('#delPreset').addEventListener('click', ()=>{ const v=$('#stylePreset').value; if (!v.startsWith('my:')) return; const ps=loadStylePresets(); delete ps[v.slice(3)]; saveStylePresets(ps); syncPresetMenu(); syncPanel(p); toast('Preset deleted'); });
   syncPresetMenu(); syncPanel(p);
 }
-const STYLE_KEYS=['font','fontSize','lineWt','widthMm','aspect','figTheme'];   // what a saved style preset carries
+const STYLE_KEYS=['font','fontSize','lineWt','widthMm','aspect','figTheme','pFrame','pTicks','pMinor','pGrid','pLegend','pMarkers','pColLight','pColDark','pAspect'];   // what a saved style preset carries
 function loadStylePresets(){ try{ return JSON.parse(localStorage.getItem('fermi.stylePresets')||'{}'); }catch(e){ return {}; } }
 function saveStylePresets(ps){ try{ localStorage.setItem('fermi.stylePresets', JSON.stringify(ps)); }catch(e){} }
 function syncPresetMenu(){ const g=$('#myPresets'); if (!g) return; const ps=loadStylePresets(); const names=Object.keys(ps);
@@ -2277,8 +2428,10 @@ function bindPanel(p){
 function syncPanel(p, except){
   $$('[data-obj]',p).forEach(inp=>{ if (inp===except) return; const v=state[inp.dataset.obj][inp.dataset.key]; if (inp.type==='checkbox') inp.checked=!!v; else inp.value=v; });
   const f=state.fig; $('#biasRow').style.display = f.mode==='bias'?'':'none'; $('#eWinRow').style.display = f.eWin==='manual'?'':'none';
+  $$('[data-for]', p).forEach(d=>{ d.hidden=!d.dataset.for.split(' ').includes(currentFig); });   // only the settings of the view that is open
+  $('#pXRow').style.display = f.pXauto==='manual'?'':'none'; $('#pYRow').style.display = f.pYauto==='manual'?'':'none'; $('#d3GapRow').style.display = state.xs.d3Style==='exploded'?'':'none';
   const g=$('#gammaVal'); if (g) g.textContent = f.gamma>=0.999?'to scale':f.gamma<=0.001?'equal':('γ = '+f.gamma.toFixed(2));
-  const sp=$('#stylePreset'); if (sp){ const ps=loadStylePresets(); const mine=Object.keys(ps).find(n=>STYLE_KEYS.every(k=>ps[n][k]===f[k]));
+  const sp=$('#stylePreset'); if (sp){ const ps=loadStylePresets(); const mine=Object.keys(ps).find(n=>STYLE_KEYS.every(k=>ps[n][k]===undefined||ps[n][k]===f[k]));
     sp.value = mine ? 'my:'+mine : (f.font==='sans'&&f.fontSize===7&&f.lineWt===1)?'nature':(f.font==='serif'&&f.fontSize===8&&f.lineWt===1)?'elsevier':(f.font==='sans'&&f.fontSize===7&&f.lineWt===0.75)?'acs':'custom';
     const db=$('#delPreset'); if (db) db.hidden=!mine; }
 }
@@ -2288,6 +2441,7 @@ function inArtifact(){ try{ return /claude(usercontent)?\.(ai|com)$/.test(locati
 function renderExportPanel(){
   const p=$('#tab-export');
   p.innerHTML = `
+    <label class="check"><input type="checkbox" id="expAll"> Export every plot of this view, not only the one shown</label>
     <div class="sec">Vector</div>
     <div class="btnrow"><button class="btn primary" id="dlSvg">Download SVG</button><button class="btn" id="copySvg">Copy SVG</button><button class="btn" id="openSvg">Open in tab</button></div>
     <div class="muted small">Text stays editable text; fonts referenced by family with fallbacks (Helvetica/Arial or Times). Opens cleanly in Illustrator, Inkscape and Affinity.</div>
@@ -2295,6 +2449,9 @@ function renderExportPanel(){
     ${ctl('Resolution', `<div class="row"><select id="pngDpi">${FERMI_CONFIG.dpiOptions.map(d=>`<option value="${d}">${d} dpi</option>`).join('')}</select><button class="btn sm" id="dpiUpgrade" hidden title="600 and 1200 dpi are Pro">Upgrade</button></div>`)}
     <div class="btnrow"><button class="btn primary" id="dlPng">Download PNG</button><button class="btn" id="copyPng">Copy PNG</button></div>
     <div class="muted small" id="pngInfo"></div>
+    <div class="sec">Data</div>
+    <div class="btnrow"><button class="btn" id="dlCsv">Download J–V data (CSV)</button></div>
+    <div class="muted small">Voltage and current density of the simulated dark and light curves, for plotting in Origin or any other program.</div>
     <div class="sec">Edition</div>
     <div id="licPanel"></div>
     ${inArtifact()?'<div class="callout warn">You are viewing Fermi inside a Claude Artifact: downloads are handed over through a confirmation dialog. If nothing appears, use <b>Copy SVG</b>/<b>Copy PNG</b> or <b>Open in tab</b>, or run the local <code>index.html</code> for direct downloads.</div>':''}
@@ -2312,6 +2469,7 @@ function renderExportPanel(){
   $('#openSvg').addEventListener('click', ()=>{ exportSVGs().forEach(f=>openBlob(f.svg,'image/svg+xml')); });
   $('#dlPng').addEventListener('click', async()=>{ const dpi=exportDpi(); for (const f of exportSVGs()){ try{ const blob=await svgToPng(f.svg, dpi, state.fig.widthMm); downloadBlob(figName()+'_'+f.name+'_'+dpi+'dpi.png', blob); }catch(e){ toast('PNG export failed: '+e.message); } } });
   $('#copyPng').addEventListener('click', async()=>{ const dpi=exportDpi(); const f=exportSVGs()[0]; try{ const blob=await svgToPng(f.svg, dpi, state.fig.widthMm); await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]); toast('PNG copied ('+dpi+' dpi'+(isPro()?'':', free: with mark')+')'); }catch(e){ toast('Clipboard image not available here: '+e.message); } });
+  $('#dlCsv').addEventListener('click', ()=>{ const csv=simCSV(); if (!csv){ toast('Run a simulation first (Simulate tab)'); return; } downloadText(figName()+'_JV.csv', csv, 'text/csv'); });
   $('#pngDpi').addEventListener('change', e=>{ e.target.dataset.pref=e.target.value; updatePngInfo(); });
   $('#dpiUpgrade').addEventListener('click', ()=>openCheckout());
   $('#dlJson').addEventListener('click', ()=>downloadText(figName()+'.fermi.json', projectJSON(), 'application/json'));
@@ -2322,9 +2480,12 @@ function renderExportPanel(){
   $('#copyCaption').addEventListener('click', ()=>copyText($('#captionBox').value, 'Caption copied'));
   applyEntitlement();
 }
-function updatePngInfo(){ const dpi=exportDpi(); const w=Math.round(state.fig.widthMm/25.4*dpi); const h=Math.round(w*state.fig.aspect); const el=$('#pngInfo'); if (el) el.textContent = `${state.fig.widthMm} mm wide → ${w} × ${h} px at ${dpi} dpi (white background) · ${isPro()?'no mark':'Free: '+FERMI_CONFIG.freeMaxDpi+' dpi, small mark'}.`; }
+function simCSV(){ if (!sim.res) return ''; const src=sim.lumped||sim.res; const rows=new Map(); const put=(pts,k)=>{ (pts||[]).forEach(p=>{ if (!isFinite(p.J)) return; const key=p.V.toFixed(6); if (!rows.has(key)) rows.set(key,{V:p.V}); rows.get(key)[k]=p.J; }); }; put(src.dark,'d'); put(src.light,'l');
+  const out=['V (V),J_dark (A cm^-2),J_light (A cm^-2)']; Array.from(rows.values()).sort((a,b)=>a.V-b.V).forEach(r=>out.push([r.V, r.d==null?'':r.d.toExponential(6), r.l==null?'':r.l.toExponential(6)].join(','))); return out.join('\n')+'\n'; }
+function updatePngInfo(){ const dpi=exportDpi(); const w=Math.round(state.fig.widthMm/25.4*dpi); const h=Math.round(w*(view.w?view.h/view.w:state.fig.aspect)); const el=$('#pngInfo'); if (el) el.textContent = `${state.fig.widthMm} mm wide → ${w} × ${h} px at ${dpi} dpi (white background) · ${isPro()?'no mark':'Free: '+FERMI_CONFIG.freeMaxDpi+' dpi, small mark'}.`; }
 function projectJSON(){ const custom={}; for (const k in mats) if (mats[k].custom) custom[k]=mats[k]; return JSON.stringify({app:'Fermi', version:2, saved:new Date().toISOString(), template:state.template, stack:state.stack, fig:state.fig, xs:state.xs, sim:state.sim, materials:custom}, null, 1); }
-function captionText(){ if (!comp||!comp.R.length) return ''; if (currentFig==='sim') return simCaption(); const R=comp.R; const parts=[]; parts.push('Equilibrium energy-band diagram of the '+R.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name).join('/')+' stack at '+state.fig.T+' K'+(state.fig.mode==='bias'&&state.fig.V?(' under V = '+state.fig.V+' V'):'')+'.');
+function captionText(){ if (!comp||!comp.R.length) return ''; if (currentFig==='sim') return simCaption(); const R=comp.R; const parts=[];
+  if (currentFig==='xsec'||currentFig==='d3'){ const seq=state.xs.firstAt==='top'?R.slice().reverse():R; return (currentFig==='d3'?'Schematic of the device structure':'Schematic cross-section of the device')+', from bottom to top: '+(state.xs.substrate&&state.xs.firstAt!=='top'?(state.xs.substrateLabel||'Glass')+' substrate / ':'')+seq.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name+' ('+fmtLen(r.t)+')').join(' / ')+(state.xs.substrate&&state.xs.firstAt==='top'?' / '+(state.xs.substrateLabel||'Glass'):'')+'.'+(state.xs.light&&state.xs.light!=='none'?' Light enters from the '+state.xs.light+'.':'')+(state.xs.toScale?'':' Layer thicknesses are not drawn to scale.'); } parts.push('Equilibrium energy-band diagram of the '+R.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name).join('/')+' stack at '+state.fig.T+' K'+(state.fig.mode==='bias'&&state.fig.V?(' under V = '+state.fig.V+' V'):'')+'.');
   const dop=R.filter(r=>r.kind==='semi'&&r.dop!=='i').map(r=>r.name+': '+(r.dop==='n'?'N_D':'N_A')+' = '+sci(r.N,1)+' cm⁻³'); if (dop.length) parts.push('Doping: '+dop.join('; ')+'.');
   const nums=[]; comp.analysis.items.forEach(it=>{ if (it.type==='schottky') nums.push('φ_B'+(it.ntype?'n':'p')+' = '+fmtE(it.phiB)+' eV, V_bi = '+fmtE(it.Vbi)+' V'+(it.W?', W = '+fmtLen(it.W):'')); if (it.type==='hetero'&&!it.homo) nums.push('ΔE_c = '+fmtE(Math.abs(it.dEc))+' eV, ΔE_v = '+fmtE(Math.abs(it.dEv))+' eV (Anderson)'); if (it.type==='hetero'&&it.homo) nums.push('V_bi = '+fmtE(Math.abs(it.Vbi))+' V, W = '+fmtLen(it.xA+it.xB)); if (it.type==='mos') nums.push('V_FB = '+fmtE(it.VFB)+' V, V_T = '+fmtE(it.VT)+' V'); });
   if (nums.length) parts.push(nums.join('; ')+'.');
@@ -2402,7 +2563,7 @@ function applyEntitlement(){ // the single place where the UI reads the entitlem
   renderLicensePanel(); updatePngInfo(); syncPresetMenu();
 }
 function exportDpi(){ const sel=$('#pngDpi'); const d=sel?+sel.value:600; return isPro() ? d : Math.min(d, FERMI_CONFIG.freeMaxDpi); }
-function exportSVGs(){ return currentSVGs().map(f=>({name:f.name, svg:stampSVG(f.svg)})); }
+function exportSVGs(){ const all=currentSVGs(); const a=$('#expAll'); const list=(a&&a.checked) ? all : [all[Math.min(figIdx[currentFig]||0, all.length-1)]]; return list.map(f=>({name:f.name, svg:stampSVG(f.svg)})); }
 function stampSVG(svg){ // free tier: append a 6.5 pt strip below the figure (same width, same background) carrying a 5 pt grey mark — never inside the figure's own area
   if (isPro()) return svg;
   const m=svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); if (!m) return svg;
@@ -2634,13 +2795,13 @@ function bindSimFields(div, Ly){
 }
 /* ---------- figures ---------- */
 function simFigures(){ // the SVGs shown in Simulate mode; all pass through exportSVGs() like the other figures
-  if (!sim.res) return [{name:'jv', svg:emptyFigure('Run a simulation (Simulate tab) to see the J–V curve, the band diagram at any bias and the carrier profiles')}];
+  if (!sim.res) return [{name:'jv', title:'J–V characteristics', svg:emptyFigure('Run a simulation (Simulate tab) to see the J–V curve, the band diagram at any bias and the carrier profiles')}];
   const S=simState(); const out=[]; const key=JSON.stringify([S.bias,S.biasLight,S.pvSign,S.showLog,S.showProfiles,state.fig,sim.stale]);
   if (sim.figCache.key===key) return sim.figCache.figs;
-  if (sim.res.light) out.push({name:'jv', svg:renderJV(state.fig, false)});
-  if (S.showLog || !sim.res.light) out.push({name:'jv-log', svg:renderJV(state.fig, true)});
-  const bc=simBandComp(S.bias, S.biasLight && !!sim.res.light); if (bc) out.push({name:'band-diagram-'+String(S.bias).replace('-','m')+'V', svg:renderBand(bc, Object.assign({}, state.fig, {mode:'bias', V:S.bias}))});
-  if (S.showProfiles){ const pr=renderProfiles(S.bias, S.biasLight && !!sim.res.light); if (pr) out.push({name:'profiles', svg:pr}); }
+  if (sim.res.light) out.push({name:'jv', title:'J–V characteristics', svg:renderJV(state.fig, false)});
+  if (S.showLog || !sim.res.light) out.push({name:'jv-log', title:'J–V, semilog', svg:renderJV(state.fig, true)});
+  const bc=simBandComp(S.bias, S.biasLight && !!sim.res.light); if (bc) out.push({name:'band-diagram-'+String(S.bias).replace('-','m')+'V', title:'Band diagram at V = '+S.bias+' V', svg:renderBand(bc, Object.assign({}, state.fig, {mode:'bias', V:S.bias}))});
+  if (S.showProfiles){ const pr=renderProfiles(S.bias, S.biasLight && !!sim.res.light); if (pr) out.push({name:'profiles', title:'Carrier profiles at V = '+S.bias+' V', svg:pr}); }
   sim.figCache={key, figs:out}; return out;
 }
 function emptyFigure(msg){ const C=figColors(state.fig.figTheme); const W=(state.fig.widthMm||85)/25.4*72, H=W*0.5; return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}pt" height="${H}pt" viewBox="0 0 ${W} ${H}" font-family="${FONTS[state.fig.font||'sans']}"><rect width="${W}" height="${H}" fill="${C.bg}"/><text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="${state.fig.fontSize||7}" fill="${C.ink2}">${esc(msg)}</text></svg>`; }
@@ -2656,59 +2817,81 @@ function simBandComp(V, light){
 function axisTicks(lo, hi, n){ const step=niceStep(hi-lo, n); const t0=Math.ceil(lo/step-1e-9)*step; const out=[]; for (let v=t0; v<=hi+1e-9; v+=step) out.push(+v.toFixed(10)); return {step, ticks:out}; }
 function fmtTick(v){ const s=Math.abs(v)<1e-12?'0':(Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=10?v.toFixed(1):Math.abs(v)>=1?v.toFixed(2):v.toFixed(3)); return s.includes('.')?s.replace(/0+$/,'').replace(/\.$/,''):s; }
 function pow10Label(e){ return '10^{'+e+'}'; }
-function plotFrame(fig, aspect){ const C=figColors(fig.figTheme); const fs=fig.fontSize||7, lw=fig.lineWt||1, lwa=Math.max(0.35, lw*0.5); const W=(fig.widthMm||85)/25.4*72, H=W*aspect; const font=FONTS[fig.font||'sans'];
-  const mL=fs*4.4, mR=fs*1.2, mT=fs*1.4, mB=fs*3.2; return {C, fs, lw, lwa, W, H, font, x0:mL, x1:W-mR, y0:mT, y1:H-mB}; }
+function plotFrame(fig, aspect, extraTop){ const C=figColors(fig.figTheme); const fs=fig.fontSize||7, lw=fig.lineWt||1, lwa=Math.max(0.35, lw*0.5); const W=(fig.widthMm||85)/25.4*72, H=W*aspect; const font=FONTS[fig.font||'sans'];
+  const tout=fig.pTicks==='out'; const mL=fs*(tout?5.7:5.2), mR=fs*1.6, mT=fs*1.3+(extraTop||0), mB=fs*(tout?3.9:3.4); return {C, fs, lw, lwa, W, H, font, x0:mL, x1:W-mR, y0:mT, y1:H-mB, tout}; }
+/* minor tick values between the major ticks of a linear axis */
+function minorVals(lo, hi, step){ const m=step/Math.pow(10, Math.floor(Math.log10(step)+1e-9)); const sub=Math.abs(m-2)<1e-6?4:5; const st=step/sub; const out=[]; for (let v=Math.ceil(lo/st-1e-9)*st; v<=hi+1e-9; v+=st){ const k=v/step; if (Math.abs(k-Math.round(k))>1e-6) out.push(v); } return out; }
+/* frame, ticks, tick labels and axis titles of one plot area. a = {x0,x1,y0,y1 (px), xt:[{p,lab}], yt:[{p,lab}], xm:[p], ym:[p], xlabel, ylabel, ylabelX}
+   Default is the usual journal style: closed box, ticks pointing inward on all four sides, minor ticks, no grid. */
+function plotAxes(F, fig, a){ const {C, fs, lwa}=F; const box=fig.pFrame!=='open', tout=F.tout; const tl=fs*0.5, ml=fs*0.28; const x0=a.x0??F.x0, x1=a.x1??F.x1, y0=a.y0??F.y0, y1=a.y1??F.y1; let o='';
+  const ln=(xa,ya,xb,yb,col,w,dash)=>`<line x1="${xa.toFixed(2)}" y1="${ya.toFixed(2)}" x2="${xb.toFixed(2)}" y2="${yb.toFixed(2)}" stroke="${col}" stroke-width="${w.toFixed(2)}"${dash?` stroke-dasharray="${dash}"`:''}/>`;
+  if (fig.pGrid){ for (const t of a.xt||[]) o+=ln(t.p,y0,t.p,y1,C.grid,lwa*0.7); for (const t of a.yt||[]) o+=ln(x0,t.p,x1,t.p,C.grid,lwa*0.7); }
+  const xtick=(p,len)=>{ let s=ln(p,y1,p,y1+(tout?len:-len),C.ink,lwa); if (box && !tout) s+=ln(p,y0,p,y0+len,C.ink,lwa); return s; };
+  const ytick=(p,len)=>{ let s=ln(x0,p,x0+(tout?-len:len),p,C.ink,lwa); if (box && !tout) s+=ln(x1,p,x1-len,p,C.ink,lwa); return s; };
+  for (const t of a.xt||[]){ o+=xtick(t.p, tl); if (t.lab!=null) o+=label(t.p, y1+fs*1.2+(tout?tl:0), t.lab, {anchor:'middle', fs:fs*0.9, fill:C.ink}); }
+  for (const t of a.yt||[]){ o+=ytick(t.p, tl); if (t.lab!=null) o+=label(x0-fs*0.5-(tout?tl:0), t.p+fs*0.32, t.lab, {anchor:'end', fs:fs*0.9, fill:C.ink}); }
+  if (fig.pMinor!==false){ for (const p of a.xm||[]) o+=xtick(p, ml); for (const p of a.ym||[]) o+=ytick(p, ml); }
+  o+= box ? `<rect x="${x0.toFixed(2)}" y="${y0.toFixed(2)}" width="${(x1-x0).toFixed(2)}" height="${(y1-y0).toFixed(2)}" fill="none" stroke="${C.ink}" stroke-width="${(lwa*1.2).toFixed(2)}"/>` : ln(x0,y1,x1,y1,C.ink,lwa*1.2)+ln(x0,y0,x0,y1,C.ink,lwa*1.2);
+  if (a.xlabel) o+=label((x0+x1)/2, y1+fs*2.75+(tout?tl:0), a.xlabel, {anchor:'middle', fs, fill:C.ink});
+  if (a.ylabel) o+=`<text transform="translate(${(fs*1.05).toFixed(2)} ${((y0+y1)/2).toFixed(2)}) rotate(-90)" text-anchor="middle" font-size="${(a.ylabelFs||fs)}" fill="${C.ink}">${T(a.ylabel)}</text>`;
+  return o; }
+function seriesCol(fig, which){ const C=figColors(fig.figTheme); let c= which==='light' ? (fig.pColLight||'#000000') : (fig.pColDark||'#0072b2'); if (fig.figTheme==='dark' && hexRGB(c).reduce((s,v)=>s+v,0)<150) c=C.ink; return c; }
 function renderJV(fig, logPanel){
-  const F=plotFrame(fig, 0.72); const {C, fs, lw, lwa, W, H, font} = F; const S=simState(); const res=sim.res; const src=sim.lumped||res; const sg=S.pvSign?-1:1;
-  const dark=src.dark?src.dark.filter(p=>p.converged||true):null, light=src.light||null; const kT=sim.P.kT;
+  const legendRow=fig.pLegend==='box'; const F=plotFrame(fig, Math.max(0.4, Math.min(1.4, +fig.pAspect||0.72)), legendRow?(fig.fontSize||7)*1.5:0); const {C, fs, lw, lwa, W, H, font} = F; const S=simState(); const res=sim.res; const src=sim.lumped||res; const sg=S.pvSign?-1:1;
+  const dark=src.dark||null, light=src.light||null; const kT=sim.P.kT;
   const uid='jv'+Math.random().toString(36).slice(2,7);
-  let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}"><title>${logPanel?'Dark current–voltage characteristic (semilog)':'Current–voltage characteristics'}: ${esc(state.stack.layers.map(l=>(mats[l.mat]||{}).name||l.mat).join(' / '))}</title>`;
+  let Vlo=Math.min(S.V0, 0), Vhi=Math.max(S.V1, 0); if (fig.pXauto==='manual' && isFinite(+fig.pXmin) && isFinite(+fig.pXmax) && +fig.pXmax>+fig.pXmin){ Vlo=+fig.pXmin; Vhi=+fig.pXmax; }
+  const X=v=>F.x0+(v-Vlo)/(Vhi-Vlo)*(F.x1-F.x0);
+  let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}" data-x0="${F.x0.toFixed(3)}" data-x1="${F.x1.toFixed(3)}" data-vlo="${Vlo}" data-vhi="${Vhi}"><title>${logPanel?'Dark current–voltage characteristic (semilog)':'Current–voltage characteristics'}: ${esc(state.stack.layers.map(l=>(mats[l.mat]||{}).name||l.mat).join(' / '))}</title>`;
   out+=`<rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/><defs><clipPath id="${uid}c"><rect x="${F.x0}" y="${F.y0}" width="${F.x1-F.x0}" height="${F.y1-F.y0}"/></clipPath></defs>`;
-  const Vlo=Math.min(S.V0, 0), Vhi=Math.max(S.V1, 0); const X=v=>F.x0+(v-Vlo)/(Vhi-Vlo)*(F.x1-F.x0);
   const lay=new Layout(fs, font, {x0:fs*0.15,y0:fs*0.15,x1:W-fs*0.15,y1:H-fs*0.15}, C, lwa);
-  const series=[];
+  const series=[]; const colD=seriesCol(fig,'dark'), colL=seriesCol(fig,'light'); const mk=!!fig.pMarkers;
+  const tx=axisTicks(Vlo, Vhi, 6); const xt=tx.ticks.map(v=>({p:X(v), lab:fmtTick(v)})), xm=minorVals(Vlo, Vhi, tx.step).map(X);
+  const xlabel=fig.pXlabel||'Voltage (V)';
+  const inX=p=>p.V>=Vlo-1e-9 && p.V<=Vhi+1e-9;
+  const legend=()=>{ let o='';
+    if (fig.pLegend==='none') return o;
+    if (legendRow){ let x=F.x1; const y=F.y0-fs*0.8; for (const s of series.slice().reverse()){ const w=textW(s.name, fs*0.9); o+=label(x-w, y+fs*0.32, s.name, {fs:fs*0.9, fill:C.ink}); o+=`<line x1="${(x-w-fs*2.6).toFixed(2)}" y1="${y.toFixed(2)}" x2="${(x-w-fs*0.5).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${s.col}" stroke-width="${lw}" stroke-linecap="round"/>`; if (mk) o+=`<circle cx="${(x-w-fs*1.55).toFixed(2)}" cy="${y.toFixed(2)}" r="${(fs*0.2).toFixed(2)}" fill="${s.col}"/>`; x-=w+fs*4.0; } return o; }
+    for (const s of series) lay.add({txt:s.name, fs:fs*0.9, fill:s.col, halo:C.bg, pri:1, home:{x:s.x,y:s.y}, cands:[{x:s.x-fs*0.3, y:s.y-fs*0.5, anchor:'end'},{x:s.x-fs*0.3, y:s.y+fs*1.1, anchor:'end'},{x:s.x+fs*0.3, y:s.y+fs*0.35, anchor:'start'}]});
+    return o; };
   if (!logPanel){
-    const yv=p=>sg*p.J*1e3; let lo=0, hi=0; if (light){ for (const p of light){ const y=yv(p); if (!isFinite(y)) continue; if (y<lo) lo=y; if (y>hi) hi=y; } }
-    if (light && sim.pv && isFinite(sim.pv.Jsc)){ const J=sim.pv.Jsc*1e3; lo=Math.min(lo, sg>0?-0.25*J:-1.15*J); hi=Math.max(hi, sg>0?1.15*J:0.25*J); } else if (dark){ const ys=dark.map(yv).filter(isFinite); lo=Math.min(...ys,0); hi=Math.max(...ys,0); }
-    if (!(hi>lo)){ lo=-1; hi=1; } const pad=(hi-lo)*0.06; lo-=pad; hi+=pad; const Y=y=>F.y1-(y-lo)/(hi-lo)*(F.y1-F.y0);
-    const tx=axisTicks(Vlo, Vhi, 6), ty=axisTicks(lo, hi, 6);
-    out+=`<line x1="${F.x0}" y1="${F.y1}" x2="${F.x1}" y2="${F.y1}" stroke="${C.ink}" stroke-width="${lwa*1.4}"/><line x1="${F.x0}" y1="${F.y0}" x2="${F.x0}" y2="${F.y1}" stroke="${C.ink}" stroke-width="${lwa*1.4}"/>`;
-    for (const v of tx.ticks){ const x=X(v); out+=`<line x1="${x.toFixed(2)}" y1="${F.y1}" x2="${x.toFixed(2)}" y2="${(F.y1-fs*0.4).toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa}"/>`+label(x, F.y1+fs*1.15, fmtTick(v), {anchor:'middle', fs:fs*0.9, fill:C.ink}); }
-    for (const v of ty.ticks){ const y=Y(v); out+=`<line x1="${F.x0}" y1="${y.toFixed(2)}" x2="${(F.x0+fs*0.4).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa}"/>`+label(F.x0-fs*0.45, y+fs*0.35, fmtTick(v), {anchor:'end', fs:fs*0.9, fill:C.ink}); }
-    if (lo<0&&hi>0) out+=`<line x1="${F.x0}" y1="${Y(0).toFixed(2)}" x2="${F.x1}" y2="${Y(0).toFixed(2)}" stroke="${C.grid}" stroke-width="${lwa}"/>`; if (Vlo<0&&Vhi>0) out+=`<line x1="${X(0).toFixed(2)}" y1="${F.y0}" x2="${X(0).toFixed(2)}" y2="${F.y1}" stroke="${C.grid}" stroke-width="${lwa}"/>`;
-    out+=label((F.x0+F.x1)/2, H-fs*0.5, 'V (V)', {anchor:'middle', fs, fill:C.ink})+`<text transform="translate(${(fs*1.0).toFixed(2)} ${((F.y0+F.y1)/2).toFixed(2)}) rotate(-90)" text-anchor="middle" font-size="${fs}" fill="${C.ink}">${T((S.pvSign?'J':'J')+' (mA cm^{-2})')}</text>`;
+    const yv=p=>sg*p.J*1e3; let lo=0, hi=0; if (light){ for (const p of light){ if (!inX(p)) continue; const y=yv(p); if (!isFinite(y)) continue; if (y<lo) lo=y; if (y>hi) hi=y; } }
+    if (light && sim.pv && isFinite(sim.pv.Jsc) && sim.pv.Jsc>0){ const J=sim.pv.Jsc*1e3; if (sim.pv.VocMissing){ lo=Math.min(lo, sg>0?-1.15*J:-0.2*J); hi=Math.max(hi, sg>0?0.2*J:1.15*J); } else { lo= sg>0?-1.12*J:-0.22*J; hi= sg>0?0.22*J:1.12*J; } }   // the power quadrant fills the plot, as in a solar cell paper else if (dark){ const ys=dark.filter(inX).map(yv).filter(isFinite); lo=Math.min(...ys,0); hi=Math.max(...ys,0); }
+    if (!(hi>lo)){ lo=-1; hi=1; } const pad=(hi-lo)*0.06; lo-=pad; hi+=pad;
+    if (fig.pYauto==='manual' && isFinite(+fig.pYmin) && isFinite(+fig.pYmax) && +fig.pYmax>+fig.pYmin){ lo=+fig.pYmin; hi=+fig.pYmax; }
+    const Y=y=>F.y1-(y-lo)/(hi-lo)*(F.y1-F.y0);
+    const ty=axisTicks(lo, hi, 6);
+    out+=plotAxes(F, fig, {xt, xm, yt:ty.ticks.map(v=>({p:Y(v), lab:fmtTick(v)})), ym:minorVals(lo, hi, ty.step).map(Y), xlabel, ylabel:fig.pYlabel||'Current density (mA cm^{-2})'});
+    if (lo<0&&hi>0) out+=`<line x1="${F.x0}" y1="${Y(0).toFixed(2)}" x2="${F.x1}" y2="${Y(0).toFixed(2)}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`; if (Vlo<0&&Vhi>0) out+=`<line x1="${X(0).toFixed(2)}" y1="${F.y0}" x2="${X(0).toFixed(2)}" y2="${F.y1}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`;
     out+=`<g clip-path="url(#${uid}c)">`;
-    const draw=(pts, col, name, dash)=>{ if (!pts) return; const P=pts.filter(p=>isFinite(p.J)).map(p=>[X(p.V), Y(yv(p))]); out+=`<polyline points="${P.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round" stroke-linecap="round" ${dash?'stroke-dasharray="'+dash+'"':''}/>`; lay.line(P,'band');
+    const draw=(pts, col, name)=>{ if (!pts) return; const P=pts.filter(p=>isFinite(p.J)).map(p=>[X(p.V), Y(yv(p))]); if (!P.length) return; out+=`<polyline points="${P.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round" stroke-linecap="round"/>`; lay.line(P,'band');
+      if (mk) for (const q of P) out+=`<circle cx="${q[0].toFixed(2)}" cy="${q[1].toFixed(2)}" r="${(fs*0.17).toFixed(2)}" fill="${col}"/>`;
       for (const p of pts) if (!p.converged) out+=`<circle cx="${X(p.V).toFixed(2)}" cy="${Y(yv(p)).toFixed(2)}" r="${fs*0.22}" fill="${C.bg}" stroke="${col}" stroke-width="${lwa}"/>`;
-      // direct label at the point inside the frame nearest the right edge
-      const inside=P.filter(q=>q[1]>=F.y0&&q[1]<=F.y1); const e=inside.length?inside[inside.length-1]:P[P.length-1]; series.push({name, col, x:e[0], y:e[1]}); };
-    draw(dark, PAL.blue, 'dark'); draw(light, C.ink, 'light');
-    if (light && sim.pv && !sim.pv.VocMissing){ const fs_=sim.pv.fs; out+=`<circle cx="${X(fs_*sim.pv.Vmp).toFixed(2)}" cy="${Y(sg*-sim.pv.Jmp*1e3).toFixed(2)}" r="${fs*0.3}" fill="${C.bg}" stroke="${C.ink}" stroke-width="${lwa*1.2}"/>`; lay.rect(X(fs_*sim.pv.Vmp)-fs*0.35, Y(sg*-sim.pv.Jmp*1e3)-fs*0.35, X(fs_*sim.pv.Vmp)+fs*0.35, Y(sg*-sim.pv.Jmp*1e3)+fs*0.35, 'mark'); }
+      const inside=P.filter(q=>q[1]>=F.y0&&q[1]<=F.y1&&q[0]>=F.x0&&q[0]<=F.x1); const e=inside.length?inside[inside.length-1]:P[P.length-1]; series.push({name, col, x:e[0], y:e[1]}); };
+    draw(dark, colD, 'Dark'); draw(light, colL, 'Light');
+    if (fig.pShowMPP!==false && light && sim.pv && !sim.pv.VocMissing){ const fs_=sim.pv.fs; out+=`<circle cx="${X(fs_*sim.pv.Vmp).toFixed(2)}" cy="${Y(sg*-sim.pv.Jmp*1e3).toFixed(2)}" r="${fs*0.3}" fill="${C.bg}" stroke="${colL}" stroke-width="${lwa*1.2}"/>`; lay.rect(X(fs_*sim.pv.Vmp)-fs*0.35, Y(sg*-sim.pv.Jmp*1e3)-fs*0.35, X(fs_*sim.pv.Vmp)+fs*0.35, Y(sg*-sim.pv.Jmp*1e3)+fs*0.35, 'mark'); }
     out+=`</g>`;
-    for (const s of series) lay.add({txt:s.name, fs:fs*0.9, fill:C.ink, halo:C.bg, pri:1, home:{x:s.x,y:s.y}, cands:[{x:s.x-fs*0.3, y:s.y-fs*0.5, anchor:'end'},{x:s.x-fs*0.3, y:s.y+fs*1.1, anchor:'end'},{x:s.x+fs*0.3, y:s.y+fs*0.35, anchor:'start'}]});
-    if (light && sim.pv){ const pv=sim.pv; const lines=['J_{sc} = '+(pv.Jsc*1e3).toFixed(2)+' mA cm^{-2}'].concat(pv.VocMissing?['V_{oc} > '+simFixed(pv.Vend,2)+' V']:['V_{oc} = '+pv.Voc.toFixed(3)+' V','FF = '+pv.FF.toFixed(3),'PCE = '+(pv.PCE*100).toFixed(2)+' %']);
-      const bx = sg>0 ? F.x0+fs*0.6 : F.x0+fs*0.6, by0 = sg>0 ? F.y0+fs*1.2 : F.y1-fs*(0.6+1.25*(lines.length-1)); lines.forEach((t,i)=>{ out+=lay.fix(t, {x:bx, y:by0+i*fs*1.25, anchor:'start'}, fs*0.9, {fill:C.ink, halo:C.bg}); }); }
+    out+=legend();
+    if (fig.pShowPV!==false && light && sim.pv){ const pv=sim.pv; const lines=['J_{sc} = '+(pv.Jsc*1e3).toFixed(2)+' mA cm^{-2}'].concat(pv.VocMissing?['V_{oc} > '+simFixed(pv.Vend,2)+' V']:['V_{oc} = '+pv.Voc.toFixed(3)+' V','FF = '+(pv.FF*100).toFixed(1)+' %','PCE = '+(pv.PCE*100).toFixed(2)+' %']);
+      const bx=Math.max(F.x0, Vlo<0&&Vhi>0?X(0):F.x0)+fs*1.0, z0=(lo<0&&hi>0)?Y(0):null, by0 = sg>0 ? Math.max(F.y0+fs*1.6, z0==null?0:z0+fs*1.7) : Math.min(F.y1-fs*1.0, z0==null?1e9:z0-fs*1.0)-fs*1.3*(lines.length-1); lines.forEach((t,i)=>{ out+=lay.fix(t, {x:bx, y:by0+i*fs*1.3, anchor:'start'}, fs*0.9, {fill:C.ink, halo:C.bg}); }); }
     out+=lay.resolve();
   } else {
-    const pts=(arr)=>arr?arr.filter(p=>isFinite(p.J)&&p.J!==0).map(p=>({V:p.V, y:Math.log10(Math.abs(p.J)*1e3), conv:p.converged})):[];
+    const pts=(arr)=>arr?arr.filter(p=>isFinite(p.J)&&p.J!==0&&inX(p)).map(p=>({V:p.V, y:Math.log10(Math.abs(p.J)*1e3), conv:p.converged})):[];
     const D=pts(dark), Lg=light?pts(light):[]; const all=D.concat(Lg); if (!all.length) return emptyFigure('no dark curve');
     let lo=Math.floor(Math.min(...all.map(p=>p.y))), hi=Math.ceil(Math.max(...all.map(p=>p.y))); if (hi-lo<2) hi=lo+2; const Y=y=>F.y1-(y-lo)/(hi-lo)*(F.y1-F.y0);
-    const tx=axisTicks(Vlo, Vhi, 6); const stepD=Math.max(1, Math.ceil((hi-lo)/7));
-    out+=`<line x1="${F.x0}" y1="${F.y1}" x2="${F.x1}" y2="${F.y1}" stroke="${C.ink}" stroke-width="${lwa*1.4}"/><line x1="${F.x0}" y1="${F.y0}" x2="${F.x0}" y2="${F.y1}" stroke="${C.ink}" stroke-width="${lwa*1.4}"/>`;
-    for (const v of tx.ticks){ const x=X(v); out+=`<line x1="${x.toFixed(2)}" y1="${F.y1}" x2="${x.toFixed(2)}" y2="${(F.y1-fs*0.4).toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa}"/>`+label(x, F.y1+fs*1.15, fmtTick(v), {anchor:'middle', fs:fs*0.9, fill:C.ink}); }
-    for (let e=lo; e<=hi; e+=stepD){ const y=Y(e); out+=`<line x1="${F.x0}" y1="${y.toFixed(2)}" x2="${(F.x0+fs*0.4).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa}"/>`+label(F.x0-fs*0.45, y+fs*0.35, pow10Label(e), {anchor:'end', fs:fs*0.9, fill:C.ink}); }
-    if (Vlo<0&&Vhi>0) out+=`<line x1="${X(0).toFixed(2)}" y1="${F.y0}" x2="${X(0).toFixed(2)}" y2="${F.y1}" stroke="${C.grid}" stroke-width="${lwa}"/>`;
-    out+=label((F.x0+F.x1)/2, H-fs*0.5, 'V (V)', {anchor:'middle', fs, fill:C.ink})+`<text transform="translate(${(fs*1.0).toFixed(2)} ${((F.y0+F.y1)/2).toFixed(2)}) rotate(-90)" text-anchor="middle" font-size="${fs}" fill="${C.ink}">${T('|J| (mA cm^{-2})')}</text>`;
+    const stepD=Math.max(1, Math.ceil((hi-lo)/7)); const yt=[]; for (let e=lo; e<=hi; e+=stepD) yt.push({p:Y(e), lab:pow10Label(e)});
+    const ym=[]; if (stepD===1 && hi-lo<=8){ for (let e=lo; e<hi; e++) for (let m=2; m<=9; m++) ym.push(Y(e+Math.log10(m))); } else if (stepD>1){ for (let e=lo; e<=hi; e++) if ((e-lo)%stepD) ym.push(Y(e)); }
+    out+=plotAxes(F, fig, {xt, xm, yt, ym, xlabel, ylabel:'|J| (mA cm^{-2})'});
+    if (Vlo<0&&Vhi>0) out+=`<line x1="${X(0).toFixed(2)}" y1="${F.y0}" x2="${X(0).toFixed(2)}" y2="${F.y1}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`;
     out+=`<g clip-path="url(#${uid}c)">`;
-    const draw=(P, col, name)=>{ if (!P.length) return; const fwd=P.filter(p=>p.V>=0), rev=P.filter(p=>p.V<=0); for (const seg of [rev,fwd]){ if (seg.length<2) continue; const pp=seg.map(p=>[X(p.V), Y(p.y)]); out+=`<polyline points="${pp.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round"/>`; lay.line(pp,'band'); }
+    const draw=(P, col, name)=>{ if (!P.length) return; const fwd=P.filter(p=>p.V>=0), rev=P.filter(p=>p.V<=0); for (const seg of [rev,fwd]){ if (seg.length<2) continue; const pp=seg.map(p=>[X(p.V), Y(p.y)]); out+=`<polyline points="${pp.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round"/>`; lay.line(pp,'band'); if (mk) for (const q of pp) out+=`<circle cx="${q[0].toFixed(2)}" cy="${q[1].toFixed(2)}" r="${(fs*0.17).toFixed(2)}" fill="${col}"/>`; }
       for (const p of P) if (!p.conv) out+=`<circle cx="${X(p.V).toFixed(2)}" cy="${Y(p.y).toFixed(2)}" r="${fs*0.22}" fill="${C.bg}" stroke="${col}" stroke-width="${lwa}"/>`; const e=P[P.length-1]; series.push({name, col, x:X(e.V), y:Y(e.y)}); };
-    draw(D, PAL.blue, 'dark'); if (Lg.length) draw(Lg, C.ink, 'light');
-    // fitted exponentials of the two windows
-    if (sim.fit){ const fs_=sim.fit.fs; for (const [w,nm] of [[sim.fit.mid,'diffusion'],[sim.fit.low,'low bias']]){ if (!w) continue; const a=fs_*w.V0, b=fs_*w.V1; const y=(V)=>Math.log10(w.J0*Math.exp(fs_*V/(w.n*kT))*1e3); const ext=(b-a)*0.35; const V1=a-ext*fs_, V2=b+ext*fs_;
+    draw(D, colD, 'Dark'); if (Lg.length) draw(Lg, colL, 'Light');
+    if (fig.pShowFit!==false && sim.fit){ const fs_=sim.fit.fs; for (const w of [sim.fit.mid, sim.fit.low]){ if (!w) continue; const a=fs_*w.V0, b=fs_*w.V1; const y=(V)=>Math.log10(w.J0*Math.exp(fs_*V/(w.n*kT))*1e3); const ext=(b-a)*0.35; const V1=a-ext*fs_, V2=b+ext*fs_;
         out+=`<line x1="${X(V1).toFixed(2)}" y1="${Y(y(V1)).toFixed(2)}" x2="${X(V2).toFixed(2)}" y2="${Y(y(V2)).toFixed(2)}" stroke="${C.ink2}" stroke-width="${lwa}" stroke-dasharray="2 1.5"/>`;
         lay.add({txt:'n = '+w.n.toFixed(2)+', J_0 = '+sciU(w.J0)+' A cm^{-2}', fs:fs*0.8, fill:C.ink2, halo:C.bg, pri:2, home:{x:X(b), y:Y(y(b))}, cands:[{x:X(b)+fs*0.4, y:Y(y(b))+fs*0.3, anchor:'start'},{x:X(a)-fs*0.4, y:Y(y(a))+fs*0.3, anchor:'end'},{x:X(b)+fs*0.4, y:Y(y(b))-fs*0.6, anchor:'start'}]}); } }
     out+=`</g>`;
-    for (const s of series) lay.add({txt:s.name, fs:fs*0.9, fill:C.ink, halo:C.bg, pri:1, home:{x:s.x,y:s.y}, cands:[{x:s.x-fs*0.3, y:s.y-fs*0.5, anchor:'end'},{x:s.x-fs*0.3, y:s.y+fs*1.1, anchor:'end'},{x:s.x+fs*0.3, y:s.y+fs*0.35, anchor:'start'}]});
+    out+=legend();
     out+=lay.resolve();
   }
   return out+`</svg>`;
@@ -2716,7 +2899,7 @@ function renderJV(fig, logPanel){
 function renderProfiles(V, light){
   const st=simStateAt(V, light); if (!st) return null; const P=sim.P; const pr=FermiDD.profiles(P, st, light?sim.res.Ge:null); const fig=state.fig;
   const C=figColors(fig.figTheme); const fs=fig.fontSize||7, lw=fig.lineWt||1, lwa=Math.max(0.35, lw*0.5); const W=(fig.widthMm||85)/25.4*72; const font=FONTS[fig.font||'sans'];
-  const panels=3, ph=W*0.26, gap=fs*1.3, mT=fs*2.6, mB=fs*2.6, mL=fs*4.4, mR=fs*1.0; const H=mT+panels*ph+(panels-1)*gap+mB;
+  const PF=plotFrame(fig, 1); const panels=3, ph=W*0.26, gap=fs*1.3, mT=fs*2.6, mB=fs*2.6, mL=PF.x0, mR=fs*1.6; const H=mT+panels*ph+(panels-1)*gap+mB;
   const gamma=fig.gamma==null?0.5:fig.gamma; const Ls=P.layers.filter(L=>L.kind!=='metal'); const wsum=Ls.reduce((s,L)=>s+Math.pow(Math.max(L.tphys,1e-7)*1e7,gamma),0)||1; const pw=W-mL-mR;
   let xc=mL; const Xl={}; for (const L of Ls){ const w=pw*Math.pow(Math.max(L.tphys,1e-7)*1e7,gamma)/wsum; Xl[L.i]={X0:xc, Xw:w, xa:P.x[L.ns], xb:P.x[L.ne]}; xc+=w; }
   const X=(k)=>{ let L=P.layers[P.Rn[k]]; if (L.kind==='metal') L=P.layers[P.Ln[k]]; const m=Xl[L.i]; if (!m) return mL; const t=m.xb>m.xa?(P.x[k]-m.xa)/(m.xb-m.xa):0; return m.X0+t*m.Xw; };
@@ -2729,13 +2912,12 @@ function renderProfiles(V, light){
   const panel=(idx, title, series, ylab, logY, floor)=>{ const y0=mT+idx*(ph+gap), y1=y0+ph; let lo=Infinity, hi=-Infinity; const data=series.map(s=>{ const pts=[]; for (let k=0;k<N;k++){ if (!semiNode(k)) continue; let v=s.arr[k]; if (logY){ if (!(v>floor)) continue; v=Math.log10(v); } if (!isFinite(v)) continue; pts.push([X(k), v]); if (v<lo) lo=v; if (v>hi) hi=v; } return {s, pts}; });
     if (!isFinite(lo)){ lo=0; hi=1; } if (logY){ lo=Math.floor(lo); hi=Math.ceil(hi); if (hi-lo<2) hi=lo+2; if (hi-lo>24) lo=hi-24; } else { const pad=(hi-lo)*0.1||0.05; lo-=pad; hi+=pad; }
     const Y=v=>y1-(v-lo)/(hi-lo)*ph;
-    out+=`<line x1="${mL}" y1="${y1.toFixed(2)}" x2="${(W-mR).toFixed(2)}" y2="${y1.toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa*1.4}"/><line x1="${mL}" y1="${y0.toFixed(2)}" x2="${mL}" y2="${y1.toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa*1.4}"/>`;
-    if (logY){ const stp=Math.max(1, Math.ceil((hi-lo)/5)); for (let e=lo; e<=hi; e+=stp){ const y=Y(e); out+=`<line x1="${mL}" y1="${y.toFixed(2)}" x2="${(mL+fs*0.4).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa}"/>`+label(mL-fs*0.45, y+fs*0.35, pow10Label(e), {anchor:'end', fs:fs*0.85, fill:C.ink}); } }
-    else { const tk=axisTicks(lo, hi, 4); for (const v of tk.ticks){ const y=Y(v); out+=`<line x1="${mL}" y1="${y.toFixed(2)}" x2="${(mL+fs*0.4).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${C.ink}" stroke-width="${lwa}"/>`+label(mL-fs*0.45, y+fs*0.35, fmtTick(v), {anchor:'end', fs:fs*0.85, fill:C.ink}); } }
-    out+=`<text transform="translate(${(fs*1.0).toFixed(2)} ${((y0+y1)/2).toFixed(2)}) rotate(-90)" text-anchor="middle" font-size="${fs*0.9}" fill="${C.ink}">${T(ylab)}</text>`;
+    const yt=[], ym=[]; if (logY){ const stp=Math.max(1, Math.ceil((hi-lo)/5)); for (let e=lo; e<=hi; e++){ if ((e-lo)%stp===0) yt.push({p:Y(e), lab:pow10Label(e)}); else ym.push(Y(e)); } }
+    else { const tk=axisTicks(lo, hi, 4); for (const v of tk.ticks) yt.push({p:Y(v), lab:fmtTick(v)}); for (const v of minorVals(lo, hi, tk.step)) ym.push(Y(v)); }
+    out+=plotAxes(PF, fig, {x0:mL, x1:W-mR, y0, y1, yt, ym, ylabel:ylab, ylabelFs:fs*0.9});
     for (const d of data){ if (d.pts.length<2) continue; const pp=d.pts.map(q=>[q[0], Math.min(y1, Math.max(y0, Y(q[1])))]); out+=`<polyline points="${pp.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${d.s.col}" stroke-width="${d.s.dash?lw*0.8:lw}" stroke-linejoin="round" ${d.s.dash?'stroke-dasharray="'+d.s.dash+'"':''}/>`; lay.line(pp,'band');
       const e=pp[pp.length-1], m=pp[Math.floor(pp.length*0.5)]; lay.add({txt:d.s.name, fs:fs*0.85, fill:C.ink, halo:C.bg, pri:1, home:{x:e[0],y:e[1]}, cands:[{x:e[0]-fs*0.3,y:e[1]-fs*0.4,anchor:'end'},{x:e[0]-fs*0.3,y:e[1]+fs*1.0,anchor:'end'},{x:m[0],y:m[1]-fs*0.4,anchor:'middle'},{x:m[0],y:m[1]+fs*1.0,anchor:'middle'}]}); }
-    out+=lay.fix(title, {x:W-mR, y:y0+fs*0.9, anchor:'end'}, fs*0.8, {fill:C.ink2, italic:true}); };
+  };
   const qfls=new Float64Array(N); for (let k=0;k<N;k++) qfls[k]=pr.Efn[k]-pr.Efp[k];
   panel(0, 'carrier densities', [{arr:pr.n, col:PAL.blue, name:'n'},{arr:pr.p, col:PAL.orange, name:'p'}], 'n, p (cm^{-3})', true, 1);
   const rs=[{arr:pr.Rsrh, col:PAL.blue, name:'R_{SRH}'},{arr:pr.Rrad, col:PAL.orange, name:'R_{rad}'},{arr:pr.Raug, col:PAL.aqua, name:'R_{Auger}'}]; if (light) rs.unshift({arr:pr.G, col:C.ink, name:'G', dash:'3 1.5'});
@@ -2747,15 +2929,15 @@ function renderProfiles(V, light){
 function simCaption(){
   if (!sim.res) return ''; const S=simState(); const pv=sim.pv; const parts=[];
   const stack=state.stack.layers.map(l=>(mats[l.mat]||{}).name||l.mat).join('/');
-  parts.push('Simulated current–voltage characteristics of the '+stack+' stack ('+(sim.res.light?(S.light.model==='bl'?'AM1.5G, '+S.light.suns+' sun, Beer–Lambert absorption, light from the '+S.light.side:'uniform generation G = '+sci(S.light.G,2)+' cm⁻³ s⁻¹')+'; dark curve in blue':'dark')+'), from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, Scharfetter–Gummel discretization, SRH/radiative/Auger recombination).');
+  parts.push('Simulated current–voltage characteristics of the '+stack+' stack ('+(sim.res.light?(S.light.model==='bl'?'AM1.5G, '+S.light.suns+' sun, Beer–Lambert absorption, light from the '+S.light.side:'uniform generation G = '+sci(S.light.G,2)+' cm⁻³ s⁻¹')+'; the dark curve is also shown':'dark')+'), from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, Scharfetter–Gummel discretization, SRH/radiative/Auger recombination).');
   if (pv && !pv.VocMissing) parts.push('J_sc = '+(pv.Jsc*1e3).toFixed(2)+' mA cm⁻², V_oc = '+pv.Voc.toFixed(3)+' V, FF = '+pv.FF.toFixed(3)+', PCE = '+(pv.PCE*100).toFixed(2)+' % (Shockley–Queisser limit for E_g = '+sim.sq.Eg.toFixed(2)+' eV: '+(sim.sq.PCE*100).toFixed(1)+' %).');
   if (sim.fit && sim.fit.mid) parts.push('Dark ideality factor n = '+sim.fit.mid.n.toFixed(2)+' with J₀ = '+sci(sim.fit.mid.J0,2)+' A cm⁻² over '+sim.fit.mid.V0.toFixed(2)+'–'+sim.fit.mid.V1.toFixed(2)+' V.');
   parts.push('Band diagram and profiles at V = '+S.bias+' V'+(S.biasLight&&sim.res.light?' under illumination':'')+'. Contacts: '+['left','right'].map(s=>s+' '+(sim.P[s==='left'?'cL':'cR'].model)).join(', ')+'. No optical interference, no mobile ions, no Fermi–Dirac statistics.');
   return parts.join(' ');
 }
 /* pointer read-out of V and J on the J–V preview (preview only; the exported SVG is untouched) */
-function simHover(e){ const note=$('#previewNote'); if (!note||currentFig!=='sim'||!sim.res) return; const svg=e.target.closest('svg'); if (!svg||!svg.querySelector('title')||!/Current–voltage/.test(svg.querySelector('title').textContent)) return;
-  const r=svg.getBoundingClientRect(); const vb=svg.viewBox.baseVal; const px=(e.clientX-r.left)/r.width*vb.width; const S=simState(); const fs=state.fig.fontSize||7; const x0=fs*4.4, x1=vb.width-fs*1.2; const Vlo=Math.min(S.V0,0), Vhi=Math.max(S.V1,0); const V=Vlo+(px-x0)/(x1-x0)*(Vhi-Vlo); if (V<Vlo||V>Vhi) return;
+function simHover(e){ const note=$('#previewNote'); if (!note||currentFig!=='sim'||!sim.res) return; const svg=e.target.closest('svg'); if (!svg||svg.dataset.vlo==null) return;
+  const r=svg.getBoundingClientRect(); const vb=svg.viewBox.baseVal; const px=(e.clientX-r.left)/r.width*vb.width; const x0=+svg.dataset.x0, x1=+svg.dataset.x1, Vlo=+svg.dataset.vlo, Vhi=+svg.dataset.vhi; const V=Vlo+(px-x0)/(x1-x0)*(Vhi-Vlo); if (V<Vlo||V>Vhi) return;
   const at=(pts)=>{ if (!pts) return null; let b=null; for (const p of pts) if (!b||Math.abs(p.V-V)<Math.abs(b.V-V)) b=p; return b; }; const l=at(sim.res.light), d=at(sim.res.dark);
   note.textContent='V = '+V.toFixed(3)+' V'+(l?' · light J = '+(l.J*1e3).toFixed(3)+' mA cm⁻²':'')+(d?' · dark J = '+sci(d.J,2)+' A cm⁻²':''); }
 
@@ -2775,15 +2957,22 @@ function init(){
   $('#resetMatsBtn').addEventListener('click', ()=>{ if (confirm('Reset all materials to library defaults? Custom materials will be removed.')){ try{localStorage.removeItem('fermi.materials');}catch(e){} mats=loadMats(); renderMaterials(); renderLayers(); recompute(); } });
   // tabs
   $$('.pane-tabs').forEach(tabs=>{ tabs.addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if (!b) return; $$('[data-tab]',tabs).forEach(x=>x.setAttribute('aria-selected', x===b?'true':'false')); const pane=tabs.parentElement; $$('.pane-body',pane).forEach(x=>x.hidden = x.id!=='tab-'+b.dataset.tab); }); });
-  $('#figSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-fig]'); if (!b) return; currentFig=b.dataset.fig; $$('[data-fig]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); renderPreview(); zoomFit(); if (currentFig==='sim'){ renderSimStatus(); $$('#paneRight [data-tab]').forEach(x=>x.setAttribute('aria-selected', x.dataset.tab==='simulate'?'true':'false')); $$('#paneRight .pane-body').forEach(x=>x.hidden = x.id!=='tab-simulate'); } else recompute(); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
+  $('#figSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-fig]'); if (!b) return; currentFig=b.dataset.fig; $$('[data-fig]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); view.auto=true; renderPreview(); syncPanel($('#tab-figure')); if (currentFig==='sim'){ renderSimStatus(); $$('#paneRight [data-tab]').forEach(x=>x.setAttribute('aria-selected', x.dataset.tab==='simulate'?'true':'false')); $$('#paneRight .pane-body').forEach(x=>x.hidden = x.id!=='tab-simulate'); } else recompute(); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
   $$('.mobile-nav button').forEach(b=>b.addEventListener('click', ()=>{ $$('.mobile-nav button').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); ['paneLeft','paneCenter','paneRight'].forEach(id=>$('#'+id).dataset.active = (id===b.dataset.pane)?'true':'false'); if (b.dataset.pane==='paneCenter') setTimeout(zoomFit,30); }));
   // zoom / pan
   $('#zoomIn').addEventListener('click', ()=>zoomBy(1.25)); $('#zoomOut').addEventListener('click', ()=>zoomBy(0.8)); $('#zoomFit').addEventListener('click', zoomFit);
   const pv=$('#preview'); let drag=null;
-  pv.addEventListener('pointerdown', e=>{ if (e.button!==0) return; drag={x:e.clientX,y:e.clientY,tx:view.tx,ty:view.ty}; pv.classList.add('dragging'); pv.setPointerCapture(e.pointerId); });
-  pv.addEventListener('pointermove', e=>{ if (!drag) return; view.tx=drag.tx+(e.clientX-drag.x); view.ty=drag.ty+(e.clientY-drag.y); applyView(); });
-  pv.addEventListener('pointerup', ()=>{ drag=null; pv.classList.remove('dragging'); }); pv.addEventListener('pointercancel', ()=>{ drag=null; pv.classList.remove('dragging'); });
-  pv.addEventListener('wheel', e=>{ if (e.ctrlKey||e.metaKey){ e.preventDefault(); const r=pv.getBoundingClientRect(); zoomBy(e.deltaY<0?1.1:0.9, e.clientX-r.left, e.clientY-r.top); } else { view.tx-=e.deltaX; view.ty-=e.deltaY; applyView(); } }, {passive:false});
+  const clamp=(v,a,b)=>Math.max(a, Math.min(b, v));
+  pv.addEventListener('pointerdown', e=>{ if (e.button!==0 || e.target.closest('.navbtn,.figbar')) return; const rot=currentFig==='d3' && !e.shiftKey;
+    drag={x:e.clientX, y:e.clientY, tx:view.tx, ty:view.ty, rot, az:+state.xs.d3Az||0, el:+state.xs.d3El||26, prev:rot?snapshot():null, moved:false}; pv.classList.add('dragging'); pv.setPointerCapture(e.pointerId); });
+  pv.addEventListener('pointermove', e=>{ if (!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if (Math.abs(dx)+Math.abs(dy)<2 && !drag.moved) return; drag.moved=true;
+    if (drag.rot){ state.xs.d3Az=Math.round(clamp(drag.az+dx*0.4, -80, 80)); state.xs.d3El=Math.round(clamp(drag.el+dy*0.3, 8, 80)); renderPreview(); }
+    else { view.tx=drag.tx+dx; view.ty=drag.ty+dy; view.auto=false; applyView(); } });
+  const endDrag=()=>{ if (drag && drag.rot && drag.moved){ commit({prev:drag.prev}); syncPanel($('#tab-figure')); } drag=null; pv.classList.remove('dragging'); };
+  pv.addEventListener('pointerup', endDrag); pv.addEventListener('pointercancel', endDrag);
+  $('#figPrev').addEventListener('click', ()=>showFig(-1, true)); $('#figNext').addEventListener('click', ()=>showFig(1, true));
+  $('#figBar').addEventListener('click', e=>{ const b=e.target.closest('[data-go]'); if (b) showFig(+b.dataset.go, false); });
+  pv.addEventListener('wheel', e=>{ if (e.ctrlKey||e.metaKey){ e.preventDefault(); const r=pv.getBoundingClientRect(); zoomBy(e.deltaY<0?1.1:0.9, e.clientX-r.left, e.clientY-r.top); } else { view.tx-=e.deltaX; view.ty-=e.deltaY; view.auto=false; applyView(); } }, {passive:false});
   // theme
   const applyTheme=t=>{ if (t) document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme'); };
   // NSDG edition: the interface follows the light or dark theme chosen on the group website
@@ -2801,8 +2990,9 @@ function init(){
     if (mod && e.key.toLowerCase()==='y'){ e.preventDefault(); redo(); return; }
     if (mod && (e.key==='='||e.key==='+')){ e.preventDefault(); zoomBy(1.25); return; } if (mod && e.key==='-'){ e.preventDefault(); zoomBy(0.8); return; } if (mod && e.key==='0'){ e.preventDefault(); zoomFit(); return; }
     if (e.altKey && (e.key==='ArrowUp'||e.key==='ArrowDown') && selectedLayer){ e.preventDefault(); const i=state.stack.layers.findIndex(l=>l.id===selectedLayer); if (i>=0) moveLayer(i, e.key==='ArrowUp'?-1:1); return; }
+    if (!typing && !mod && !e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight') && shownFigs.length>1){ e.preventDefault(); showFig(e.key==='ArrowLeft'?-1:1, true); return; }
     if (e.key==='Escape') $('#helpModal').removeAttribute('open'); });
-  window.addEventListener('resize', ()=>{ clearTimeout(window._rz); window._rz=setTimeout(zoomFit,120); });
+  window.addEventListener('resize', ()=>{ clearTimeout(window._rz); window._rz=setTimeout(()=>{ if (view.auto) zoomFit(); },120); });
   renderFigurePanel(); renderExportPanel(); renderSimPanel(); recompute(); renderLayers(); renderMaterials(); updateUndo();
   $('#preview').addEventListener('pointermove', simHover);
   loadLicense();   // async: re-verifies a stored key offline and unlocks Pro when it is genuine and unexpired
