@@ -23,7 +23,7 @@
           <button type="button" class="nav-drop-btn{% if in_tools %} current{% endif %}" aria-expanded="false" aria-controls="tools-menu">Tools <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <div class="nav-drop-menu" id="tools-menu">
             {% for t in site.data.tools %}{% assign first = t.url | slice: 0 %}
-            <a href="{% if first == '/' %}{{ t.url | relative_url }}{% else %}{{ t.url }}{% endif %}"{% if here == t.url %} aria-current="page"{% endif %}>{% if t.logo %}{% include tool-logo.html name=t.logo %}{% endif %}<span class="nav-drop-text"><span class="nav-drop-name">{{ t.name }}</span>{% if t.note %}<span class="nav-drop-note">{{ t.note }}</span>{% endif %}</span></a>
+            <a href="{% if first == '/' %}{{ t.url | relative_url }}{% else %}{{ t.url }}{% endif %}"{% if here == t.url %} aria-current="page"{% endif %}><span class="nav-drop-id">{% if t.logo %}{% include tool-logo.html name=t.logo %}{% endif %}<span class="nav-drop-name">{{ t.name }}</span></span>{% if t.note %}<span class="nav-drop-note">{{ t.note }}</span>{% endif %}</a>
             {% endfor %}
           </div>
         </div>
