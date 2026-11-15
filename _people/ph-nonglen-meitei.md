@@ -4,7 +4,7 @@ role: "Visvesvaraya Postdoctoral Fellow"
 photo: /assets/img/people/ph-nonglen-meitei.jpg
 category: current
 order: 5
-topic: "Memristor-based neuromorphic olfactory system"
+topic: "Biocompatible Crossbar Memristor"
 email: "nonglenm@iitg.ac.in"
 areas: [memristors]
 links:
@@ -17,6 +17,4 @@ education:
   - "B.Tech, Electronics and Communication Engineering, Sri Siddhartha Institute of Technology, Tumkur"
 ---
 
-Nonglen works on a neuromorphic olfactory system, an artificial sense of smell in which memristors process signals from gas sensors in a manner inspired by biological neural networks.
-
-*A detailed profile with selected results and publications will be added.*
+My research focuses on resistive random-access memory (ReRAM), flexible electronics, and memristive crossbar arrays for next-generation memory and in-memory computing. I work on bio-derived materials such as chitosan, with particular interest in device fabrication, resistive-switching behavior, crossbar scaling, variability, sneak-path effects, and readout reliability. My work combines experimental device characterization with circuit-level modeling to understand the practical limits of scalable and flexible memory systems.
