@@ -2140,8 +2140,9 @@ const TEMPLATES = [
   {name:'Heterojunction — p-GaAs / n-Al₀.₃Ga₀.₇As', key:'hetero', layers:()=>[L('GaAs',1000,'p',1e17), L('AlGaAs',1000,'n',1e17,{x:0.3})], fig:{biasTerm:'left'}},
   {name:'MOS capacitor — Al / SiO₂ / p-Si', key:'mos', layers:()=>[L('Al',100,'i',0), L('SiO2',10,'i',0), L('Si',1000,'p',1e17)], fig:{biasTerm:'left', mode:'bias', V:0, showEvac:true}},
   {name:'n-i-p perovskite cell — FTO / TiO₂ / MAPbI₃ / Spiro / Au', key:'nip', layers:()=>[L('FTO',400,'i',0), L('TiO2',50,'n',1e17), L('MAPbI3',500,'i',1e13), L('Spiro',200,'p',1e18), L('Au',80,'i',0)], fig:{biasTerm:'right', gamma:0.5}, xs:{substrate:true, light:'bottom'}},
-  {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',30,'p',1e18), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e18), L('Al',100,'i',0)], fig:{biasTerm:'left'}, xs:{substrate:true, light:'bottom'}},
+  {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',30,'p',1e18), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e18), L('Al',100,'i',0)], fig:{biasTerm:'left', mode:'eq', showEvac:false, lightOn:false}, xs:{substrate:true, light:'bottom'}},
   {name:'Ohmic contact — n-Si / Al (accumulation)', key:'ohmic', layers:()=>[L('Si',1000,'n',1e16), L('Mg',100,'i',0)], fig:{biasTerm:'right'}},
+  {name:'Custom — blank device', key:'custom', layers:()=>[], fig:{}},
 ];
 
 let state = null, history=[], future=[], mats=null, comp=null, selectedLayer=null, currentFig='band';
@@ -2156,12 +2157,12 @@ function saveMats(){ const custom={}; for (const k in mats){ const base=MATERIAL
   try{ localStorage.setItem('fermi.materials', JSON.stringify(custom)); }catch(e){} }
 
 /* ---------- state ---------- */
-function freshState(tpl){ const t = tpl||TEMPLATES[0];
+function freshState(tpl){ const t = tpl||TEMPLATES.find(x=>x.key==='pin');   // a new visit opens the p-i-n perovskite cell
   return { stack:{layers:t.layers()}, fig:Object.assign({}, DEFAULT_FIG, t.fig||{}), xs:Object.assign({}, DEFAULT_XS, t.xs||{}), sim:JSON.parse(JSON.stringify(DEFAULT_SIM)), template:t.key }; }
 function snapshot(){ return JSON.stringify({stack:state.stack, fig:state.fig, xs:state.xs, sim:state.sim, template:state.template}); }
 function commit(opts={}){ // push history, persist, recompute
   if (!opts.silent){ history.push(opts.prev||lastSnap); if (history.length>120) history.shift(); future.length=0; }
-  lastSnap = snapshot(); try{ localStorage.setItem('fermi.project', lastSnap); }catch(e){}
+  lastSnap = snapshot(); try{ sessionStorage.setItem('fermi.project', lastSnap); }catch(e){}
   recompute(); updateUndo(); refreshLayerInfo();
 }
 function refreshLayerInfo(){ if (!comp) return; $$('#layers .layer').forEach((div,i)=>{ const R=comp.R[i]; const el=div.querySelector('.derived'); if (!el||!R||R.kind!=='semi') return; el.textContent=(R.dop==='p'?'E_F − E_v = '+fmtE(R.EFEv,3):'E_c − E_F = '+fmtE(R.EcEF,3))+' eV · n_i = '+sci(R.ni,1)+' · L_D = '+fmtLen(R.LD)+' · φ_s = '+fmtE(R.phi,2)+' eV'; }); }
@@ -2169,7 +2170,7 @@ let lastSnap='';
 function undo(){ if (!history.length) return; future.push(snapshot()); const s=history.pop(); loadSnapshot(s); lastSnap=s; recompute(); rebuildAll(); updateUndo(); }
 function redo(){ if (!future.length) return; history.push(snapshot()); const s=future.pop(); loadSnapshot(s); lastSnap=s; recompute(); rebuildAll(); updateUndo(); }
 function loadSnapshot(s){ const o=JSON.parse(s); (o.stack&&o.stack.layers||[]).forEach(l=>{ if (l.mat==='PEDOT' && (!l.dop||l.dop==='i')){ l.dop='p'; l.N=1e18; } });   // projects saved when PEDOT:PSS was a metal
-  state = { stack:o.stack, fig:Object.assign({},DEFAULT_FIG,o.fig), xs:Object.assign({},DEFAULT_XS,o.xs), sim:Object.assign(JSON.parse(JSON.stringify(DEFAULT_SIM)),o.sim||{}), template:o.template }; try{ localStorage.setItem('fermi.project', snapshot()); }catch(e){} }
+  state = { stack:o.stack, fig:Object.assign({},DEFAULT_FIG,o.fig), xs:Object.assign({},DEFAULT_XS,o.xs), sim:Object.assign(JSON.parse(JSON.stringify(DEFAULT_SIM)),o.sim||{}), template:o.template }; try{ sessionStorage.setItem('fermi.project', snapshot()); }catch(e){} }
 function updateUndo(){ $('#undoBtn').disabled = !history.length; $('#redoBtn').disabled = !future.length; }
 
 function recompute(){
@@ -2653,7 +2654,7 @@ function guideHTML(){ return `
   <h2 id="helpTitle">How to use Fermi</h2>
   <p>Fermi draws the band diagram, the cross-section and a 3D view of a layered device, and plots spatial profiles across it. Everything is computed from the material parameters of the layers.</p>
   <h3>1. Build the stack (left panel)</h3>
-  <ol><li>Pick a ready stack from <b>Templates</b> at the top, or press <b>+ Add layer</b>.</li>
+  <ol><li>Fermi opens with a p-i-n perovskite cell. Pick another stack from <b>Templates</b> at the top, or choose <b>Custom — blank device</b> and build your own with <b>+ Add layer</b>.</li>
   <li>For each layer choose the material, the thickness and, for a semiconductor, the doping type and density. Layers run from left to right in the band diagram and from bottom to top in the device views.</li>
   <li>The arrows on a layer move it up or down; the dots open its parameters (χ, E_g, ε_r, N_c, N_v or the work function). Mobility, lifetime and absorption are under <b>Advanced</b> and are needed only for illumination and spatial profiles.</li>
   <li>The <b>Materials</b> tab lists the library. You can edit a material or add your own with <b>+ Custom</b>.</li></ol>
@@ -2840,7 +2841,7 @@ function rebuildAll(){ renderLayers(); renderMaterials(); syncPanel($('#tab-figu
 function init(){
   mats = loadMats();
   const sel=$('#templateSel'); sel.innerHTML='<option value="">Templates…</option>'+TEMPLATES.map(t=>`<option value="${t.key}">${esc(t.name)}</option>`).join('');
-  let saved=null; try{ saved=localStorage.getItem('fermi.project'); }catch(e){}
+  let saved=null; try{ saved=sessionStorage.getItem('fermi.project'); }catch(e){}
   if (saved){ try{ loadSnapshot(saved); }catch(e){ state=freshState(); } } else state=freshState();
   lastSnap=snapshot();
   sel.addEventListener('change', e=>{ const t=TEMPLATES.find(x=>x.key===e.target.value); if (!t) return; const prev=snapshot(); state=freshState(t); commit({prev}); rebuildAll(); });
