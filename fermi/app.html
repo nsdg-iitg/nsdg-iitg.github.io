@@ -438,7 +438,21 @@ function resolveLayer(L, T, mats){
   r.eps = (r.epsr||1)*EPS0;
   if (r.kind==='semi'){ Object.assign(r, bulkFermi(r)); r.phi = r.chi + r.EcEF; }
   if (r.kind==='ins'){ r.phi = NaN; }
+  if (r.kind==='metal'){ r.pinS = o.pinS==null ? 1 : Math.min(1, Math.max(0, o.pinS)); r.pin0 = o.pin0; }
   return r;
+}
+/* Fermi-level pinning at a metal/semiconductor contact (interface states), in the usual linear model:
+     φ_Bn = S(φ_m − χ) + (1 − S)(E_g − φ_0),
+   S = pinning factor (1 = Schottky–Mott, 0 = Bardeen limit), φ_0 = charge-neutrality level above E_v.
+   It is applied as an effective work function of the metal, φ_eff = S φ_m + (1 − S)(χ + E_g − φ_0), which the
+   electrostatics, the readouts and the drift–diffusion contacts all use. The true φ_m is kept for the vacuum level
+   drawn in the metal, so the interface dipole appears as a step of E_vac at the contact. */
+function applyPinning(R){
+  R.forEach((r,i)=>{ if (r.kind!=='metal' || !(r.pinS<1)) return;
+    const s = (i>0 && R[i-1].kind==='semi') ? R[i-1] : (i<R.length-1 && R[i+1].kind==='semi') ? R[i+1] : null; if (!s) return;
+    const phi0 = (r.pin0!=null && isFinite(r.pin0)) ? Math.min(s.Eg, Math.max(0, r.pin0)) : s.Eg/3;
+    r.phiM = r.phi; r.pin0 = phi0; r.pinned = true; r.phi = r.pinS*r.phiM + (1-r.pinS)*(s.chi + s.Eg - phi0); });
+  return R;
 }
 
 /* ---------------- terminals and quasi-Fermi levels ---------------- */
@@ -561,7 +575,7 @@ function solvePoisson(R, nodes){
 function computeStack(project, mats){
   const S = project.stack, F = project.fig;
   const T = F.T || 300, V = F.mode==='bias' ? (F.V||0) : 0;
-  const R = S.layers.map(L=>resolveLayer(L, T, mats));
+  const R = applyPinning(S.layers.map(L=>resolveLayer(L, T, mats)));
   const warnings=[];
   if (!R.length) return {R, warnings:['Empty stack'], nodes:[], sol:null};
   const term = assignTerminals(R, V, F.biasTerm||'right');
@@ -623,7 +637,7 @@ function analyzeStack(R, nodes, sol, term, V, F){
       const ohmic = Vbi <= 0;
       push({type:'schottky', m, s, ntype, phiB, Vbi, bend, psi_s, W, W0, Emax, dphi, xm, ohmic, depl, N, fullDep, intrinsic:s.dop==='i',
         rows:[
-          {k:(ntype?'φ_Bn':'φ_Bp'), v:fmtE(phiB)+' eV', f:(ntype?'φ_Bn = φ_m − χ = '+fmtE(m.phi)+' − '+fmtE(s.chi):'φ_Bp = χ + E_g − φ_m = '+fmtE(s.chi)+' + '+fmtE(s.Eg)+' − '+fmtE(m.phi))+'\nSchottky–Mott limit, no Fermi-level pinning, no interface dipole.'},
+          {k:(ntype?'φ_Bn':'φ_Bp'), v:fmtE(phiB)+' eV', f:(ntype?'φ_Bn = φ_m − χ = '+fmtE(m.phi)+' − '+fmtE(s.chi):'φ_Bp = χ + E_g − φ_m = '+fmtE(s.chi)+' + '+fmtE(s.Eg)+' − '+fmtE(m.phi))+(m.pinned ? '\nφ_m here is the effective value: Fermi-level pinning with S = '+fmtE(m.pinS)+' and φ_0 = '+fmtE(m.pin0)+' eV above E_v,\nφ_Bn = S(φ_m − χ) + (1 − S)(E_g − φ_0), true φ_m = '+fmtE(m.phiM)+' eV.' : '\nSchottky–Mott limit, no Fermi-level pinning, no interface dipole.')},
           ...(s.dop==='i' ? [{k:'φ_Bp', v:fmtE(s.chi+s.Eg-m.phi)+' eV', f:'φ_Bp = χ + E_g − φ_m = '+fmtE(s.chi)+' + '+fmtE(s.Eg)+' − '+fmtE(m.phi)+' (undoped layer: both barriers shown)'}] : []),
           {k:(ntype?'E_c − E_F':'E_F − E_v'), v:fmtE(ntype?s.EcEF:s.EFEv,3)+' eV', f:(ntype?'E_c − E_F = kT ln(N_c/n₀) = '+fmtE(kT,4)+' × ln('+sci(s.Nc)+'/'+sci(s.n0)+')':'E_F − E_v = kT ln(N_v/p₀) = '+fmtE(kT,4)+' × ln('+sci(s.Nv)+'/'+sci(s.p0)+')')+'\nBoltzmann statistics, complete ionization, n₀ from charge neutrality with n_i = '+sci(s.ni)+' cm⁻³.'},
           {k:'V_bi', v:fmtE(Vbi)+' V', warn:ohmic, f:'V_bi = φ_B − (E_c − E_F)/q = '+fmtE(phiB)+' − '+fmtE(ntype?s.EcEF:s.EFEv,3)+(ohmic?'\nV_bi ≤ 0: accumulation (ohmic-type) contact; no depletion region.':'')},
@@ -951,7 +965,7 @@ function renderBand(comp, fig){
   if (fig.showLayerNames!==false){
     const rows=[[],[],[]];
     R.forEach(r=>{ if (r.Xw < fs*1.2) return; const nm = r.kind==='semi' && r.dop!=='i' ? r.dop+'-'+r.name : r.name;
-      const sub = showNum && r.kind==='semi' && r.dop!=='i' ? (r.dop==='n'?'N_D':'N_A')+' = '+sciU(r.N)+' cm^{-3}' : showNum && r.kind==='metal' ? 'φ_m = '+fmtNum(r.phi,2)+' eV' : null;
+      const sub = showNum && r.kind==='semi' && r.dop!=='i' ? (r.dop==='n'?'N_D':'N_A')+' = '+sciU(r.N)+' cm^{-3}' : showNum && r.kind==='metal' ? 'φ_m = '+fmtNum(r.phiM??r.phi,2)+' eV' : null;
       const sw = sub ? mW(sub, fs*0.82) : 0; const w = mW(nm, fs);
       let cx=(r.X0+r.X1)/2; cx = Math.min(Math.max(cx, fs*0.2+w/2), W-fs*0.2-w/2);
       NM.set(r, {cx, nm, w, sub: (sub && sw <= r.Xw + fs*0.5) ? sub : null, sw}); });
@@ -968,7 +982,7 @@ function renderBand(comp, fig){
   let emin=Infinity, emax=-Infinity;
   const consider = (e)=>{ if (e==null||!isFinite(e)) return; if (e<emin) emin=e; if (e>emax) emax=e; };
   R.forEach(r=>{
-    if (r.kind==='metal'){ consider(r.EFt); if (fig.showEvac) consider(r.EFt+r.phi); return; }
+    if (r.kind==='metal'){ consider(r.EFt); if (fig.showEvac) consider(r.EFt+(r.phiM??r.phi)); return; }
     for (let k=r.nodeStart;k<=r.nodeEnd;k++){ if (r.kind==='semi'){ consider(EC(r,k)); consider(EV(r,k)); if (fig.showEvac) consider(prof[k].Evac); }
       else { consider(EC(r,k)); if (r.Eg<=4 || fig.eWin==='manual') consider(EV(r,k)); if (fig.showEvac) consider(prof[k].Evac); } }
     if (r.kind==='semi'){ consider(r.EFn); consider(r.EFp); }
@@ -1027,7 +1041,7 @@ function renderBand(comp, fig){
     out += `<polygon points="${bandPts(r,EV).join(' ')} ${r.X1.toFixed(2)},${py1} ${r.X0.toFixed(2)},${py1}" fill="${col}" fill-opacity=".12"/>`; }); }
   // ---- E_vac (continuous across stack) ----
   if (fig.showEvac){
-    const pts=[]; R.forEach(r=>{ if (r.kind==='metal'){ const e=r.EFt+r.phi; pts.push([r.X0,Y(e)]); pts.push([r.X1,Y(e)]); return; }
+    const pts=[]; R.forEach(r=>{ if (r.kind==='metal'){ const e=r.EFt+(r.phiM??r.phi); pts.push([r.X0,Y(e)]); pts.push([r.X1,Y(e)]); return; }
       for (let k=r.nodeStart;k<=r.nodeEnd;k++) pts.push([X(k,r), Y(prof[k].Evac)]); });
     out += `<polyline points="${ptsStr(pts)}" fill="none" stroke="${C.ink2}" stroke-width="${lwf}" stroke-dasharray="3 1.5"/>`;
     lay.line(pts, 'evac'); linePts.vac=pts;
@@ -2296,7 +2310,9 @@ function paramFields(Ly, m){
   let html='';
   if (m.fn) html+=`<div class="field"><label>x (Al)</label><input type="number" step="0.05" min="0" max="1" data-key="x" value="${Ly.x!=null?Ly.x:m.x}"><span class="muted small">composition</span></div>`;
   const base = m.fn ? Object.assign({}, m, m.fn(Ly.x!=null?Ly.x:m.x)) : m;
-  if (m.kind==='metal') html+=f('phi','φ_m (eV)',0.01, ov.phi??base.phi);
+  if (m.kind==='metal') html+=f('phi','φ_m (eV)',0.01, ov.phi??base.phi)
+    +`<div class="field" title="Fermi-level pinning at the contact with the neighbouring semiconductor. 1 = no pinning (Schottky–Mott), 0 = fully pinned."><label>Pinning S</label><input type="number" step="0.05" min="0" max="1" data-key="pinS" value="${ov.pinS??1}" aria-label="Pinning factor S"><span class="muted small">${ov.pinS!=null&&ov.pinS<1?'pinned':'1 = none'}</span></div>`
+    +`<div class="field" title="Charge-neutrality level of the interface states, measured from the valence-band edge of the semiconductor. Used only when S is below 1. Empty = E_g/3."><label>φ_0 (eV)</label><input type="number" step="0.01" min="0" data-key="pin0" value="${ov.pin0??''}" placeholder="E_g/3" aria-label="Charge-neutrality level above E_v"><span class="muted small">above E_v</span></div>`;
   else { html+=f('chi','χ (eV)',0.01, ov.chi??base.chi)+f('Eg','E_g (eV)',0.01, ov.Eg??base.Eg)+f('epsr','ε_r',0.1, ov.epsr??base.epsr);
     if (m.kind==='semi') html+=`<div class="field"><label>N_c (cm⁻³)</label><input type="text" data-key="Nc" value="${sci(ov.Nc??base.Nc,2)}"><span></span></div><div class="field"><label>N_v (cm⁻³)</label><input type="text" data-key="Nv" value="${sci(ov.Nv??base.Nv,2)}"><span></span></div>`; }
   html+=`<div class="field"><label>Label</label><input type="text" data-key="label" value="${esc(Ly.label||'')}" placeholder="${esc(m.name)}"><span></span></div>`;
@@ -2312,7 +2328,7 @@ function bindParamFields(div, Ly, m){
     else if (k==='label'){ Ly.label=inp.value.trim(); if(!Ly.label) delete Ly.label; }
     else if (k==='color'){ Ly.color=inp.value; }
     else if (k==='hatch'){ if (inp.value) Ly.hatch=inp.value; else delete Ly.hatch; }
-    else { const v=parseFloat(inp.value); Ly.ov=Ly.ov||{}; if (isFinite(v)) Ly.ov[k]=v; }
+    else { const v=parseFloat(inp.value); Ly.ov=Ly.ov||{}; if (isFinite(v)) Ly.ov[k]=v; else if (k==='pin0') delete Ly.ov.pin0; }
     commit({prev}); renderLayers(); }); });
   $('.reset-ov',div).addEventListener('click', e=>{ e.stopPropagation(); const prev=snapshot(); Ly.ov={}; delete Ly.color; delete Ly.hatch; delete Ly.label; commit({prev}); renderLayers(); });
   $('.dup',div).addEventListener('click', e=>{ e.stopPropagation(); const prev=snapshot(); const i=state.stack.layers.indexOf(Ly); const c=JSON.parse(JSON.stringify(Ly)); c.id=uid(); c._open=false; state.stack.layers.splice(i+1,0,c); commit({prev}); renderLayers(); });
@@ -2527,7 +2543,7 @@ function captionText(){ if (!comp||!comp.R.length) return ''; const R=comp.R; co
   const dop=R.filter(r=>r.kind==='semi'&&r.dop!=='i').map(r=>r.name+': '+(r.dop==='n'?'N_D':'N_A')+' = '+sci(r.N,1)+' cm⁻³'); if (dop.length) parts.push('Doping: '+dop.join('; ')+'.');
   const nums=[]; comp.analysis.items.forEach(it=>{ if (it.type==='schottky') nums.push('φ_B'+(it.ntype?'n':'p')+' = '+fmtE(it.phiB)+' eV, V_bi = '+fmtE(it.Vbi)+' V'+(it.W?', W = '+fmtLen(it.W):'')); if (it.type==='hetero'&&!it.homo) nums.push('ΔE_c = '+fmtE(Math.abs(it.dEc))+' eV, ΔE_v = '+fmtE(Math.abs(it.dEv))+' eV (Anderson)'); if (it.type==='hetero'&&it.homo) nums.push('V_bi = '+fmtE(Math.abs(it.Vbi))+' V, W = '+fmtLen(it.xA+it.xB)); if (it.type==='mos') nums.push('V_FB = '+fmtE(it.VFB)+' V, V_T = '+fmtE(it.VT)+' V'); });
   if (nums.length) parts.push(nums.join('; ')+'.');
-  parts.push('Band alignment by Anderson’s rule (vacuum level continuous, no interface dipoles or Fermi-level pinning); '+(comp.dd?'bands and quasi-Fermi levels from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, complete ionization)':'band bending from the one-dimensional Poisson equation with Boltzmann statistics and complete ionization')+'; the depletion-approximation widths are quoted. Horizontal axis not to scale.');
+  parts.push('Band alignment by Anderson’s rule (vacuum level continuous, '+(R.some(r=>r.pinned)?'Fermi-level pinning at '+R.filter(r=>r.pinned).map(r=>'the '+r.name+' contact with S = '+fmtE(r.pinS)+' and φ_0 = '+fmtE(r.pin0)+' eV above E_v').join(' and '):'no interface dipoles or Fermi-level pinning')+'); '+(comp.dd?'bands and quasi-Fermi levels from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, complete ionization)':'band bending from the one-dimensional Poisson equation with Boltzmann statistics and complete ionization')+'; the depletion-approximation widths are quoted. Horizontal axis not to scale.');
   return parts.join(' '); }
 function downloadText(name, text, mime){ downloadBlob(name, new Blob([text],{type:mime})); }
 async function downloadBlob(name, blob){
@@ -2674,8 +2690,9 @@ function helpHTML(){ return `
   <h2 id="helpTitle">Physics model and assumptions</h2>
   <p>Fermi computes the equilibrium band diagram of the stack by solving the one-dimensional Poisson equation with Boltzmann carrier statistics on every layer at once, so accumulation, depletion, inversion, fully depleted thin layers and multi-junction stacks all come from the same solution. The quantities in the readout strip are the textbook closed-form values so that you can check them against Sze &amp; Ng. Under applied bias or light the diagram comes from a steady-state drift–diffusion solution (see below).</p>
   <h3>Band alignment</h3>
-  <ul><li>Anderson’s rule: vacuum level continuous across every interface; ΔE_c = χ₁ − χ₂, ΔE_v = (χ₂ + E_g₂) − (χ₁ + E_g₁). No interface dipoles, no Fermi-level pinning, no interface states, no fixed oxide charge.</li>
-  <li>Schottky–Mott limit: φ_Bn = φ_m − χ, φ_Bp = χ + E_g − φ_m. Real contacts on Si, GaAs and most III–Vs are partly pinned; enter a measured φ_B by editing φ_m in the layer.</li></ul>
+  <ul><li>Anderson’s rule: vacuum level continuous across every interface; ΔE_c = χ₁ − χ₂, ΔE_v = (χ₂ + E_g₂) − (χ₁ + E_g₁). No dipoles or interface states at semiconductor heterojunctions, and no fixed oxide charge.</li>
+  <li>Schottky–Mott limit: φ_Bn = φ_m − χ, φ_Bp = χ + E_g − φ_m. Real contacts on Si, GaAs and most III–Vs are partly pinned.</li>
+  <li>Fermi-level pinning (optional, per metal layer): φ_Bn = S(φ_m − χ) + (1 − S)(E_g − φ_0), with the pinning factor S between 0 and 1 and the charge-neutrality level φ_0 above E_v. S = 1 is the Schottky–Mott limit. The interface dipole appears as a step of the vacuum level at the contact. It applies to a metal or TCO that touches a semiconductor.</li></ul>
   <h3>Statistics</h3>
   <ul><li>Boltzmann statistics with complete ionization; n₀ from charge neutrality with n_i = √(N_c N_v) exp(−E_g/2kT). N_c, N_v scale as T^{3/2}.</li>
   <li>A layer whose Fermi level sits within kT ln 2 of a band edge is flagged degenerate; the Fermi level there is approximate (Fermi–Dirac would move it by tens of meV).</li>
@@ -2695,7 +2712,7 @@ function helpHTML(){ return `
   <ul><li>The band diagram under bias or light and every curve of the Spatial profiles view come from one steady-state solution at the chosen bias: Poisson and the electron and hole continuity equations (drift–diffusion, Scharfetter–Gummel fluxes) with Boltzmann statistics, and SRH, radiative and Auger recombination.</li>
   <li>Generation: AM1.5G (ASTM G173-03) with Beer–Lambert absorption. Tabulated α for Si, GaAs, CdTe and MAPbI₃, analytic α₀√(E − E_g) otherwise. No optical interference and no reflection.</li>
   <li>Contacts: thermionic emission over the Schottky–Mott barrier of the band diagram.</li>
-  <li>Not modelled: mobile ions, transients, Fermi–Dirac statistics, tunnelling. Fermi does not compute J–V curves; use CEISIM for device simulation.</li></ul>
+  <li>Not modelled: mobile ions, transients, Fermi–Dirac statistics, tunnelling, charged interface states at heterojunctions. Fermi does not compute J–V curves; use CEISIM for device simulation.</li></ul>
   <h3>Figure conventions</h3>
   <ul><li>The horizontal axis is compressed layer by layer (width ∝ thickness^γ) unless γ = 1, in which case a scale bar is drawn and metals keep a fixed width.</li>
   <li>Exported SVG uses points: a 7 pt label is 7 pt at the stated column width. PNGs are rendered at the stated dpi for that width.</li>
@@ -2750,7 +2767,7 @@ function layerDD(Ly){ const base=FermiDD.DD_LIBRARY[Ly.mat]||FermiDD.DD_GENERIC;
   return d; }
 /* build the plain-JSON problem specification from the current stack */
 function simSpec(Vspan){
-  const S=simState(); const T=state.fig.T||300; const R=state.stack.layers.map(L=>resolveLayer(L, T, mats)); if (!R.length) return null;
+  const S=simState(); const T=state.fig.T||300; const R=applyPinning(state.stack.layers.map(L=>resolveLayer(L, T, mats))); if (!R.length) return null;
   assignTerminals(R, 0, state.fig.biasTerm||'right'); const Vmax=Math.max(Vspan||0, 0.5); const nodes=buildGrid(R, Vmax, false);
   const semis=R.filter(r=>r.kind==='semi'); const Egmin=semis.length?Math.min(...semis.map(r=>r.Eg)):0;
   const dd=state.stack.layers.map((Ly,i)=>{ const d=layerDD(Ly); const r=R[i]; if (d.absorb==null) d.absorb = r.kind==='semi' && (S.light.model==='bl' ? true : r.Eg<=Egmin+0.05); return d; });
