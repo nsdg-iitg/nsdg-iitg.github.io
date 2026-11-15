@@ -67,6 +67,8 @@ header{display:flex;align-items:center;gap:14px;padding:0 14px;background:var(--
 .wordmark .ef:after{content:"E";position:absolute;right:-9px;top:-5px;font-size:9px;font-style:italic;color:var(--accent)}
 .wordmark .tag{font-size:11.5px;color:var(--ink-3)}
 header .grow{flex:1}
+.adv{margin:8px 0 2px}
+.adv>summary{cursor:pointer;color:var(--ink-2);font-size:12px;padding:4px 0}
 .hbtn.ai{border-color:var(--accent-line);color:var(--accent)}
 .hbtn[hidden]{display:none}
 .aibox textarea{width:100%;min-height:92px;resize:vertical;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg)}
@@ -2130,8 +2132,8 @@ const license = { status:'free', key:null, payload:null, reason:'' };   // statu
    ===================================================================== */
 const $ = (s, el=document)=>el.querySelector(s); const $$=(s, el=document)=>Array.from(el.querySelectorAll(s));
 const uid = ()=>Math.random().toString(36).slice(2,9);
-const DEFAULT_FIG = { mode:'eq', V:0, biasTerm:'right', T:300, schematic:false, showEvac:true, showEi:false, showLabels:true, showNumbers:true, showLayerNames:true,
-  annEg:true, annPhiB:true, annVbi:true, annW:true, annOffsets:true, annAxis:true, axisRef:'EF', imageForce:false, gamma:0.5,
+const DEFAULT_FIG = { mode:'eq', V:0, biasTerm:'right', T:300, schematic:false, showEvac:false, showEi:false, showLabels:true, showNumbers:true, showLayerNames:true,
+  annEg:false, annPhiB:false, annVbi:false, annW:false, annOffsets:false, annAxis:true, axisRef:'EF', imageForce:false, gamma:0.5,
   eWin:'auto', eMin:-2, eMax:2, widthMm:85, aspect:0.62, font:'sans', fontSize:7, lineWt:1, figTheme:'paper', fillBands:false, insHatch:true,
   fitPane:true, lightOn:false, lightSuns:1, lightSide:'left',   // the figure takes the shape of the centre pane and fills it
   // plots (Simulate view)
@@ -2142,10 +2144,10 @@ const DEFAULT_XS = { firstAt:'bottom', toScale:false, substrate:false, substrate
   d3Style:'stepped', d3Top:'auto', d3Az:35, d3El:26, d3Depth:1, d3Gap:0.12, d3Shade:true, d3Real:true, d3Labels:true, d3Edge:'soft' };
 const L = (mat, t_nm, dop, N, extra={})=>Object.assign({id:uid(), mat, t_nm, dop, N}, extra);
 const TEMPLATES = [
-  {name:'Schottky diode — n-Si / Au', key:'schottky', layers:()=>[L('Si',2000,'n',1e16), L('Au',100,'i',0)], fig:{biasTerm:'right', imageForce:true}},
+  {name:'Schottky diode — n-Si / Au', key:'schottky', layers:()=>[L('Si',2000,'n',1e16), L('Au',100,'i',0)], fig:{biasTerm:'right'}},
   {name:'p–n homojunction — Si', key:'pn', layers:()=>[L('Si',2000,'p',1e16), L('Si',2000,'n',1e16)], fig:{biasTerm:'left'}},
   {name:'Heterojunction — p-GaAs / n-Al₀.₃Ga₀.₇As', key:'hetero', layers:()=>[L('GaAs',1000,'p',1e17), L('AlGaAs',1000,'n',1e17,{x:0.3})], fig:{biasTerm:'left'}},
-  {name:'MOS capacitor — Al / SiO₂ / p-Si', key:'mos', layers:()=>[L('Al',100,'i',0), L('SiO2',10,'i',0), L('Si',1000,'p',1e17)], fig:{biasTerm:'left', mode:'bias', V:0, showEvac:true}},
+  {name:'MOS capacitor — Al / SiO₂ / p-Si', key:'mos', layers:()=>[L('Al',100,'i',0), L('SiO2',10,'i',0), L('Si',1000,'p',1e17)], fig:{biasTerm:'left', mode:'bias', V:0}},
   {name:'n-i-p perovskite cell — FTO / TiO₂ / MAPbI₃ / Spiro / Au', key:'nip', layers:()=>[L('FTO',400,'i',0), L('TiO2',50,'n',1e17), L('MAPbI3',500,'i',1e13), L('Spiro',200,'p',1e18), L('Au',80,'i',0)], fig:{biasTerm:'right', gamma:0.5}, xs:{substrate:true, light:'bottom'}},
   {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',30,'p',1e18), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e18), L('Al',100,'i',0)], fig:{biasTerm:'left', mode:'eq', showEvac:false, lightOn:false}, xs:{substrate:true, light:'bottom'}},
   {name:'Ohmic contact — n-Si / Al (accumulation)', key:'ohmic', layers:()=>[L('Si',1000,'n',1e16), L('Mg',100,'i',0)], fig:{biasTerm:'right'}},
@@ -2397,13 +2399,14 @@ function renderFigurePanel(){
     </div>
     <div data-for="band">
     <div class="sec">Band diagram</div>
+    ${chk('showLayerNames','Layer names and doping')}${chk('showLabels','Band labels (E_c, E_v, E_F)')}${chk('annAxis','Energy axis')}${chk('showEvac','Vacuum level E_vac')}${chk('annEg','Band gap E_g')}
+    <details class="adv"${['annPhiB','annVbi','annW','annOffsets','showEi','imageForce','schematic'].some(k=>state.fig[k])?' open':''}><summary>Advanced markings</summary>
+    ${chk('annPhiB','Barrier height φ_B')}${chk('annVbi','Band bending qV_bi / qψ_s')}${chk('annW','Depletion width W')}${chk('annOffsets','Band offsets ΔE_c, ΔE_v')}${chk('showNumbers','Numeric values in markings')}${chk('showEi','Intrinsic level E_i')}
     ${chk('imageForce','Image-force lowering inset (Schottky)')}
     ${chk('schematic','Schematic: flat bands aligned at E_F (no bending)')}
-    <div class="sec">Labels and annotations</div>
-    ${chk('showEvac','Vacuum level E_vac')}${chk('showEi','Intrinsic level E_i')}${chk('showLayerNames','Layer names and doping')}${chk('showLabels','Band labels (E_c, E_v, E_F)')}${chk('showNumbers','Numeric values in annotations')}
-    ${chk('annEg','E_g arrows')}${chk('annPhiB','Barrier height φ_B')}${chk('annVbi','Band bending qV_bi / qψ_s')}${chk('annW','Depletion width W')}${chk('annOffsets','Band offsets ΔE_c, ΔE_v')}${chk('annAxis','Energy axis')}
     ${ctl('Axis zero', `<select data-obj="fig" data-key="axisRef"><option value="EF">E_F (left contact)</option><option value="Evac">E_vac (far left)</option></select>`)}
     ${chk('fillBands','Tint bands with layer colour')}${chk('insHatch','Hatch insulator gap')}
+    </details>
     </div>
     <div data-for="band prof">
     <div class="sec">Geometry</div>
@@ -2699,7 +2702,7 @@ function guideHTML(){ return `
   <li>The arrows on a layer move it up or down; the dots open its parameters (χ, E_g, ε_r, N_c, N_v or the work function). Mobility, lifetime and absorption are under <b>Advanced</b> and are needed only for illumination and spatial profiles.</li>
   <li>The <b>Materials</b> tab lists the library. You can edit a material or add your own with <b>+ Custom</b>.</li></ol>
   <h3>2. Choose the view (centre)</h3>
-  <ul><li><b>Band diagram</b>: E_c, E_v, E_F and the vacuum level, with barrier heights, band offsets and depletion widths marked.</li>
+  <ul><li><b>Band diagram</b>: E_c, E_v and E_F across the stack. The vacuum level and the band gap can be switched on in the Figure tab. Barrier heights, band bending, band offsets and depletion widths are under <b>Advanced markings</b>.</li>
   <li><b>Cross-section</b>: a flat drawing of the layers with their thicknesses.</li>
   <li><b>3D</b>: the device as stacked slabs. Drag the figure to rotate it.</li>
   <li><b>Spatial profiles</b>: choose the quantity from the dropdown: carrier densities, space charge, electric field, electrostatic potential, generation and recombination, or quasi-Fermi level splitting.</li></ul>
