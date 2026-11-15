@@ -2295,7 +2295,7 @@ function renderExportPanel(){
     ${ctl('Resolution', `<div class="row"><select id="pngDpi">${FERMI_CONFIG.dpiOptions.map(d=>`<option value="${d}">${d} dpi</option>`).join('')}</select><button class="btn sm" id="dpiUpgrade" hidden title="600 and 1200 dpi are Pro">Upgrade</button></div>`)}
     <div class="btnrow"><button class="btn primary" id="dlPng">Download PNG</button><button class="btn" id="copyPng">Copy PNG</button></div>
     <div class="muted small" id="pngInfo"></div>
-    <div class="sec">Licence</div>
+    <div class="sec">Edition</div>
     <div id="licPanel"></div>
     ${inArtifact()?'<div class="callout warn">You are viewing Fermi inside a Claude Artifact: downloads are handed over through a confirmation dialog. If nothing appears, use <b>Copy SVG</b>/<b>Copy PNG</b> or <b>Open in tab</b>, or run the local <code>index.html</code> for direct downloads.</div>':''}
     <div class="sec">Project</div>
@@ -2322,7 +2322,7 @@ function renderExportPanel(){
   $('#copyCaption').addEventListener('click', ()=>copyText($('#captionBox').value, 'Caption copied'));
   applyEntitlement();
 }
-function updatePngInfo(){ const dpi=exportDpi(); const w=Math.round(state.fig.widthMm/25.4*dpi); const h=Math.round(w*state.fig.aspect); const el=$('#pngInfo'); if (el) el.textContent = `${state.fig.widthMm} mm wide → ${w} × ${h} px at ${dpi} dpi (white background) · ${isPro()?'Pro: no mark':'Free: '+FERMI_CONFIG.freeMaxDpi+' dpi, small mark'}.`; }
+function updatePngInfo(){ const dpi=exportDpi(); const w=Math.round(state.fig.widthMm/25.4*dpi); const h=Math.round(w*state.fig.aspect); const el=$('#pngInfo'); if (el) el.textContent = `${state.fig.widthMm} mm wide → ${w} × ${h} px at ${dpi} dpi (white background) · ${isPro()?'no mark':'Free: '+FERMI_CONFIG.freeMaxDpi+' dpi, small mark'}.`; }
 function projectJSON(){ const custom={}; for (const k in mats) if (mats[k].custom) custom[k]=mats[k]; return JSON.stringify({app:'Fermi', version:2, saved:new Date().toISOString(), template:state.template, stack:state.stack, fig:state.fig, xs:state.xs, sim:state.sim, materials:custom}, null, 1); }
 function captionText(){ if (!comp||!comp.R.length) return ''; if (currentFig==='sim') return simCaption(); const R=comp.R; const parts=[]; parts.push('Equilibrium energy-band diagram of the '+R.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name).join('/')+' stack at '+state.fig.T+' K'+(state.fig.mode==='bias'&&state.fig.V?(' under V = '+state.fig.V+' V'):'')+'.');
   const dop=R.filter(r=>r.kind==='semi'&&r.dop!=='i').map(r=>r.name+': '+(r.dop==='n'?'N_D':'N_A')+' = '+sci(r.N,1)+' cm⁻³'); if (dop.length) parts.push('Doping: '+dop.join('; ')+'.');
@@ -2361,7 +2361,7 @@ function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('sh
    The key is verified here against FERMI_CONFIG.publicKey, stored in localStorage, never sent anywhere. */
 function b64uToBytes(s){ s=s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length%4) s+='='; const bin=atob(s); const u=new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u; }
 function fmtDate(d){ return d.toISOString().slice(0,10); }
-function isPro(){ return license.status==='pro'; }
+function isPro(){ return true; }   // NSDG edition: every export option is open to all visitors, no licence key is needed
 async function verifyLicenseKey(raw){
   const key=(raw||'').replace(/\s+/g,'');
   if (!/^FERMI-[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(key)) return {ok:false, reason:'format', msg:'That does not look like a Fermi key (FERMI-….…). Paste the whole key, including the part after the dot.'};
@@ -2414,6 +2414,8 @@ function stampSVG(svg){ // free tier: append a 6.5 pt strip below the figure (sa
 }
 function renderLicensePanel(){
   const el=$('#licPanel'); if (!el) return; const C=FERMI_CONFIG; const p=license.payload;
+  // NSDG edition: no tiers, no checkout. The original licence panel below is kept but not used.
+  if (true){ el.innerHTML=`<div class="callout good"><b>All export options are open.</b> PNG at 300, 600 and 1200 dpi, no mark on exported figures, and saved style presets. This copy is hosted by the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati.</div>`; return; }
   const planName=pl=>({'pro-monthly':'monthly','pro-yearly':'yearly','pro-lifetime':'lifetime'})[pl]||pl;
   const buyRow = (C.checkoutUrlMonthly && C.checkoutUrlYearly)
     ? `<div class="btnrow"><button class="btn primary" data-buy="monthly">${esc(C.productName)} — ${esc(C.prices.monthly)}</button><button class="btn primary" data-buy="yearly">${esc(C.productName)} — ${esc(C.prices.yearly)}</button></div>`
@@ -2464,7 +2466,7 @@ function helpHTML(){ return `
   <h3>Figure conventions</h3>
   <ul><li>The horizontal axis is compressed layer by layer (width ∝ thickness^γ) unless γ = 1, in which case a scale bar is drawn and metals keep a fixed width.</li>
   <li>Exported SVG uses points: a 7 pt label is 7 pt at the stated column width. PNGs are rendered at the stated dpi for that width.</li>
-  <li>Free exports carry a small grey “made with Fermi” mark in a strip below the figure (never inside it) and are capped at 300 dpi; Pro exports have no mark and go to 1200 dpi (Export → Licence).</li></ul>
+  <li>In this edition all exports are open: PNG at 300, 600 and 1200 dpi, with no mark on the figure.</li></ul>
   <p>Keyboard: <kbd>Ctrl/⌘ Z</kbd> undo, <kbd>Ctrl/⌘ ⇧ Z</kbd> redo, <kbd>Alt ↑/↓</kbd> move the selected layer, <kbd>Ctrl/⌘ +/−/0</kbd> zoom.</p>
   <div class="btnrow"><button class="btn" id="helpClose">Close</button></div>`; }
 
