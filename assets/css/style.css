@@ -486,3 +486,10 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .edit-links strong { flex: 1; min-width: 180px; font-weight: 500; }
 .edit-checks { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .edit-checks label { font-size: .9rem; }
+.edit-sub { margin: 10px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.edit-papers { margin: 0; padding-left: 1.2em; font-size: .92rem; }
+.edit-box { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; }
+.edit-box summary { cursor: pointer; font-weight: 600; }
+.edit-box .cite-btn { justify-self: start; }
+.edit-rows { display: grid; gap: 12px; }
+.edit-rows:empty { display: none; }

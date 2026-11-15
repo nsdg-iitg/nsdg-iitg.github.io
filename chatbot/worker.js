@@ -125,11 +125,16 @@ function scalar(v) {
 }
 function readFields(text) {
   const doc = splitDoc(text); if (!doc) return null;
-  const f = { name: '', role: '', topic: '', email: '', photo: '', links: {}, highlights: [], education: [], body: doc.body.replace(/^\n+/, '') };
+  const f = { name: '', role: '', topic: '', email: '', photo: '', links: {}, highlights: [], education: [], other: [], body: doc.body.replace(/^\n+/, '') };
   toBlocks(doc.fm).forEach(function (b) {
     const first = b.lines[0].slice(b.key.length + 1);
     if (['name', 'role', 'topic', 'email', 'photo'].indexOf(b.key) >= 0) f[b.key] = scalar(first);
     if (b.key === 'highlights' || b.key === 'education') b.lines.slice(1).forEach(function (l) { const m = l.match(/^\s*-\s+(.*)$/); if (m) f[b.key].push(scalar(m[1])); });
+    if (b.key === 'other_publications') b.lines.slice(1).forEach(function (l) {
+      const m = l.match(/^\s*(-\s+)?([a-z_]+):\s*(.*)$/); if (!m) return;
+      if (m[1] || !f.other.length) f.other.push({});
+      f.other[f.other.length - 1][m[2]] = String(scalar(m[3]));
+    });
     if (b.key === 'links') b.lines.slice(1).forEach(function (l) { const m = l.match(/^\s+([a-z_]+):\s*(.*)$/); if (m) f.links[m[1]] = scalar(m[2]); });
   });
   return f;
@@ -145,6 +150,10 @@ function writeFields(text, f) {
   ['highlights', 'education'].forEach(function (k) {
     made[k] = f[k].length ? [k + ':'].concat(f[k].map(function (x) { return '  - ' + q(x); })) : null;
   });
+  made.other_publications = f.other.length ? ['other_publications:'].concat(f.other.map(function (o) {
+    return '  - title: ' + q(o.title) + '\n    authors: ' + q(o.authors) + '\n    venue: ' + q(o.venue) + '\n    year: ' + o.year +
+      (o.details ? '\n    details: ' + q(o.details) : '') + (o.doi ? '\n    doi: ' + q(o.doi) : '');
+  })) : null;
   const blocks = toBlocks(doc.fm), seen = {}, out = [];
   blocks.forEach(function (b) {
     if (!(b.key in made)) { out.push(b.lines.join('\n')); return; }
@@ -191,6 +200,40 @@ async function propose(env, label, title, note, files) {
   return pr.data.html_url;
 }
 
+function cleanDoi(v) { return oneLine(v, 200).replace(/^https?:\/\/(dx\.)?doi\.org\//, '').replace(/^doi:\s*/i, ''); }
+// Check a paper sent from a form. Returns { error } or the cleaned paper.
+function checkPaper(p, needType) {
+  p = p || {};
+  const o = { type: PUB_TYPES.indexOf(p.type) >= 0 ? p.type : '', year: parseInt(p.year, 10), title: oneLine(p.title, 400), authors: oneLine(p.authors, 600),
+    venue: oneLine(p.venue, 300), details: oneLine(p.details, 200), note: oneLine(p.note, 80), doi: cleanDoi(p.doi) };
+  if ((needType && !o.type) || !(o.year > 1950 && o.year < 2100) || !o.title || !o.authors || !o.venue) return { error: 'Each paper needs a year, a title, the authors and the journal or conference.' };
+  if (o.doi && !/^10\.[^\s"<>]+$/.test(o.doi)) return { error: 'Please check the DOI of "' + o.title.slice(0, 40) + '". It should look like 10.1088/xxxx.' };
+  return o;
+}
+function slugList(v, allow) { return (Array.isArray(v) ? v : []).filter(function (s) { return /^[a-z0-9-]{2,60}$/.test(s) && (!allow || allow.indexOf(s) >= 0); }).slice(0, 20); }
+// Put a new entry at the top of its type in the group publications file.
+function addGroupPaper(text, o, people, areas) {
+  const entry = '- type: ' + o.type + '\n  year: ' + o.year + '\n  title: ' + q(o.title) + '\n  authors: ' + q(o.authors) + '\n  venue: ' + q(o.venue) + '\n' +
+    (o.details ? '  details: ' + q(o.details) + '\n' : '') + (o.doi ? '  doi: ' + q(o.doi) + '\n' : '') + (o.note ? '  note: ' + q(o.note) + '\n' : '') +
+    '  people: [' + people.join(', ') + ']\n  areas: [' + areas.join(', ') + ']\n\n';
+  const at = text.search(new RegExp('^- type: ' + o.type + '\\s*$', 'm'));
+  return at < 0 ? text.replace(/\n*$/, '\n\n') + entry : text.slice(0, at) + entry + text.slice(at);
+}
+function alreadyListed(text, o) {
+  if (o.doi && text.toLowerCase().indexOf(o.doi.toLowerCase()) >= 0) return true;
+  return text.toLowerCase().indexOf('title: ' + q(o.title).toLowerCase()) >= 0;
+}
+// Titles of the group papers that are shown on one member's page
+function groupPapersOf(text, who) {
+  return text.split(/^(?=- type:)/m).filter(function (e) {
+    const m = e.match(/^\s+people:\s*\[(.*)\]/m);
+    return m && m[1].split(',').map(function (x) { return x.trim(); }).indexOf(who) >= 0;
+  }).map(function (e) {
+    const t = e.match(/^\s+title:\s*(.*)$/m), y = e.match(/^\s+year:\s*(\d+)/m);
+    return { title: t ? String(scalar(t[1])) : '', year: y ? y[1] : '' };
+  });
+}
+
 async function edit(body, env, site, origin) {
   if (!env.EDIT_SECRET || !env.GITHUB_TOKEN) return reply({ error: 'Editing is not set up yet.' }, 500, origin);
   const who = String(body.who || ''), key = String(body.key || '');
@@ -217,7 +260,8 @@ async function edit(body, env, site, origin) {
       const file = await readFile(env, '_people/' + who + '.md');
       const fields = file && readFields(file.text);
       if (!fields) return reply({ error: 'This page could not be found.' }, 404, origin);
-      return reply({ fields: fields, linkKeys: LINK_KEYS }, 200, origin);
+      const pubs = await readFile(env, '_data/publications.yml');
+      return reply({ fields: fields, linkKeys: LINK_KEYS, groupPapers: pubs ? groupPapersOf(pubs.text, who) : [], areas: AREAS, types: PUB_TYPES }, 200, origin);
     }
 
     // Everything below files a change, so it is limited per day
@@ -231,7 +275,14 @@ async function edit(body, env, site, origin) {
       if (!old) return reply({ error: 'This page could not be found.' }, 404, origin);
       const inp = body.fields || {};
       const f = { role: oneLine(inp.role, 200) || old.role, topic: oneLine(inp.topic, 300) || old.topic, email: oneLine(inp.email, 120), photo: old.photo, links: {},
-        highlights: lines(inp.highlights, 8, 300), education: lines(inp.education, 8, 300), body: clean(inp.body, 20000) };
+        highlights: lines(inp.highlights, 8, 300), education: lines(inp.education, 8, 300), other: [], body: clean(inp.body, 20000) };
+      // Papers from before joining or outside the group stay in the member's own file
+      const others = Array.isArray(inp.other) ? inp.other.slice(0, 60) : old.other;
+      for (let i = 0; i < others.length; i++) {
+        const o = checkPaper(others[i], false);
+        if (o.error) return reply({ error: o.error }, 400, origin);
+        f.other.push(o);
+      }
       if (f.email && !/^[^\s@"<>]+@[^\s@"<>]+$/.test(f.email)) return reply({ error: 'Please check the email address.' }, 400, origin);
       LINK_KEYS.forEach(function (k) { const v = webLink((inp.links || {})[k]); if (v) f.links[k] = v; });
       if (!f.body.trim()) return reply({ error: 'The description cannot be empty.' }, 400, origin);
@@ -246,6 +297,15 @@ async function edit(body, env, site, origin) {
       }
       const text = writeFields(file.text, f);
       if (text !== file.text) files.unshift({ path: '_people/' + who + '.md', b64: toB64(text), sha: file.sha });
+      // A new paper with this group goes into the group list, linked to this member's page
+      if (body.groupPaper) {
+        const g = checkPaper(body.groupPaper, true);
+        if (g.error) return reply({ error: g.error }, 400, origin);
+        const pubs = await readFile(env, '_data/publications.yml');
+        if (!pubs) throw new Error('publications file');
+        if (alreadyListed(pubs.text, g)) return reply({ error: 'That paper is already on the Publications page. If it is missing from your page, please ask the administrator to link it.' }, 400, origin);
+        files.push({ path: '_data/publications.yml', b64: toB64(addGroupPaper(pubs.text, g, [who], slugList(body.groupPaper.areas, AREAS))), sha: pubs.sha });
+      }
       if (!files.length) return reply({ error: 'Nothing was changed.' }, 400, origin);
       await propose(env, who, 'Profile update: ' + (old.name || who), 'Changes to the page of **' + (old.name || who) + '**' + (admin ? ' (sent with the administrator link).' : '.'), files);
       return reply({ done: true }, 200, origin);
@@ -268,21 +328,12 @@ async function edit(body, env, site, origin) {
     }
 
     if (body.action === 'add-paper') {
-      const p = body.paper || {};
-      const type = PUB_TYPES.indexOf(p.type) >= 0 ? p.type : '', year = parseInt(p.year, 10);
-      const title = oneLine(p.title, 400), authors = oneLine(p.authors, 600), venue = oneLine(p.venue, 300);
-      const details = oneLine(p.details, 200), note = oneLine(p.note, 80);
-      const doi = oneLine(p.doi, 200).replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
-      if (!type || !(year > 1990 && year < 2100) || !title || !authors || !venue) return reply({ error: 'Please fill in the type, year, title, authors and venue.' }, 400, origin);
-      if (doi && !/^10\.[^\s"<>]+$/.test(doi)) return reply({ error: 'Please check the DOI. It should look like 10.1088/xxxx.' }, 400, origin);
-      const slugs = function (v, allow) { return (Array.isArray(v) ? v : []).filter(function (s) { return /^[a-z0-9-]{2,60}$/.test(s) && (!allow || allow.indexOf(s) >= 0); }).slice(0, 20); };
-      const entry = '- type: ' + type + '\n  year: ' + year + '\n  title: ' + q(title) + '\n  authors: ' + q(authors) + '\n  venue: ' + q(venue) + '\n' +
-        (details ? '  details: ' + q(details) + '\n' : '') + (doi ? '  doi: ' + q(doi) + '\n' : '') + (note ? '  note: ' + q(note) + '\n' : '') +
-        '  people: [' + slugs(p.people).join(', ') + ']\n  areas: [' + slugs(p.areas, AREAS).join(', ') + ']\n\n';
+      const o = checkPaper(body.paper, true);
+      if (o.error) return reply({ error: o.error }, 400, origin);
       const file = await readFile(env, '_data/publications.yml');
       if (!file) throw new Error('publications file');
-      const at = file.text.search(new RegExp('^- type: ' + type + '\\s*$', 'm'));
-      const text2 = at < 0 ? file.text.replace(/\n*$/, '\n\n') + entry : file.text.slice(0, at) + entry + file.text.slice(at);
+      if (alreadyListed(file.text, o)) return reply({ error: 'That paper is already on the Publications page.' }, 400, origin);
+      const title = o.title, text2 = addGroupPaper(file.text, o, slugList(body.paper.people), slugList(body.paper.areas, AREAS));
       await propose(env, 'paper', 'Publication: ' + title.slice(0, 80), 'New publication entry.', [{ path: '_data/publications.yml', b64: toB64(text2), sha: file.sha }]);
       return reply({ done: true }, 200, origin);
     }

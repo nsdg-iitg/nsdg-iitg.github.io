@@ -50,7 +50,28 @@
     });
   }
 
-  function memberForm(f, linkKeys) {
+  var TYPE_NAMES = { journal: 'Journal article', conference: 'Conference paper', preprint: 'Preprint', ip: 'Patent or copyright', talk: 'Talk' };
+  // The fields of one paper. With types and areas it is a group paper, without them an "other" paper.
+  function paperInputs(box, types, areas, o) {
+    o = o || {};
+    var type = null, checks = [];
+    if (types) { type = el('select'); types.forEach(function (t) { var op = el('option', '', TYPE_NAMES[t] || t); op.value = t; type.appendChild(op); }); box.appendChild(field('Type', type)); }
+    var title = input(o.title), authors = input(o.authors), venue = input(o.venue), year = input(o.year || '', 'number'), details = input(o.details), doi = input(o.doi);
+    box.appendChild(field('Title', title)); box.appendChild(field('Authors', authors, 'For example: A. Baruah, A. T. Mallajosyula'));
+    box.appendChild(field('Journal or conference', venue)); box.appendChild(field('Year', year));
+    box.appendChild(field('Volume and pages (optional)', details)); box.appendChild(field('DOI (optional)', doi, 'For example: 10.1088/1361-6463/ae27de'));
+    if (areas) {
+      var fs = el('fieldset', 'edit-checks'); fs.appendChild(el('legend', 'edit-label', 'Research areas'));
+      areas.forEach(function (a) { var l = el('label'); var c = el('input'); c.type = 'checkbox'; c.value = a; l.appendChild(c); l.appendChild(document.createTextNode(' ' + a)); fs.appendChild(l); checks.push(c); });
+      box.appendChild(fs);
+    }
+    return { read: function () {
+      return { type: type ? type.value : '', title: title.value.trim(), authors: authors.value.trim(), venue: venue.value.trim(), year: year.value, details: details.value.trim(), doi: doi.value.trim(),
+        areas: checks.filter(function (c) { return c.checked; }).map(function (c) { return c.value; }) };
+    } };
+  }
+
+  function memberForm(f, linkKeys, info) {
     var form = el('form', 'edit-form');
     form.appendChild(el('h2', '', f.name || who));
     var role = input(f.role), topic = input(f.topic), email = input(f.email, 'email');
@@ -64,12 +85,39 @@
     var hi = area((f.highlights || []).join('\n'), 4), edu = area((f.education || []).join('\n'), 4);
     form.appendChild(field('Highlights (one per line, optional)', hi, 'Short key results, shown at the side of the page.'));
     form.appendChild(field('Education (one per line)', edu, 'For example: M.Tech, VLSI, NIT Manipur'));
+    // Papers, in two groups
+    form.appendChild(el('h3', 'edit-sub', 'Publications with this group'));
+    form.appendChild(el('p', 'edit-hint', 'These are on the group Publications page and on your page.'));
+    var gl = el('ul', 'edit-papers');
+    (info.groupPapers || []).forEach(function (g) { gl.appendChild(el('li', '', g.title + (g.year ? ' (' + g.year + ')' : ''))); });
+    if (!gl.firstChild) gl.appendChild(el('li', 'muted', 'None listed yet.'));
+    form.appendChild(gl);
+    var gbox = el('details', 'edit-box'); gbox.appendChild(el('summary', '', 'Add a paper with this group'));
+    var g = paperInputs(gbox, info.types || [], info.areas || []);
+    form.appendChild(gbox);
+
+    form.appendChild(el('h3', 'edit-sub', 'Other publications'));
+    form.appendChild(el('p', 'edit-hint', 'Papers from before you joined the group, or outside it. They are shown only on your page, under "Other publications", and are not counted in the group list.'));
+    var rows = el('div', 'edit-rows'), others = [];
+    function addRow(o) {
+      var box = el('div', 'edit-box'); var r = paperInputs(box, null, null, o || {});
+      var rm = el('button', 'cite-btn', 'Remove this paper'); rm.type = 'button';
+      rm.addEventListener('click', function () { others.splice(others.indexOf(r), 1); box.remove(); });
+      box.appendChild(rm); rows.appendChild(box); others.push(r);
+    }
+    (f.other || []).forEach(addRow);
+    form.appendChild(rows);
+    var more = el('button', 'btn ghost', 'Add another paper'); more.type = 'button';
+    more.addEventListener('click', function () { addRow(); }); form.appendChild(more);
+
     var photo = el('input'); photo.type = 'file'; photo.accept = 'image/jpeg,image/png';
     form.appendChild(field('New photo (optional)', photo, 'A clear head-and-shoulders picture. Leave empty to keep the current one.'));
     submitter(form, 'Send for approval', function () {
       return readPhoto(photo.files[0]).then(function (data) {
         var l = {}; linkKeys.forEach(function (k) { l[k] = links[k].value; });
-        return send({ action: 'save', photo: data, fields: { role: role.value, topic: topic.value, email: email.value, links: l, body: body.value, highlights: hi.value, education: edu.value } });
+        var gp = g.read();
+        return send({ action: 'save', photo: data, groupPaper: gp.title || gp.authors || gp.venue ? gp : null,
+          fields: { role: role.value, topic: topic.value, email: email.value, links: l, body: body.value, highlights: hi.value, education: edu.value, other: others.map(function (r) { return r.read(); }) } });
       });
     });
     return form;
@@ -122,7 +170,7 @@
   if (!who || !key) return show(el('p', '', 'This page opens only from a private edit link. Please ask the group administrator for your link.'));
   send({ action: who === 'admin' ? 'admin-load' : 'load' }).then(function (j) {
     if (j.members) show(adminView(j));
-    else if (j.fields) show(memberForm(j.fields, j.linkKeys || []));
+    else if (j.fields) show(memberForm(j.fields, j.linkKeys || [], j));
     else show(el('p', 'edit-status bad', j.error || 'This edit link is not valid.'));
   });
 })();

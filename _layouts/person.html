@@ -45,8 +45,16 @@ layout: default
 {% assign pubs = site.data.publications | where_exp: "p", "p.people contains slug" %}
 {% if pubs.size > 0 %}
 <section class="wrap section">
-  <h2>Publications{% if page.category == 'pi' %} with the group{% endif %}</h2>
+  <h2>Publications{% if page.category == 'pi' or page.other_publications %} with this group{% endif %}</h2>
   <ol class="pubs">{% for p in pubs %}{% include pub.html p=p %}{% endfor %}</ol>
+</section>
+{% endif %}
+{% comment %} Papers from before joining or outside the group. They are listed in the member's own file and are not counted on the Publications page. {% endcomment %}
+{% if page.other_publications and page.other_publications.size > 0 %}
+<section class="wrap section">
+  <h2>Other publications</h2>
+  <p class="muted">Work carried out before joining the group or outside it.</p>
+  <ol class="pubs">{% for p in page.other_publications %}{% include pub.html p=p %}{% endfor %}</ol>
 </section>
 {% endif %}
 {% capture same %}{% for l in page.links %}"{{ l[1] }}"{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}

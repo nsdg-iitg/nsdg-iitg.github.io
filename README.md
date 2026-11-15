@@ -51,3 +51,10 @@ jekyll serve
 ```
 
 Then open http://localhost:4000.
+
+## Papers from outside the group
+
+Papers a member wrote before joining, or outside the group, go in that member's own file in
+`_people/` under `other_publications:` (fields: `title`, `authors`, `venue`, `year`, and optional
+`details` and `doi`). They are shown on the member's page under "Other publications" and are
+not counted on the Publications page. Papers with the group stay in `_data/publications.yml`.
