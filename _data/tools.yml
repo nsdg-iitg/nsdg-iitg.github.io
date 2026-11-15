@@ -9,3 +9,7 @@
   url: /fermi/
   note: "Band diagrams & device figures"
   logo: fermi
+- name: "Nyquist"
+  url: /nyquist/
+  note: "Impedance & C–V analysis"
+  logo: nyquist
