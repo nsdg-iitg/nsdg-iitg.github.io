@@ -76,6 +76,8 @@
     form.appendChild(el('h2', '', f.name || who));
     var role = input(f.role), topic = input(f.topic), email = input(f.email, 'email');
     form.appendChild(field('Position', role, 'For example: PhD Scholar, Electronics and Electrical Engineering'));
+    var now = f.category === 'alumni' ? input(f.now) : null;   // only alumni have a current position; needs the current Worker
+    if (now) form.appendChild(field('Current position', now, 'Shown on your card and page as "Now: …". For example: Postdoctoral researcher, IISc Bangalore'));
     form.appendChild(field('Research topic (one line)', topic));
     form.appendChild(field('Email', email));
     var links = {};
@@ -117,7 +119,7 @@
         var l = {}; linkKeys.forEach(function (k) { l[k] = links[k].value; });
         var gp = g.read();
         return send({ action: 'save', photo: data, groupPaper: gp.title || gp.authors || gp.venue ? gp : null,
-          fields: { role: role.value, topic: topic.value, email: email.value, links: l, body: body.value, highlights: hi.value, education: edu.value, other: others.map(function (r) { return r.read(); }) } });
+          fields: { role: role.value, topic: topic.value, now: now ? now.value : undefined, email: email.value, links: l, body: body.value, highlights: hi.value, education: edu.value, other: others.map(function (r) { return r.read(); }) } });
       });
     });
     return form;

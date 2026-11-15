@@ -127,10 +127,10 @@ function scalar(v) {
 }
 function readFields(text) {
   const doc = splitDoc(text); if (!doc) return null;
-  const f = { name: '', role: '', topic: '', email: '', photo: '', links: {}, highlights: [], education: [], other: [], body: doc.body.replace(/^\n+/, '') };
+  const f = { name: '', role: '', topic: '', email: '', photo: '', category: '', now: '', links: {}, highlights: [], education: [], other: [], body: doc.body.replace(/^\n+/, '') };
   toBlocks(doc.fm).forEach(function (b) {
     const first = b.lines[0].slice(b.key.length + 1);
-    if (['name', 'role', 'topic', 'email', 'photo'].indexOf(b.key) >= 0) f[b.key] = scalar(first);
+    if (['name', 'role', 'topic', 'email', 'photo', 'category', 'now'].indexOf(b.key) >= 0) f[b.key] = scalar(first);
     if (b.key === 'highlights' || b.key === 'education') b.lines.slice(1).forEach(function (l) { const m = l.match(/^\s*-\s+(.*)$/); if (m) f[b.key].push(scalar(m[1])); });
     if (b.key === 'other_publications') b.lines.slice(1).forEach(function (l) {
       const m = l.match(/^\s*(-\s+)?([a-z_]+):\s*(.*)$/); if (!m) return;
@@ -145,6 +145,7 @@ function writeFields(text, f) {
   const doc = splitDoc(text); const made = {};
   made.role = ['role: ' + q(f.role)];
   made.topic = ['topic: ' + q(f.topic)];
+  made.now = f.now ? ['now: ' + q(f.now)] : null;   // current position of an alumnus, shown as "Now: …"
   made.email = f.email ? ['email: ' + q(f.email)] : null;
   made.photo = f.photo ? ['photo: ' + f.photo] : null;
   const lk = Object.keys(f.links).filter(function (k) { return f.links[k]; });
@@ -277,6 +278,7 @@ async function edit(body, env, site, origin) {
       if (!old) return reply({ error: 'This page could not be found.' }, 404, origin);
       const inp = body.fields || {};
       const f = { role: oneLine(inp.role, 200) || old.role, topic: oneLine(inp.topic, 300) || old.topic, email: oneLine(inp.email, 120), photo: old.photo, links: {},
+        now: typeof inp.now === 'string' ? oneLine(inp.now, 200) : old.now,   // an older form that does not send it leaves it as it is
         highlights: lines(inp.highlights, 8, 300), education: lines(inp.education, 8, 300), other: [], body: clean(inp.body, 20000) };
       // Papers from before joining or outside the group stay in the member's own file
       const others = Array.isArray(inp.other) ? inp.other.slice(0, 60) : old.other;
