@@ -5,8 +5,10 @@ layout: page
 kicker: "Analysis · In the browser"
 heading: "Nyquist"
 logo: nyquist
-lead: "Analysis of electrical measurements: Mott–Schottky, equivalent-circuit fitting of impedance spectra, and J–V curves."
-description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of impedance spectra and analysis of illuminated and dark J–V curves, running in the browser. A tool from NSDG, IIT Guwahati."
+# Set jv_tab to true to show the J–V analyser tab again. Its code is kept in assets/js/nyquist.js.
+jv_tab: false
+lead: "Equivalent-circuit fitting of impedance spectra and Mott–Schottky analysis of C–V data."
+description: "Nyquist: equivalent-circuit fitting of impedance spectra and Mott–Schottky analysis of C–V data, running in the browser. A tool from NSDG, IIT Guwahati."
 ---
 <link rel="stylesheet" href="{{ '/assets/css/nyquist.css' | relative_url }}?v={{ site.time | date: '%s' }}">
 <div id="nyq" class="nyq">
@@ -21,30 +23,12 @@ description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of i
   </fieldset>
 
   <div class="nyq-tabs" role="tablist" aria-label="Analysis">
-    <button type="button" role="tab" aria-selected="true" data-pane="pane-ms">Mott–Schottky (C–V)</button>
-    <button type="button" role="tab" aria-selected="false" data-pane="pane-eis">Circuit fit (impedance)</button>
-    <button type="button" role="tab" aria-selected="false" data-pane="pane-jv">J–V</button>
+    <button type="button" role="tab" aria-selected="true" data-pane="pane-eis">Circuit fit (impedance)</button>
+    <button type="button" role="tab" aria-selected="false" data-pane="pane-ms">Mott–Schottky (C–V)</button>
+    {% if page.jv_tab %}<button type="button" role="tab" aria-selected="false" data-pane="pane-jv">J–V</button>{% endif %}
   </div>
 
-  <section class="nyq-pane" id="pane-ms" role="tabpanel">
-    <div class="nyq-side">
-      <h2>Data</h2>
-      <div id="ms-data"></div>
-      <label class="nyq-f"><span>Capacitance unit</span><select id="ms-cu"><option value="1">F</option><option value="1e-6">µF</option><option value="1e-9">nF</option><option value="1e-12">pF</option></select></label>
-      <h2>Fit range</h2>
-      <div class="nyq-row"><label class="nyq-f"><span>From (V)</span><input type="number" id="ms-va" step="any"></label><label class="nyq-f"><span>To (V)</span><input type="number" id="ms-vb" step="any"></label></div>
-      <p><button type="button" class="btn btn-ghost" id="ms-auto">Choose the range automatically</button></p>
-      <h2>Result</h2>
-      <div id="ms-out" class="nyq-out"></div>
-    </div>
-    <div class="nyq-plots">
-      <figure><div class="nyq-plot" id="ms-p1"></div><figcaption>Mott–Schottky plot. The shaded band is the fit range. <button type="button" class="nyq-link" data-svg="ms-p1">Save SVG</button></figcaption></figure>
-      <figure><div class="nyq-plot" id="ms-p2"></div><figcaption>Capacitance per unit area. <button type="button" class="nyq-link" data-svg="ms-p2">Save SVG</button></figcaption></figure>
-      <figure><div class="nyq-plot" id="ms-p3"></div><figcaption>Apparent doping profile from the local slope of 1/C². <button type="button" class="nyq-link" data-svg="ms-p3">Save SVG</button></figcaption></figure>
-    </div>
-  </section>
-
-  <section class="nyq-pane" id="pane-eis" role="tabpanel" hidden>
+  <section class="nyq-pane" id="pane-eis" role="tabpanel">
     <div class="nyq-side">
       <h2>Data</h2>
       <div id="eis-data"></div>
@@ -88,6 +72,25 @@ description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of i
     </div>
   </section>
 
+  <section class="nyq-pane" id="pane-ms" role="tabpanel" hidden>
+    <div class="nyq-side">
+      <h2>Data</h2>
+      <div id="ms-data"></div>
+      <label class="nyq-f"><span>Capacitance unit</span><select id="ms-cu"><option value="1">F</option><option value="1e-6">µF</option><option value="1e-9">nF</option><option value="1e-12">pF</option></select></label>
+      <h2>Fit range</h2>
+      <div class="nyq-row"><label class="nyq-f"><span>From (V)</span><input type="number" id="ms-va" step="any"></label><label class="nyq-f"><span>To (V)</span><input type="number" id="ms-vb" step="any"></label></div>
+      <p><button type="button" class="btn btn-ghost" id="ms-auto">Choose the range automatically</button></p>
+      <h2>Result</h2>
+      <div id="ms-out" class="nyq-out"></div>
+    </div>
+    <div class="nyq-plots">
+      <figure><div class="nyq-plot" id="ms-p1"></div><figcaption>Mott–Schottky plot. The shaded band is the fit range. <button type="button" class="nyq-link" data-svg="ms-p1">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="ms-p2"></div><figcaption>Capacitance per unit area. <button type="button" class="nyq-link" data-svg="ms-p2">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="ms-p3"></div><figcaption>Apparent doping profile from the local slope of 1/C². <button type="button" class="nyq-link" data-svg="ms-p3">Save SVG</button></figcaption></figure>
+    </div>
+  </section>
+
+  {% if page.jv_tab %}
   <section class="nyq-pane" id="pane-jv" role="tabpanel" hidden>
     <div class="nyq-side">
       <h2>Data</h2>
@@ -104,14 +107,17 @@ description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of i
       <figure id="jv-f3"><div class="nyq-plot" id="jv-p3"></div><figcaption>Local ideality factor from the slope of ln J against V. <button type="button" class="nyq-link" data-svg="jv-p3">Save SVG</button></figcaption></figure>
     </div>
   </section>
+  {% endif %}
 
   <details class="nyq-method">
     <summary>Methods and assumptions</summary>
     <ul>
-      <li><strong>Mott–Schottky.</strong> One-sided abrupt junction with uniform doping in the depletion approximation: 1/C² = 2(V<sub>bi</sub> − V − k<sub>B</sub>T/q)/(q ε N), with C per unit area. The doping density follows from the slope and V<sub>bi</sub> from the intercept. The apparent doping profile uses the local slope, N(W) = 2/(q ε |d(1/C²)/dV|) at W = ε/C.</li>
       <li><strong>Circuit fit.</strong> Complex non-linear least squares on Z′ and Z″ together (Levenberg–Marquardt), started from several automatic guesses. Standard errors come from the covariance matrix of the fit. A constant-phase element has Z = 1/(Q (jω)<sup>n</sup>), and the Warburg element Z = σ(1 − j)/√ω. A good fit does not prove that the circuit is the correct physical model; different circuits can fit the same spectrum.</li>
+      <li><strong>Mott–Schottky.</strong> One-sided abrupt junction with uniform doping in the depletion approximation: 1/C² = 2(V<sub>bi</sub> − V − k<sub>B</sub>T/q)/(q ε N), with C per unit area. The doping density follows from the slope and V<sub>bi</sub> from the intercept. The apparent doping profile uses the local slope, N(W) = 2/(q ε |d(1/C²)/dV|) at W = ε/C.</li>
+      {% if page.jv_tab %}
       <li><strong>J–V, illuminated.</strong> V<sub>OC</sub> and J<sub>SC</sub> by linear interpolation, the maximum power point from a parabola through the three points around the largest V·J, FF = P<sub>max</sub>/(V<sub>OC</sub> J<sub>SC</sub>), and PCE = P<sub>max</sub>/P<sub>in</sub>. A file that changes sweep direction is split into reverse and forward sweeps.</li>
       <li><strong>J–V, dark.</strong> The logarithmic slope G(V) = d ln J / d ln V is taken from a five-point fit, and its peak gives the diffusion-to-drift transition voltage V<sub>α</sub>, after A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023). The ideality factor and J<sub>0</sub> follow from J = J<sub>0</sub> exp(qV/n k<sub>B</sub>T) fitted over the exponential region.</li>
+      {% endif %}
     </ul>
   </details>
 </div>
