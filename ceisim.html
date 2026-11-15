@@ -4,21 +4,21 @@ permalink: /ceisim/
 layout: page
 kicker: "Simulation · In-house"
 heading: "CEISIM"
-lead: "Coupled Electronic–Ionic Transport Semiconductor Device Simulator. A one-dimensional drift–diffusion device simulator developed in the group, in which trap occupancy and mobile-ion density are treated as dynamical variables."
+lead: "Coupled Electronic–Ionic Transport Semiconductor Device Simulator. A one-dimensional drift–diffusion device simulator developed in the group, which solves electronic and ionic transport together."
 description: "CEISIM, the in-house coupled electronic–ionic drift–diffusion device simulator of NSDG, IIT Guwahati. Online access is coming soon."
 ---
 <div class="ceisim-grid">
   <div class="ceisim-left">
   <div class="soon">
     <p class="soon-tag">Coming soon</p>
-    <h2>The online simulator will be available on this page</h2>
-    <p>Users with login access will be able to set up a device, run DC, small-signal and transient simulations, and view the results here. Login access will be given after a request through the Request access form. Requests are not open yet.</p>
+    <h2>The simulator will be available on this page</h2>
+    <p>Users with login access will be able to set up a device, submit DC, small-signal and transient simulations, and view the results here. The device is set up online on this page, while the simulations run on the group's server and not in the browser. Login access will be given after a request through the Request access form. Requests are not open yet.</p>
     <p><button type="button" class="btn" disabled>Log in (not yet open)</button></p>
   </div>
   <section class="prose">
     <h2>About the simulator</h2>
     <ul>
-      <li>One-dimensional drift–diffusion model with trap occupancy and mobile-ion density as unknowns.</li>
+      <li>One-dimensional drift–diffusion model in which trap occupancy and mobile-ion density are treated as dynamical variables.</li>
       <li>DC, small-signal (impedance and capacitance) and transient solvers within a single framework.</li>
       <li>The internal variables of the device are accessible, so individual physical couplings can be switched off one at a time.</li>
       <li>Validated against a commercial TCAD simulator.</li>
@@ -46,7 +46,7 @@ description: "CEISIM, the in-house coupled electronic–ionic drift–diffusion 
   f.addEventListener('submit', function (e) {
     e.preventDefault();
     var v = function (n) { return f.elements[n].value.trim(); };
-    var body = 'Request for access to the CEISIM online simulator\n\nName: ' + v('name') + '\nEmail: ' + v('email') + '\nInstitution: ' + v('institution') + '\nPosition: ' + v('position') + '\n\nIntended use:\n' + v('use') + '\n';
+    var body = 'Request for access to the CEISIM simulator\n\nName: ' + v('name') + '\nEmail: ' + v('email') + '\nInstitution: ' + v('institution') + '\nPosition: ' + v('position') + '\n\nIntended use:\n' + v('use') + '\n';
     location.href = 'mailto:' + f.getAttribute('data-to') + '?subject=' + encodeURIComponent('CEISIM access request: ' + v('name')) + '&body=' + encodeURIComponent(body);
     var s = f.querySelector('.edit-status'); s.className = 'edit-status ok';
     s.textContent = 'Your email program should now open with the request. Please press Send there. If nothing opens, email the same details to ' + f.getAttribute('data-to') + '.';
