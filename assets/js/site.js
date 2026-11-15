@@ -227,7 +227,7 @@ var NSDG_INDEX = '';
     try { document.execCommand('copy'); } finally { a.remove(); } return Promise.resolve();
   }
   document.addEventListener('click', function (e) {
-    var b = e.target.closest ? e.target.closest('.cite-btn') : null;
+    var b = e.target.closest ? e.target.closest('.pub-actions .cite-btn') : null;
     if (!b) return;
     var d = b.parentNode.dataset, label = b.textContent;
     copy(b.dataset.kind === 'bibtex' ? bibtex(d) : text(d)).then(function () {

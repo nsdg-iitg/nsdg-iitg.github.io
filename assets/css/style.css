@@ -464,3 +464,32 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .chat-note { margin: 0; padding: 0 12px 10px; font-size: .72rem; color: var(--muted); }
 @media (max-width: 520px) { .chat-open span { display: none; } .chat-open { padding: 12px; } .chat-panel { right: 12px; bottom: 12px; } }
 @media print { .chat-open, .chat-panel { display: none !important; } }
+
+/* Private edit page */
+.edit-app { max-width: 760px; }
+.edit-form { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin: 0 0 24px; display: grid; gap: 16px; }
+.edit-form h2 { margin: 0; }
+.edit-form > p { margin: 0; }
+.edit-field { display: grid; gap: 6px; }
+.edit-label { font-weight: 600; font-size: .92rem; }
+.edit-hint { font-size: .8rem; color: var(--muted); }
+.edit-form input:not([type="checkbox"]), .edit-form textarea, .edit-form select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--font); }
+.edit-form textarea { resize: vertical; }
+.edit-form .btn { justify-self: start; cursor: pointer; }
+.edit-form .btn:disabled { opacity: .5; }
+.edit-status { margin: 0; font-size: .92rem; color: var(--muted); }
+.edit-status:empty { display: none; }
+.edit-status.ok { color: var(--c-light); font-weight: 600; }
+.edit-status.bad { color: var(--c-model); font-weight: 600; }
+.edit-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.edit-links li { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); }
+.edit-links strong { flex: 1; min-width: 180px; font-weight: 500; }
+.edit-checks { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.edit-checks label { font-size: .9rem; }
+.edit-sub { margin: 10px 0 0; padding-top: 16px; border-top: 1px solid var(--line); }
+.edit-papers { margin: 0; padding-left: 1.2em; font-size: .92rem; }
+.edit-box { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; }
+.edit-box summary { cursor: pointer; font-weight: 600; }
+.edit-box .cite-btn { justify-self: start; }
+.edit-rows { display: grid; gap: 12px; }
+.edit-rows:empty { display: none; }

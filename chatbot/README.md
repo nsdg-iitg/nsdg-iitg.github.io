@@ -1,4 +1,4 @@
-# Website chat assistant
+# Website worker: chat assistant and private edit links
 
 `worker.js` is a small relay that runs on Cloudflare Workers (free plan). It keeps the
 Gemini API key out of the public website. For each question it reads the website text
@@ -15,3 +15,24 @@ from `search.json` and asks Gemini to answer from that text only.
 The chat button appears on the site only when `chat_endpoint` is set. The Worker only
 answers requests that come from the website address (`SITE_URL`, default
 https://nsdg-iitg.github.io). Limits per visitor and per day are at the top of `worker.js`.
+
+## Private edit links
+
+The same Worker lets members propose changes to their own page from a private link, with
+no GitHub account. Each change is filed as a pull request and goes live only when the
+administrator merges it.
+
+Extra setup:
+1. While signed in to GitHub as the owner of this repository, create a fine-grained token
+   at https://github.com/settings/personal-access-tokens/new. Give it access to this
+   repository only, with **Contents** and **Pull requests** set to "Read and write".
+2. In the Worker's **Settings > Variables and Secrets**, add:
+   - Secret `GITHUB_TOKEN`: the token from step 1
+   - Secret `EDIT_SECRET`: a long password of your choice (letters and digits only). It is the administrator key.
+   - Text `APPROVER` (optional): the GitHub user name that should be asked to review each change
+3. Open `https://nsdg-iitg.github.io/edit/?who=admin&key=<EDIT_SECRET>`. This page lists a
+   private link for every member, and has forms to add a news item or a publication.
+
+A member link can change only that member's file in `_people/` and their photo. Changing
+`EDIT_SECRET` cancels all links at once. To cancel the links without a new password, delete
+the `EDIT_SECRET` secret.
