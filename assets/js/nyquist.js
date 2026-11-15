@@ -451,9 +451,10 @@ $('#eis-ckt').addEventListener('change', function () { $('#eis-preset').value = 
 ['eis-fmt', 'eis-neg', 'eis-fa', 'eis-fb', 'eis-wt'].forEach(function (id) { $('#' + id).addEventListener('change', function () { runEIS(true); }); });
 
 /* ---------- 3. J–V ---------- */
-var jv = null;
-var jvSet = dataset('jv', [{ key: 'v', label: 'Voltage (V)' }, { key: 'j', label: 'Current or current density' }], function (fresh) { if (fresh && jvSet.table) { var h = jvSet.table.heads[jvSet.map.j] || ''; var u = /ma\s*\/?\s*cm/i.test(h) ? '1' : /a\s*\/?\s*cm/i.test(h) ? '1000' : /a\s*\/?\s*m/i.test(h) ? '0.1' : /\(\s*ma\s*\)|\bma\b/i.test(h) ? 'mA' : /\(\s*a\s*\)|current\s*\(a|\bamp/i.test(h) ? 'A' : null; if (u) $('#jv-ju').value = u; } runJV(); });
-function runJV() { var out = $('#jv-out'), V = jvSet.col('v'), J = jvSet.col('j'); jv = null; if (!V || !J) { out.innerHTML = ''; drawJV(); return; }
+/* This tab is switched off on the page for now (jv_tab in the front matter of nyquist.html). The code is kept so that it can be switched on again. */
+var jv = null, hasJV = !!$('#jv-data');
+var jvSet = !hasJV ? null : dataset('jv', [{ key: 'v', label: 'Voltage (V)' }, { key: 'j', label: 'Current or current density' }], function (fresh) { if (fresh && jvSet.table) { var h = jvSet.table.heads[jvSet.map.j] || ''; var u = /ma\s*\/?\s*cm/i.test(h) ? '1' : /a\s*\/?\s*cm/i.test(h) ? '1000' : /a\s*\/?\s*m/i.test(h) ? '0.1' : /\(\s*ma\s*\)|\bma\b/i.test(h) ? 'mA' : /\(\s*a\s*\)|current\s*\(a|\bamp/i.test(h) ? 'A' : null; if (u) $('#jv-ju').value = u; } runJV(); });
+function runJV() { if (!hasJV) return; var out = $('#jv-out'), V = jvSet.col('v'), J = jvSet.col('j'); jv = null; if (!V || !J) { out.innerHTML = ''; drawJV(); return; }
   var s = sampleOK(out); if (!s) { drawJV(); return; }
   var u = $('#jv-ju').value, k = u === 'A' ? 1000 / s.area : u === 'mA' ? 1 / s.area : parseFloat(u), sw = jvSweeps(V, J.map(function (x) { return x * k; }));
   if (!sw.length) { out.innerHTML = '<p class="nyq-bad">Fewer than five usable points. Check the columns.</p>'; drawJV(); return; }
@@ -486,7 +487,7 @@ function runJV() { var out = $('#jv-out'), V = jvSet.col('v'), J = jvSet.col('j'
     download('jv-analysis.csv', t, 'text/csv'); });
   drawJV();
 }
-function drawJV() { var ids = ['jv-p1', 'jv-p2', 'jv-p3'], cap = { 'jv-c1': '', 'jv-c2': '', 'jv-c3': '' };
+function drawJV() { if (!hasJV) return; var ids = ['jv-p1', 'jv-p2', 'jv-p3'], cap = { 'jv-c1': '', 'jv-c2': '', 'jv-c3': '' };
   if (!jv || (jv.mode === 'light' && !jv.res.length) || (jv.mode === 'dark' && jv.d.error)) { ids.forEach(function (id) { $('#' + id).innerHTML = '<p class="nyq-empty muted">The plot appears here after data is loaded.</p>'; }); $('#jv-f3').hidden = false; return; }
   var cols = ['--accent', '--c-model', '--c-light', '--c-energy'];
   if (jv.mode === 'light') { var S = [], P = []; jv.res.forEach(function (r, i) { var keep = r.v.map(function (v, k) { return k; }).filter(function (k) { return r.v[k] >= -0.25 * r.voc && r.j[k] > -0.35 * r.jsc; });
@@ -502,7 +503,7 @@ function drawJV() { var ids = ['jv-p1', 'jv-p2', 'jv-p3'], cap = { 'jv-c1': '', 
     plot($('#jv-p3'), { w: 380, h: 290, series: [{ x: d.nv, y: d.n.map(function (x) { return Math.min(x, 10); }) }], xlabel: 'Voltage (V)', ylabel: 'Local ideality factor', zero: 'y' });
     $('#jv-c1').textContent = 'Dark J–V on a logarithmic scale. The shaded band is the exponential region used for the fit.'; $('#jv-c2').textContent = 'Logarithmic slope G(V). The dashed line marks the transition voltage.'; $('#jv-f3').hidden = false; }
 }
-['jv-mode', 'jv-ju', 'jv-pin'].forEach(function (id) { $('#' + id).addEventListener('change', runJV); });
+if (hasJV) ['jv-mode', 'jv-ju', 'jv-pin'].forEach(function (id) { $('#' + id).addEventListener('change', runJV); });
 
 /* ---------- shared ---------- */
 function redraw() { drawMS(); drawEIS(); drawJV(); cedRender(); }
