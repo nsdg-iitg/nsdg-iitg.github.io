@@ -11,5 +11,5 @@
   logo: fermi
 - name: "Nyquist"
   url: /nyquist/
-  note: "Impedance & C–V analysis"
+  note: "Impedance, C–V & J–V analysis"
   logo: nyquist

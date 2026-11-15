@@ -1,5 +1,5 @@
-/* Nyquist: impedance and C–V analysis in the browser. No data leaves the page.
-   Parts: table reader, plots, Mott–Schottky analysis, equivalent-circuit fitting, trap density of states from C–f. */
+/* Nyquist: impedance, C–V and J–V analysis in the browser. No data leaves the page.
+   Parts: table reader, plots, Mott–Schottky analysis, equivalent-circuit fitting, J–V analysis. */
 (function () {
 'use strict';
 var Q = 1.602176634e-19, KB = 1.380649e-23, EPS0 = 8.8541878128e-14; /* C, J/K, F/cm */
@@ -35,7 +35,7 @@ function parseTable(text) {
 }
 var GUESS = {
   f: /freq|^f\b|^f[\s_(/[]|\bhz\b/i, zre: /z'(?!')|z′(?!′)|zre|re\s*\(?z|z[\s_]*real|^z1\b|^r\b|^rs\b/i, zim: /z''|z″|z′′|zim|im\s*\(?z|z[\s_]*imag|^z2\b|^x\b/i,
-  zmod: /\|z\||zmod|z[\s_]*mag|^z\b|^z[\s_(/[]/i, ph: /phase|theta|θ|phi|deg/i, v: /volt|bias|^v\b|^v[\s_(/[]|vdc|potential/i, c: /^c\b|^c[\s_(/[]|capac|^cp\b|^cs\b/i
+  zmod: /\|z\||zmod|z[\s_]*mag|^z\b|^z[\s_(/[]/i, ph: /phase|theta|θ|phi|deg/i, v: /volt|bias|^v\b|^v[\s_(/[]|vdc|potential/i, j: /curr|^j\b|^i\b|^j[\s_(/[]|^i[\s_(/[]|amp|ma\b/i, c: /^c\b|^c[\s_(/[]|capac|^cp\b|^cs\b/i
 };
 function guessCol(t, key, taken) { for (var j = 0; j < t.heads.length; j++) if (taken.indexOf(j) < 0 && GUESS[key].test(t.heads[j])) return j; return -1; }
 
@@ -165,19 +165,51 @@ function derived(ck, p) { var out = [];
       if (R.length === 1 && X.length === 1 && n.k.length === 2) { var r = p[R[0].i], x = X[0], c = x.type === 'C' ? p[x.i] : Math.pow(p[x.i] * Math.pow(r, 1 - p[x.i + 1]), 1 / p[x.i + 1]); out.push({ name: R[0].name + '|' + x.name, C: c, tau: r * c, f: 1 / (2 * Math.PI * r * c), cpe: x.type === 'Q' }); } }
     n.k.forEach(walk); })(ck.ast); return out; }
 
-/* ---------- trap density of states from C–f (Walter et al.) ---------- */
-/* f in Hz, C in F, area in cm², W in cm. N_t(E_ω) = −(V_bi / (q W)) (dC/dω) ω / (k_B T), E_ω = k_B T ln(ω0/ω). */
-function trapDOS(f, C, area, vbi, W, T, nu0, win) {
-  var idx = f.map(function (_, i) { return i; }).filter(function (i) { return isNum(f[i]) && f[i] > 0 && isNum(C[i]); }).sort(function (a, b) { return f[a] - f[b]; });
-  var fs = idx.map(function (i) { return f[i]; }), ca = idx.map(function (i) { return C[i] / area; }), lw = fs.map(function (x) { return Math.log(2 * Math.PI * x); });
-  var h = Math.max(1, Math.floor((win || 5) / 2)), kT = KB * T, out = { f: fs, ca: ca, E: [], Nt: [], fd: [], dc: [] };
-  for (var i = 0; i < fs.length; i++) { var a = Math.max(0, i - h), b = Math.min(fs.length, i + h + 1); if (b - a < 3) continue; var ft = linfit(lw.slice(a, b), ca.slice(a, b)); if (!ft) continue;
-    out.fd.push(fs[i]); out.dc.push(-ft.b); out.E.push(kT / Q * Math.log(2 * Math.PI * nu0 / (2 * Math.PI * fs[i]))); out.Nt.push(-vbi * ft.b / (W * kT)); }
-  return out;
-}
-function trapz(x, y) { var s = 0; for (var i = 1; i < x.length; i++) s += 0.5 * (y[i] + y[i - 1]) * (x[i] - x[i - 1]); return s; }
+/* ---------- J–V analysis ---------- */
+function interp(x, y, x0) { for (var i = 1; i < x.length; i++) if ((x[i - 1] - x0) * (x[i] - x0) <= 0 && x[i] !== x[i - 1]) return y[i - 1] + (y[i] - y[i - 1]) * (x0 - x[i - 1]) / (x[i] - x[i - 1]); return NaN; }
+function nearest(x, x0, m) { var idx = x.map(function (_, i) { return i; }).sort(function (a, b) { return Math.abs(x[a] - x0) - Math.abs(x[b] - x0); }).slice(0, m).sort(function (a, b) { return a - b; }); return idx; }
+/* Splits a file into sweeps wherever the voltage changes direction. Each sweep is returned sorted by rising voltage. */
+function jvSweeps(V, J) { var pts = []; for (var i = 0; i < V.length; i++) if (isNum(V[i]) && isNum(J[i])) pts.push([V[i], J[i]]); var out = [], cur = [], dir = 0;
+  pts.forEach(function (p) { if (cur.length) { var d = Math.sign(p[0] - cur[cur.length - 1][0]); if (d !== 0 && dir !== 0 && d !== dir) { out.push({ dir: dir, pts: cur }); cur = [cur[cur.length - 1]]; dir = d; } else if (d !== 0) dir = d; } cur.push(p); });
+  if (cur.length) out.push({ dir: dir, pts: cur });
+  return out.filter(function (s) { return s.pts.length >= 5; }).map(function (s) { var q = s.pts.slice().sort(function (a, b) { return a[0] - b[0]; }); return { dir: s.dir, v: q.map(function (p) { return p[0]; }), j: q.map(function (p) { return p[1]; }) }; }); }
+/* Illuminated curve. v in V, j in mA/cm², pin in mW/cm². The curve is turned so that J_SC and V_OC are positive. */
+function jvLight(v, j, pin) { var o = { v: v.slice(), j: j.slice() }, j0 = interp(o.v, o.j, 0), extrap = false;
+  if (!isNum(j0)) { var k = nearest(o.v, 0, 2), f0 = linfit(k.map(function (i) { return o.v[i]; }), k.map(function (i) { return o.j[i]; })); j0 = f0 ? f0.a : NaN; extrap = true; }
+  if (!isNum(j0) || j0 === 0) return { error: 'The current at zero voltage could not be found.' };
+  if (j0 < 0) o.j = o.j.map(function (x) { return -x; });
+  function cross() { for (var i = 1; i < o.v.length; i++) if (o.j[i - 1] > 0 && o.j[i] <= 0) return o.v[i - 1] + (o.v[i] - o.v[i - 1]) * o.j[i - 1] / (o.j[i - 1] - o.j[i]); return NaN; }
+  var voc = cross(); if (!isNum(voc)) { o.v = o.v.map(function (x) { return -x; }).reverse(); o.j.reverse(); voc = cross(); }
+  if (!isNum(voc) || !(voc > 0)) return { error: 'The curve does not cross J = 0, so V_OC cannot be found. Check that this is an illuminated curve that extends beyond V_OC.' };
+  o.voc = voc; o.jsc = Math.abs(j0); o.extrap = extrap;
+  var im = -1, pm = -Infinity; for (var i = 0; i < o.v.length; i++) { if (o.v[i] < 0 || o.v[i] > voc) continue; var pw = o.v[i] * o.j[i]; if (pw > pm) { pm = pw; im = i; } }
+  if (im < 0) return { error: 'No points lie between short circuit and open circuit.' };
+  o.vmpp = o.v[im]; if (im > 0 && im < o.v.length - 1) { var x1 = o.v[im - 1], x2 = o.v[im], x3 = o.v[im + 1], y1 = x1 * o.j[im - 1], y2 = pm, y3 = x3 * o.j[im + 1], den = (x1 - x2) * (x1 - x3) * (x2 - x3), A = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / den, B = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / den; if (A < 0) { var xv = -B / (2 * A); if (xv > x1 && xv < x3) { var C0 = y1 - A * x1 * x1 - B * x1; o.vmpp = xv; pm = A * xv * xv + B * xv + C0; } } }
+  o.pmax = pm; o.jmpp = pm / o.vmpp; o.ff = pm / (o.voc * o.jsc); o.pce = pm / pin * 100;
+  function slopeR(x0) { var k = nearest(o.v, x0, 5); if (x0 === 0) { var wide = o.v.map(function (_, i) { return i; }).filter(function (i) { return Math.abs(o.v[i]) <= 0.2 * voc; }); if (wide.length > 5) k = wide; } var f = linfit(k.map(function (i) { return o.v[i]; }), k.map(function (i) { return o.j[i]; })); return f && f.b < 0 ? -1000 / f.b : NaN; } /* Ω cm² */
+  o.rs = slopeR(voc); o.rsh = slopeR(0); return o; }
+/* Dark curve. v in V, j in mA/cm². Forward bias is taken as the polarity with the larger current.
+   G(V) = d ln J / d ln V; its peak is the diffusion-to-drift transition voltage V_α (Andrabi and Mallajosyula, Sol. Energy 264, 112020 (2023)). */
+function jvDark(v, j, T) { var o = { v: v.slice(), j: j.slice() }, vt = KB * T / Q, i;
+  var mp = 0, mn = 0; for (i = 0; i < o.v.length; i++) { if (o.v[i] > 0) mp = Math.max(mp, Math.abs(o.j[i])); else if (o.v[i] < 0) mn = Math.max(mn, Math.abs(o.j[i])); }
+  if (mn > mp) { o.v = o.v.map(function (x) { return -x; }).reverse(); o.j.reverse(); }
+  var jz = interp(o.v, o.j, 0); if (isNum(jz) && interp(o.v, o.j, Math.max.apply(null, o.v)) < 0) o.j = o.j.map(function (x) { return -x; });
+  o.ja = o.j.map(Math.abs);
+  var k0 = nearest(o.v, 0, 5), f0 = linfit(k0.map(function (i) { return o.v[i]; }), k0.map(function (i) { return o.j[i]; })); o.rsh = f0 && f0.b > 0 && Math.max.apply(null, k0.map(function (i) { return Math.abs(o.v[i]); })) < 0.3 ? 1000 / f0.b : NaN;
+  var fv = [], fj = []; for (i = 0; i < o.v.length; i++) if (o.v[i] > 0 && o.j[i] > 0) { fv.push(o.v[i]); fj.push(o.j[i]); }
+  if (fv.length < 8) { o.error = 'Fewer than eight forward-bias points with positive current.'; return o; }
+  var lv = fv.map(Math.log), lj = fj.map(Math.log), h = 2; o.gv = []; o.g = []; o.nv = []; o.n = [];
+  for (i = h; i < fv.length - h; i++) { var a = linfit(lv.slice(i - h, i + h + 1), lj.slice(i - h, i + h + 1)), b = linfit(fv.slice(i - h, i + h + 1), lj.slice(i - h, i + h + 1)); if (a) { o.gv.push(fv[i]); o.g.push(a.b); } if (b && b.b > 0) { o.nv.push(fv[i]); o.n.push(1 / (vt * b.b)); } }
+  var ig = 0; for (i = 1; i < o.g.length; i++) if (o.g[i] > o.g[ig]) ig = i;
+  o.valpha = o.gv[ig]; o.gmax = o.g[ig]; o.edge = ig === 0 || ig === o.g.length - 1;
+  if (!o.edge) { var y1 = o.g[ig - 1], y2 = o.g[ig], y3 = o.g[ig + 1], x1 = o.gv[ig - 1], x2 = o.gv[ig], x3 = o.gv[ig + 1], den = (x1 - x2) * (x1 - x3) * (x2 - x3), A = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / den, B = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / den; if (A < 0) { var xv = -B / (2 * A); if (xv > x1 && xv < x3) { o.valpha = xv; o.gmax = y1 + A * (xv * xv - x1 * x1) + B * (xv - x1); } } }
+  if (o.n.length) { var im = 0; for (i = 1; i < o.n.length; i++) if (o.n[i] < o.n[im]) im = i; var lo = im, hi = im; while (lo > 0 && o.n[lo - 1] <= 1.15 * o.n[im]) lo--; while (hi < o.n.length - 1 && o.n[hi + 1] <= 1.15 * o.n[im]) hi++;
+    var xs = [], ys = []; for (i = 0; i < fv.length; i++) if (fv[i] >= o.nv[lo] - 1e-12 && fv[i] <= o.nv[hi] + 1e-12) { xs.push(fv[i]); ys.push(lj[i]); } var ff = xs.length >= 3 ? linfit(xs, ys) : null;
+    if (ff && ff.b > 0) { o.nid = 1 / (vt * ff.b); o.j0 = Math.exp(ff.a); o.fa = xs[0]; o.fb = xs[xs.length - 1]; o.fr2 = ff.r2; } }
+  var kt = []; for (i = Math.max(0, fv.length - 5); i < fv.length; i++) kt.push(i); var ft = linfit(kt.map(function (i) { return fv[i]; }), kt.map(function (i) { return fj[i]; })); o.rs = ft && ft.b > 0 ? 1000 / ft.b : NaN;
+  o.fv = fv; o.fj = fj; return o; }
 
-var Core = { parseTable: parseTable, mottSchottky: mottSchottky, parseCircuit: parseCircuit, zOf: zOf, guessParams: guessParams, fitCircuit: fitCircuit, fitBest: fitBest, derived: derived, trapDOS: trapDOS, linfit: linfit, EPS0: EPS0, Q: Q, KB: KB };
+var Core = { parseTable: parseTable, mottSchottky: mottSchottky, parseCircuit: parseCircuit, zOf: zOf, guessParams: guessParams, fitCircuit: fitCircuit, fitBest: fitBest, derived: derived, jvSweeps: jvSweeps, jvLight: jvLight, jvDark: jvDark, linfit: linfit, EPS0: EPS0, Q: Q, KB: KB };
 if (typeof module !== 'undefined' && module.exports) { module.exports = Core; return; }
 window.NyquistCore = Core;
 
@@ -274,8 +306,17 @@ var EXAMPLE = {
     { name: 'Semicircle with an inductive loop', circuit: 'Rs-(R1|Q1|(R2-L2))', p: [10, 400, 1.2e-7, 0.93, 600, 400], lo: -2, hi: 6 }
   ].map(function (x) { x.before = function () { $('#eis-ckt').value = x.circuit; $('#eis-preset').value = $('#eis-preset option[value="' + x.circuit + '"]') ? x.circuit : ''; };
     x.text = function () { var ck = parseCircuit(x.circuit), o = 'Frequency (Hz)\tZ\' (Ohm)\t-Z\'\' (Ohm)\n', n = Math.round((x.hi - x.lo) * 10); for (var i = 0; i <= n; i++) { var f = Math.pow(10, x.hi - i * 0.1), z = zOf(ck.ast, 2 * Math.PI * f, x.p), m = Math.hypot(z[0], z[1]); o += f.toExponential(4) + '\t' + (z[0] + 0.004 * m * noise(i)).toExponential(5) + '\t' + (-z[1] + 0.004 * m * noise(i + 99)).toExponential(5) + '\n'; } return o; }; return x; }),
-  dos: function () { var o = 'Frequency (Hz)\tCapacitance (F)\n', kT = 0.02585, A = sample().area > 0 ? sample().area : 0.1; function erfc(x) { var t = 1 / (1 + 0.3275911 * Math.abs(x)), y = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-x * x); return x >= 0 ? y : 2 - y; }
-    for (var i = 0; i <= 60; i++) { var f = Math.pow(10, 1 + i * 0.0833), E = kT * Math.log(1e12 / f), c = A * (2.2e-8 + 1.4e-8 * 0.5 * erfc((0.42 - E) / (Math.SQRT2 * 0.035))); o += f.toExponential(4) + '\t' + (c * (1 + 0.0015 * noise(i + 7))).toExponential(5) + '\n'; } return o; }
+  jv: (function () {
+    /* single-diode model, solved for J at each V; J in mA/cm² */
+    function diode(v, P) { var jj = 0, vt = 0.02585; for (var it = 0; it < 300; it++) { var vd = v - jj * P.rs * 1e-3, e = Math.exp(Math.min(vd / (P.n * vt), 60)), F = P.j0 * (e - 1) + vd / P.rsh * 1e3 - P.jph - jj, dF = -P.j0 * e * P.rs * 1e-3 / (P.n * vt) - P.rs / P.rsh - 1, st = F / dF; jj -= st; if (Math.abs(st) < 1e-12) break; } return jj; }
+    function sweep(P, va, vb, n, seed) { var o = ''; for (var i = 0; i <= n; i++) { var v = va + (vb - va) * i / n, jj = diode(v, P); o += v.toFixed(4) + '\t' + (jj * (1 + 0.002 * noise(i + seed)) + 0.004 * (P.jph ? 1 : 0) * noise(i + seed + 50)).toExponential(5) + '\n'; } return o; }
+    var rev = { jph: 22.4, j0: 2e-9, n: 1.6, rs: 4, rsh: 2500 }, fwd = { jph: 22.3, j0: 6e-9, n: 1.6, rs: 6.5, rsh: 1400 }, dark = { jph: 0, j0: 2e-9, n: 1.6, rs: 4, rsh: 4e5 }, head = 'Voltage (V)\tCurrent density (mA/cm2)\n';
+    return [
+      { name: 'Illuminated, one sweep', mode: 'light', text: function () { return head + sweep(rev, -0.1, 1.15, 62, 3); } },
+      { name: 'Illuminated, reverse and forward sweeps', mode: 'light', text: function () { return head + sweep(rev, 1.15, -0.1, 62, 3) + sweep(fwd, -0.1, 1.15, 62, 31).split('\n').slice(1).join('\n'); } },
+      { name: 'Dark', mode: 'dark', text: function () { return head + sweep(dark, -0.5, 1.5, 100, 11); } }
+    ].map(function (x) { x.before = function () { $('#jv-mode').value = x.mode; $('#jv-ju').value = '1'; }; return x; });
+  })()
 };
 
 /* ---------- 1. Mott–Schottky ---------- */
@@ -297,9 +338,8 @@ function runMS() {
   nt.push('In perovskite and organic devices, mobile ions and injected carriers can give an apparent slope in 1/C². The result is reliable only where C is measured at a frequency above the ionic response and below the series-resistance roll-off.');
   out.innerHTML = rows([['V<sub>bi</sub>', fix(r.vbi, 3) + ' V'], ['Doping density N', sci(r.N) + ' cm⁻³'], ['Voltage intercept', fix(r.vint, 3) + ' V'], ['Slope of 1/C²', sci(r.fit.b) + ' cm⁴ F⁻² V⁻¹'], ['Depletion width at ' + fix(r.v0, 2) + ' V', fix(r.w0 * 1e7, 1) + ' nm'], ['R² of the fit', fix(r.fit.r2, 4) + ' (' + r.fit.n + ' points)']]) +
     '<p class="muted small">V<sub>bi</sub> is the intercept corrected by k<sub>B</sub>T/q (' + fix(r.vth * 1e3, 1) + ' mV). The slope is ' + (r.fit.b < 0 ? 'negative' : 'positive') + '; with the bias defined as positive on the p side, a negative slope is the usual depletion behaviour.</p>' + notes(nt) +
-    '<p><button type="button" class="btn btn-ghost" id="ms-csv">Download results (CSV)</button> <button type="button" class="btn btn-ghost" id="ms-todos">Use V<sub>bi</sub> and W in the trap density tab</button></p>';
+    '<p><button type="button" class="btn btn-ghost" id="ms-csv">Download results (CSV)</button></p>';
   $('#ms-csv').addEventListener('click', function () { var t = 'quantity,value,unit\nV_bi,' + r.vbi + ',V\nN,' + r.N + ',cm^-3\nintercept,' + r.vint + ',V\nslope,' + r.fit.b + ',cm^4 F^-2 V^-1\nW(' + r.v0 + ' V),' + r.w0 * 1e7 + ',nm\nR2,' + r.fit.r2 + ',\nfit_from,' + r.va + ',V\nfit_to,' + r.vb + ',V\n\nV (V),C (F/cm^2),1/C^2 (cm^4/F^2)\n' + r.v.map(function (v, i) { return v + ',' + r.ca[i] + ',' + r.y[i]; }).join('\n'); download('mott-schottky.csv', t, 'text/csv'); });
-  $('#ms-todos').addEventListener('click', function () { $('#dos-vbi').value = +r.vbi.toFixed(3); $('#dos-w').value = +(r.w0 * 1e7).toFixed(1); runDOS(); $('.nyq-tabs [data-pane=pane-dos]').click(); });
   drawMS();
 }
 function drawMS() { var r = msRes; if (!r || !r.v.length) { ['ms-p1', 'ms-p2', 'ms-p3'].forEach(function (id) { $('#' + id).innerHTML = '<p class="nyq-empty muted">The plot appears here after data is loaded.</p>'; }); return; }
@@ -337,14 +377,13 @@ function showEIS() { var r = eis.res, ck = eis.ck, out = $('#eis-out'), nt = [],
   if ($('#eis-wt').value !== 'unit' && rms > 0.05) nt.push('The fit does not follow the data closely (residual above 5 %). The circuit may be missing an element, or the starting values led to a poor solution. Edit a value and press Fit again.');
   if (big) nt.push('Some standard errors are above 50 %. Those elements are not determined by this data. Hold them fixed or use a simpler circuit.');
   ck.params.forEach(function (d, i) { if (d.sub === 'n' && r.p[i] < 0.6) nt.push(esc(d.el) + ' has n = ' + r.p[i].toFixed(2) + '. A value this far below 1 usually means the arc contains more than one process, or diffusion.'); });
-  h += notes(nt) + '<p><button type="button" class="btn" id="eis-fit">Fit from these values</button> <button type="button" class="btn btn-ghost" id="eis-re">New automatic start</button> <button type="button" class="btn btn-ghost" id="eis-csv">Download results (CSV)</button> <button type="button" class="btn btn-ghost" id="eis-todos">Use this data for C–f</button></p>';
+  h += notes(nt) + '<p><button type="button" class="btn" id="eis-fit">Fit from these values</button> <button type="button" class="btn btn-ghost" id="eis-re">New automatic start</button> <button type="button" class="btn btn-ghost" id="eis-csv">Download results (CSV)</button></p>';
   out.innerHTML = h;
   $$('.nyq-fx', out).forEach(function (c) { c.addEventListener('change', function () { eis.fixed[+c.getAttribute('data-i')] = c.checked; }); });
   function readStart() { $$('.nyq-pv', out).forEach(function (inp) { var v = parseFloat(inp.value); if (v > 0) eis.start[+inp.getAttribute('data-i')] = v; }); }
   $('#eis-fit').addEventListener('click', function () { readStart(); runEIS(false); });
   $('#eis-re').addEventListener('click', function () { runEIS(true); });
   $('#eis-csv').addEventListener('click', function () { var d = eis.data, w, t = 'circuit,' + ck.src + '\nelement,value,unit,relative std error\n' + ck.params.map(function (p, i) { return p.label + ',' + r.p[i] + ',' + p.unit + ',' + (eis.fixed[i] ? 'held' : r.err[i]); }).join('\n') + '\n\nf (Hz),Z\' (Ohm),Z\'\' (Ohm),fit Z\' (Ohm),fit Z\'\' (Ohm)\n' + d.f.map(function (f, i) { w = zOf(ck.ast, 2 * Math.PI * f, r.p); return f + ',' + d.zre[i] + ',' + d.zim[i] + ',' + w[0] + ',' + w[1]; }).join('\n'); download('circuit-fit.csv', t, 'text/csv'); });
-  $('#eis-todos').addEventListener('click', function () { var d = eis.data.all, t = 'Frequency (Hz)\tCapacitance (F)\n'; for (var i = 0; i < d.f.length; i++) { var m = d.zre[i] * d.zre[i] + d.zim[i] * d.zim[i]; t += d.f[i] + '\t' + (-d.zim[i] / m / (2 * Math.PI * d.f[i])) + '\n'; } $('#dos-cu').value = '1'; sets.dos.load(t, 'From the impedance data, C = Im(1/Z)/ω'); $('.nyq-tabs [data-pane=pane-dos]').click(); });
 }
 function drawEIS() { var d = eis.data, r = eis.res; if (!d) { ['eis-p1', 'eis-p2', 'eis-p3'].forEach(function (id) { $('#' + id).innerHTML = '<p class="nyq-empty muted">The plot appears here after data is loaded.</p>'; }); return; }
   var a = d.all, fit = { f: [], re: [], im: [] }; if (r) { var lo = Math.log10(Math.min.apply(null, d.f)), hi = Math.log10(Math.max.apply(null, d.f)); for (var i = 0; i <= 240; i++) { var f = Math.pow(10, lo + (hi - lo) * i / 240), z = zOf(eis.ck.ast, 2 * Math.PI * f, r.p); fit.f.push(f); fit.re.push(z[0]); fit.im.push(z[1]); } }
@@ -411,37 +450,63 @@ $('#eis-preset').addEventListener('change', function (e) { if (e.target.value) {
 $('#eis-ckt').addEventListener('change', function () { $('#eis-preset').value = ''; runEIS(true); });
 ['eis-fmt', 'eis-neg', 'eis-fa', 'eis-fb', 'eis-wt'].forEach(function (id) { $('#' + id).addEventListener('change', function () { runEIS(true); }); });
 
-/* ---------- 3. trap density of states ---------- */
-var dosRes = null;
-var dosSet = dataset('dos', [{ key: 'f', label: 'Frequency (Hz)' }, { key: 'c', label: 'Capacitance' }], function () { runDOS(); });
-function runDOS() { var out = $('#dos-out'), f = dosSet.col('f'), C = dosSet.col('c'); dosRes = null; if (!f || !C) { out.innerHTML = ''; drawDOS(); return; }
-  var s = sampleOK(out); if (!s) { drawDOS(); return; }
-  var vbi = val('dos-vbi'), W = val('dos-w'), nu0 = val('dos-nu'), cu = parseFloat($('#dos-cu').value), win = parseInt($('#dos-win').value, 10);
-  if (!(vbi > 0) || !(W > 0) || !(nu0 > 0)) { dosRes = trapDOS(f, C.map(function (c) { return c * cu; }), s.area, 1, 1, s.T, 1e12, win); dosRes.partial = true; out.innerHTML = '<p class="nyq-bad">Enter V<sub>bi</sub>, the depletion width W and the attempt-to-escape frequency to obtain the trap density. V<sub>bi</sub> and W can be taken from the Mott–Schottky tab.</p>'; drawDOS(); return; }
-  var r = trapDOS(f, C.map(function (c) { return c * cu; }), s.area, vbi, W * 1e-7, s.T, nu0, win); dosRes = r;
-  var ea = val('dos-ea'), eb = val('dos-eb'), E = [], N = []; for (var i = r.E.length - 1; i >= 0; i--) { if ((isNum(ea) && r.E[i] < ea) || (isNum(eb) && r.E[i] > eb)) continue; E.push(r.E[i]); N.push(Math.max(r.Nt[i], 0)); }
-  if (E.length < 3) { out.innerHTML = '<p class="nyq-bad">Fewer than three points fall in the chosen energy range.</p>'; drawDOS(); return; }
-  var ip = 0; for (i = 1; i < N.length; i++) if (N[i] > N[ip]) ip = i; var tot = trapz(E, N), nt = [], negs = r.Nt.filter(function (v) { return v < 0; }).length;
-  if (ip === 0 || ip === N.length - 1) nt.push('The largest value is at the edge of the energy range, so no peak is resolved. A wider frequency range or another temperature is needed to find the peak.');
-  if (negs > r.Nt.length * 0.25) nt.push('The capacitance rises with frequency over part of the range (negative values, shown as gaps). This is usually series resistance or inductance at high frequency, not traps.');
-  nt.push('The energy scale depends on the attempt-to-escape frequency: a factor of 10 in ν₀ shifts all energies by ' + fix(KB * s.T / Q * Math.log(10) * 1e3, 0) + ' meV. Take ν₀ from temperature-dependent C–f or DLTS where possible.');
-  nt.push('In perovskite devices the low-frequency rise of the capacitance often comes from mobile ions or electrode polarisation. A density of states from that range should not be assigned to electronic traps without a check against temperature and bias.');
-  out.innerHTML = rows([['Peak energy E<sub>ω</sub>', fix(E[ip], 3) + ' eV'], ['Peak density', sci(N[ip]) + ' cm⁻³ eV⁻¹'], ['Integrated trap density', sci(tot) + ' cm⁻³'], ['Energy range used', fix(E[0], 3) + ' to ' + fix(E[E.length - 1], 3) + ' eV']]) +
-    '<p class="muted small">E<sub>ω</sub> = k<sub>B</sub>T ln(2πν₀/ω) is measured from the band edge. N<sub>t</sub>(E<sub>ω</sub>) = −(V<sub>bi</sub>/qW) (dC/dω) ω/k<sub>B</sub>T, after Walter et al., J. Appl. Phys. 80, 4411 (1996).</p>' + notes(nt) + '<p><button type="button" class="btn btn-ghost" id="dos-csv">Download results (CSV)</button></p>';
-  $('#dos-csv').addEventListener('click', function () { download('trap-density.csv', 'peak energy,' + E[ip] + ',eV\npeak density,' + N[ip] + ',cm^-3 eV^-1\nintegrated density,' + tot + ',cm^-3\n\nf (Hz),E_omega (eV),-dC/dln(omega) (F/cm^2),N_t (cm^-3 eV^-1)\n' + r.fd.map(function (x, i) { return x + ',' + r.E[i] + ',' + r.dc[i] + ',' + r.Nt[i]; }).join('\n'), 'text/csv'); });
-  drawDOS();
+/* ---------- 3. J–V ---------- */
+var jv = null;
+var jvSet = dataset('jv', [{ key: 'v', label: 'Voltage (V)' }, { key: 'j', label: 'Current or current density' }], function (fresh) { if (fresh && jvSet.table) { var h = jvSet.table.heads[jvSet.map.j] || ''; var u = /ma\s*\/?\s*cm/i.test(h) ? '1' : /a\s*\/?\s*cm/i.test(h) ? '1000' : /a\s*\/?\s*m/i.test(h) ? '0.1' : /\(\s*ma\s*\)|\bma\b/i.test(h) ? 'mA' : /\(\s*a\s*\)|current\s*\(a|\bamp/i.test(h) ? 'A' : null; if (u) $('#jv-ju').value = u; } runJV(); });
+function runJV() { var out = $('#jv-out'), V = jvSet.col('v'), J = jvSet.col('j'); jv = null; if (!V || !J) { out.innerHTML = ''; drawJV(); return; }
+  var s = sampleOK(out); if (!s) { drawJV(); return; }
+  var u = $('#jv-ju').value, k = u === 'A' ? 1000 / s.area : u === 'mA' ? 1 / s.area : parseFloat(u), sw = jvSweeps(V, J.map(function (x) { return x * k; }));
+  if (!sw.length) { out.innerHTML = '<p class="nyq-bad">Fewer than five usable points. Check the columns.</p>'; drawJV(); return; }
+  var mode = $('#jv-mode').value; if (mode === 'auto') { var a = sw[0], j0 = interp(a.v, a.j, 0), mx = Math.max.apply(null, a.j.map(Math.abs)); mode = isNum(j0) && Math.abs(j0) > 0.02 * mx ? 'light' : 'dark'; }
+  var nt = [], h = '';
+  if (mode === 'light') { var pin = val('jv-pin'); if (!(pin > 0)) { out.innerHTML = '<p class="nyq-bad">Enter the incident power density.</p>'; drawJV(); return; }
+    var res = sw.map(function (x) { var r = jvLight(x.v, x.j, pin); r.dir = x.dir; r.label = sw.length === 1 ? 'Sweep' : x.dir < 0 ? 'Reverse sweep' : 'Forward sweep'; return r; }), ok = res.filter(function (r) { return !r.error; });
+    jv = { mode: 'light', res: ok };
+    if (!ok.length) { out.innerHTML = '<p class="nyq-bad">' + res[0].error + '</p>'; drawJV(); return; }
+    var q = [['V<sub>OC</sub> (V)', function (r) { return fix(r.voc, 3); }], ['J<sub>SC</sub> (mA cm⁻²)', function (r) { return fix(r.jsc, 2); }], ['Fill factor (%)', function (r) { return fix(r.ff * 100, 1); }], ['PCE (%)', function (r) { return fix(r.pce, 2); }], ['V<sub>MPP</sub> (V)', function (r) { return fix(r.vmpp, 3); }], ['J<sub>MPP</sub> (mA cm⁻²)', function (r) { return fix(r.jmpp, 2); }], ['P<sub>max</sub> (mW cm⁻²)', function (r) { return fix(r.pmax, 2); }], ['R at V<sub>OC</sub> (Ω cm²)', function (r) { return isNum(r.rs) ? r.rs.toPrecision(3) : '–'; }], ['R at short circuit (Ω cm²)', function (r) { return isNum(r.rsh) ? r.rsh.toPrecision(3) : '–'; }]];
+    h += '<table class="nyq-tab nyq-jvt"><thead><tr><th>Quantity</th>' + ok.map(function (r) { return '<th>' + r.label + '</th>'; }).join('') + '</tr></thead><tbody>' + q.map(function (row) { return '<tr><td>' + row[0] + '</td>' + ok.map(function (r) { return '<td>' + row[1](r) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+    var rv = ok.filter(function (r) { return r.dir < 0; })[0], fw = ok.filter(function (r) { return r.dir > 0; })[0];
+    if (ok.length >= 2 && rv && fw) { jv.hi = (rv.pce - fw.pce) / rv.pce; h += rows([['Hysteresis index', fix(jv.hi, 3)]]) + '<p class="muted small">Hysteresis index = (PCE<sub>reverse</sub> − PCE<sub>forward</sub>)/PCE<sub>reverse</sub>.</p>'; if (ok.length > 2) nt.push('The file holds ' + ok.length + ' sweeps. The hysteresis index uses the first reverse and the first forward sweep.'); }
+    else if (ok.length === 1) nt.push('The file holds one sweep, so hysteresis cannot be assessed. Load a file with a reverse and a forward sweep for the hysteresis index.');
+    if (ok.some(function (r) { return r.extrap; })) nt.push('The data do not include V = 0, so J<sub>SC</sub> is extrapolated from the two nearest points.');
+    nt.push('The resistances are the inverse slopes of the curve at V<sub>OC</sub> and at short circuit. They estimate R<sub>s</sub> and R<sub>sh</sub> only for a device that follows the single-diode model; in perovskite cells both depend on scan rate and direction.');
+    nt.push('PCE uses the incident power and the area entered here. J<sub>SC</sub> should be checked against the integrated EQE.');
+    h += '<p class="muted small">The curve is shown with J<sub>SC</sub> and V<sub>OC</sub> positive, whatever the sign convention of the file.</p>'; }
+  else { var d = jvDark(sw[0].v, sw[0].j, s.T); jv = { mode: 'dark', d: d };
+    if (d.error) { out.innerHTML = '<p class="nyq-bad">' + d.error + '</p>'; drawJV(); return; }
+    h += rows([['Transition voltage V<sub>α</sub>', fix(d.valpha, 3) + ' V'], ['Peak of G = d ln J / d ln V', fix(d.gmax, 1)], ['Ideality factor', isNum(d.nid) ? fix(d.nid, 2) : '–'], ['J<sub>0</sub>', isNum(d.j0) ? sci(d.j0) + ' mA cm⁻²' : '–'], ['Exponential region', isNum(d.fa) ? fix(d.fa, 2) + ' to ' + fix(d.fb, 2) + ' V' : '–'], ['R near 0 V (shunt)', isNum(d.rsh) ? sci(d.rsh) + ' Ω cm²' : '–'], ['dV/dJ at highest bias', isNum(d.rs) ? d.rs.toPrecision(3) + ' Ω cm²' : '–']]) +
+      '<p class="muted small">V<sub>α</sub> is the voltage at which the logarithmic slope G(V) = d ln J / d ln V peaks, where the current changes from diffusion-limited to drift-limited. After A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023).</p>';
+    if (d.edge) nt.push('G(V) is largest at the end of the voltage range, so no peak is resolved. Extend the sweep to higher forward bias to find V<sub>α</sub>.');
+    if (isNum(d.nid) && (d.nid < 0.9 || d.nid > 4)) nt.push('The ideality factor lies outside the range of 1 to 2 expected for diffusion and trap-assisted recombination. The exponential region may be masked by the shunt or by series resistance.');
+    if (sw.length > 1) nt.push('The file holds ' + sw.length + ' sweeps. Only the first sweep is analysed.');
+    nt.push('The ideality factor and J<sub>0</sub> come from a straight-line fit of ln J against V over the region where the local ideality factor is within 15 % of its minimum. dV/dJ at the highest bias is an upper limit for the series resistance.'); }
+  out.innerHTML = h + notes(nt) + '<p><button type="button" class="btn btn-ghost" id="jv-csv">Download results (CSV)</button></p>';
+  $('#jv-csv').addEventListener('click', function () { var t; if (jv.mode === 'light') { t = 'quantity,' + jv.res.map(function (r) { return r.label; }).join(',') + '\n' + [['V_OC (V)', 'voc'], ['J_SC (mA/cm2)', 'jsc'], ['FF', 'ff'], ['PCE (%)', 'pce'], ['V_MPP (V)', 'vmpp'], ['J_MPP (mA/cm2)', 'jmpp'], ['P_max (mW/cm2)', 'pmax'], ['R at V_OC (Ohm cm2)', 'rs'], ['R at short circuit (Ohm cm2)', 'rsh']].map(function (r) { return r[0] + ',' + jv.res.map(function (x) { return x[r[1]]; }).join(','); }).join('\n') + (isNum(jv.hi) ? '\nhysteresis index,' + jv.hi : '') + '\n'; jv.res.forEach(function (r) { t += '\n' + r.label + '\nV (V),J (mA/cm2),P (mW/cm2)\n' + r.v.map(function (v, i) { return v + ',' + r.j[i] + ',' + v * r.j[i]; }).join('\n') + '\n'; }); }
+    else { var d = jv.d; t = 'V_alpha (V),' + d.valpha + '\npeak G,' + d.gmax + '\nideality factor,' + d.nid + '\nJ0 (mA/cm2),' + d.j0 + '\nfit from (V),' + d.fa + '\nfit to (V),' + d.fb + '\nR near 0 V (Ohm cm2),' + d.rsh + '\ndV/dJ at highest bias (Ohm cm2),' + d.rs + '\n\nV (V),G = dlnJ/dlnV\n' + d.gv.map(function (v, i) { return v + ',' + d.g[i]; }).join('\n') + '\n\nV (V),J (mA/cm2)\n' + d.v.map(function (v, i) { return v + ',' + d.j[i]; }).join('\n'); }
+    download('jv-analysis.csv', t, 'text/csv'); });
+  drawJV();
 }
-function drawDOS() { var r = dosRes; if (!r || !r.f.length) { ['dos-p1', 'dos-p2', 'dos-p3'].forEach(function (id) { $('#' + id).innerHTML = '<p class="nyq-empty muted">The plot appears here after data is loaded.</p>'; }); return; }
-  plot($('#dos-p1'), { w: 380, h: 290, series: [{ x: r.f, y: r.ca.map(function (c) { return c * 1e9; }) }], xlabel: 'Frequency (Hz)', ylabel: 'Capacitance (nF cm⁻²)', xlog: true });
-  plot($('#dos-p2'), { w: 380, h: 290, series: [{ x: r.fd, y: r.dc.map(function (c) { return c * 1e9; }) }], xlabel: 'Frequency (Hz)', ylabel: '−dC/d ln ω (nF cm⁻²)', xlog: true });
-  if (r.partial) $('#dos-p3').innerHTML = '<p class="nyq-empty muted">The trap density appears here after V<sub>bi</sub>, W and ν₀ are entered.</p>';
-  else { var ea = val('dos-ea'), eb = val('dos-eb'); plot($('#dos-p3'), { series: [{ x: r.E, y: r.Nt, line: 1, width: 1.2 }, { x: r.E, y: r.Nt }], xlabel: 'Demarcation energy (eV)', ylabel: 'Trap density of states (cm⁻³ eV⁻¹)', ylog: true, band: isNum(ea) && isNum(eb) ? [ea, eb] : null }); }
+function drawJV() { var ids = ['jv-p1', 'jv-p2', 'jv-p3'], cap = { 'jv-c1': '', 'jv-c2': '', 'jv-c3': '' };
+  if (!jv || (jv.mode === 'light' && !jv.res.length) || (jv.mode === 'dark' && jv.d.error)) { ids.forEach(function (id) { $('#' + id).innerHTML = '<p class="nyq-empty muted">The plot appears here after data is loaded.</p>'; }); $('#jv-f3').hidden = false; return; }
+  var cols = ['--accent', '--c-model', '--c-light', '--c-energy'];
+  if (jv.mode === 'light') { var S = [], P = []; jv.res.forEach(function (r, i) { var keep = r.v.map(function (v, k) { return k; }).filter(function (k) { return r.v[k] >= -0.25 * r.voc && r.j[k] > -0.35 * r.jsc; });
+      S.push({ x: keep.map(function (k) { return r.v[k]; }), y: keep.map(function (k) { return r.j[k]; }), line: 1, color: cols[i % 4], label: r.label }); S.push({ x: [r.vmpp], y: [r.jmpp], color: cols[i % 4], r: 5, hollow: 1 });
+      var kp = keep.filter(function (k) { return r.v[k] >= 0 && r.v[k] <= r.voc; }); P.push({ x: kp.map(function (k) { return r.v[k]; }), y: kp.map(function (k) { return r.v[k] * r.j[k]; }), line: 1, color: cols[i % 4], label: r.label }); });
+    plot($('#jv-p1'), { series: S, xlabel: 'Voltage (V)', ylabel: 'Current density (mA cm⁻²)', legend: 'bottom' });
+    plot($('#jv-p2'), { w: 380, h: 290, series: P, xlabel: 'Voltage (V)', ylabel: 'Power density (mW cm⁻²)', zero: 'y' });
+    $('#jv-c1').textContent = 'Illuminated J–V. The open circle marks the maximum power point.'; $('#jv-c2').textContent = 'Output power density.'; $('#jv-f3').hidden = true; }
+  else { var d = jv.d, fit = { x: [], y: [] }; if (isNum(d.nid)) { var vt = KB * val('s-T') / Q; [d.fa - 0.05, d.fb + 0.05].forEach(function (v) { fit.x.push(v); fit.y.push(d.j0 * Math.exp(v / (d.nid * vt))); }); }
+    plot($('#jv-p1'), { series: [{ x: d.v, y: d.ja, label: 'Measured |J|' }, { x: fit.x, y: fit.y, line: 1, color: '--c-model', label: 'Exponential fit' }], xlabel: 'Voltage (V)', ylabel: '|J| (mA cm⁻²)', ylog: true, band: isNum(d.fa) ? [d.fa, d.fb] : null });
+    var gm = Math.max.apply(null, d.g);
+    plot($('#jv-p2'), { w: 380, h: 290, series: [{ x: d.gv, y: d.g, line: 1, width: 1.4 }, { x: d.gv, y: d.g, r: 2 }, { x: [d.valpha, d.valpha], y: [0, gm * 1.05], line: 1, dash: 1, color: '--c-model', width: 1.4 }], xlabel: 'Voltage (V)', ylabel: 'G = d ln J / d ln V', zero: 'y' });
+    plot($('#jv-p3'), { w: 380, h: 290, series: [{ x: d.nv, y: d.n.map(function (x) { return Math.min(x, 10); }) }], xlabel: 'Voltage (V)', ylabel: 'Local ideality factor', zero: 'y' });
+    $('#jv-c1').textContent = 'Dark J–V on a logarithmic scale. The shaded band is the exponential region used for the fit.'; $('#jv-c2').textContent = 'Logarithmic slope G(V). The dashed line marks the transition voltage.'; $('#jv-f3').hidden = false; }
 }
-['dos-vbi', 'dos-w', 'dos-nu', 'dos-cu', 'dos-win', 'dos-ea', 'dos-eb'].forEach(function (id) { $('#' + id).addEventListener('change', runDOS); });
+['jv-mode', 'jv-ju', 'jv-pin'].forEach(function (id) { $('#' + id).addEventListener('change', runJV); });
 
 /* ---------- shared ---------- */
-function redraw() { drawMS(); drawEIS(); drawDOS(); cedRender(); }
-['s-area', 's-eps', 's-T', 's-d'].forEach(function (id) { $('#' + id).addEventListener('change', function () { runMS(); runDOS(); }); });
+function redraw() { drawMS(); drawEIS(); drawJV(); cedRender(); }
+['s-area', 's-eps', 's-T', 's-d'].forEach(function (id) { $('#' + id).addEventListener('change', function () { runMS(); runJV(); }); });
 new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
 try { cedSync(parseCircuit($('#eis-ckt').value).ast); } catch (e) {}
 redraw();

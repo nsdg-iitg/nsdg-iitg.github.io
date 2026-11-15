@@ -65,3 +65,5 @@
 .ced-bar select { width: 100%; }
 .ced-bar .btn { padding: 5px 10px; font-size: .82rem; }
 .ced-bar .btn:disabled { opacity: .45; cursor: default; }
+.nyq-jvt th:not(:first-child), .nyq-jvt td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; padding-right: 0; padding-left: 8px; }
+.nyq-jvt td:first-child { white-space: normal; color: var(--muted); }
