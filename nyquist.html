@@ -59,7 +59,7 @@ description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of i
         <option value="Rs-(R1|Q1)-(R2|Q2)" selected>Two depressed arcs: Rs-(R1|Q1)-(R2|Q2)</option>
         <option value="Rs-(C1|(R1-(R2|C2)))">Nested (geometric C with a slow branch): Rs-(C1|(R1-(R2|C2)))</option>
         <option value="Rs-(C1|(R1-W1))">Randles with diffusion: Rs-(C1|(R1-W1))</option>
-        <option value="Rs-(R1|Q1)-(R2|L2)">Arc with a low-frequency inductive loop: Rs-(R1|Q1)-(R2|L2)</option>
+        <option value="Rs-(R1|Q1|(R2-L2))">Arc with a low-frequency inductive loop: Rs-(R1|Q1|(R2-L2))</option>
         <option value="">Custom</option>
       </select></label>
       <label class="nyq-f"><span>Circuit</span><input type="text" id="eis-ckt" value="Rs-(R1|Q1)-(R2|Q2)" spellcheck="false" autocomplete="off"></label>

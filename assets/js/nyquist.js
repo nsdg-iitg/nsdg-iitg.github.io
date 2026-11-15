@@ -239,7 +239,7 @@ $$('.nyq-tabs button').forEach(function (b) { b.addEventListener('click', functi
 var sets = {};
 function dataset(key, roles, onChange) {
   var box = $('#' + key + '-data'), st = { table: null, map: {}, name: '' }; sets[key] = st;
-  box.innerHTML = '<div class="nyq-load"><label class="btn btn-ghost nyq-file">Open data file<input type="file" accept=".csv,.txt,.dat,.tsv,.z,.mpt,text/*" hidden></label><button type="button" class="btn btn-ghost" data-act="paste">Paste data</button><button type="button" class="btn btn-ghost" data-act="example">Load example</button></div>' +
+  box.innerHTML = '<div class="nyq-load"><label class="btn btn-ghost nyq-file">Open data file<input type="file" accept=".csv,.txt,.dat,.tsv,.z,.mpt,text/*" hidden></label><button type="button" class="btn btn-ghost" data-act="paste">Paste data</button>' + (Array.isArray(EXAMPLE[key]) ? '<select class="nyq-samples" aria-label="Sample data"><option value="">Load sample data…</option>' + EXAMPLE[key].map(function (x, i) { return '<option value="' + i + '">' + x.name + '</option>'; }).join('') + '</select>' : '<button type="button" class="btn btn-ghost" data-act="example">Load example</button>') + '</div>' +
     '<textarea class="nyq-paste" rows="5" hidden placeholder="Paste the columns here, then press Read"></textarea><button type="button" class="btn nyq-read" hidden>Read</button><p class="nyq-status muted small" role="status">No data loaded. Text files with columns separated by commas, tabs, semicolons or spaces are accepted.</p><div class="nyq-cols"></div>';
   var status = $('.nyq-status', box), cols = $('.nyq-cols', box), ta = $('.nyq-paste', box), rd = $('.nyq-read', box);
   function load(text, name) { var t = parseTable(text); if (!t) { status.textContent = 'This file could not be read as a table of numbers. It needs at least two columns and three rows.'; status.className = 'nyq-status small nyq-bad'; return; }
@@ -253,7 +253,9 @@ function dataset(key, roles, onChange) {
   box.addEventListener('dragover', function (e) { e.preventDefault(); }); box.addEventListener('drop', function (e) { e.preventDefault(); var fl = e.dataTransfer.files[0]; if (!fl) return; var r = new FileReader(); r.onload = function () { load(r.result, fl.name); }; r.readAsText(fl); });
   $('[data-act=paste]', box).addEventListener('click', function () { ta.hidden = !ta.hidden; rd.hidden = ta.hidden; if (!ta.hidden) ta.focus(); });
   rd.addEventListener('click', function () { load(ta.value, 'Pasted data'); });
-  $('[data-act=example]', box).addEventListener('click', function () { load(EXAMPLE[key](), 'Example data'); });
+  var exb = $('[data-act=example]', box), exs = $('.nyq-samples', box);
+  if (exb) exb.addEventListener('click', function () { load(EXAMPLE[key](), 'Example data'); });
+  if (exs) exs.addEventListener('change', function () { var x = EXAMPLE[key][+exs.value]; if (exs.value === '' || !x) return; if (x.before) x.before(); load(x.text(), 'Sample data, ' + x.name.toLowerCase()); });
   st.col = function (k) { var j = st.map[k]; return st.table && j >= 0 ? st.table.cols[j] : null; };
   st.load = load; return st;
 }
@@ -266,7 +268,12 @@ function notes(list) { return list.length ? '<ul class="nyq-notes">' + list.map(
 function noise(i) { var x = Math.sin(i * 12.9898 + 4.1) * 43758.5453; return (x - Math.floor(x)) * 2 - 1; }
 var EXAMPLE = {
   ms: function () { var sm = sample(), o = 'Voltage (V)\tCapacitance (F)\n', eps = (sm.epsr > 0 ? sm.epsr : 11.7) * EPS0, N = 2e16, vbi = 0.75, A = sm.area > 0 ? sm.area : 0.1; for (var i = 0; i <= 40; i++) { var v = -2 + i * 0.065, c = A * Math.sqrt(Q * eps * N / (2 * (vbi - v - 0.0259))); o += v.toFixed(3) + '\t' + (c * (1 + 0.004 * noise(i))).toExponential(5) + '\n'; } return o; },
-  eis: function () { var ck = parseCircuit('Rs-(R1|Q1)-(R2|C2)'), p = [12, 180, 2.2e-7, 0.92, 420, 6e-5], o = 'Frequency (Hz)\tZ\' (Ohm)\t-Z\'\' (Ohm)\n'; for (var i = 0; i <= 60; i++) { var f = Math.pow(10, 6 - i * 0.1), z = zOf(ck.ast, 2 * Math.PI * f, p); o += f.toExponential(4) + '\t' + (z[0] * (1 + 0.004 * noise(i))).toExponential(5) + '\t' + (-z[1] * (1 + 0.004 * noise(i + 99))).toExponential(5) + '\n'; } return o; },
+  eis: [
+    { name: 'One semicircle', circuit: 'Rs-(R1|C1)', p: [15, 600, 4e-8], lo: 1, hi: 6 },
+    { name: 'Two unequal semicircles', circuit: 'Rs-(R1|Q1)-(R2|Q2)', p: [12, 180, 2.2e-7, 0.92, 520, 6e-5, 0.88], lo: -1, hi: 6 },
+    { name: 'Semicircle with an inductive loop', circuit: 'Rs-(R1|Q1|(R2-L2))', p: [10, 400, 1.2e-7, 0.93, 600, 400], lo: -2, hi: 6 }
+  ].map(function (x) { x.before = function () { $('#eis-ckt').value = x.circuit; $('#eis-preset').value = $('#eis-preset option[value="' + x.circuit + '"]') ? x.circuit : ''; };
+    x.text = function () { var ck = parseCircuit(x.circuit), o = 'Frequency (Hz)\tZ\' (Ohm)\t-Z\'\' (Ohm)\n', n = Math.round((x.hi - x.lo) * 10); for (var i = 0; i <= n; i++) { var f = Math.pow(10, x.hi - i * 0.1), z = zOf(ck.ast, 2 * Math.PI * f, x.p), m = Math.hypot(z[0], z[1]); o += f.toExponential(4) + '\t' + (z[0] + 0.004 * m * noise(i)).toExponential(5) + '\t' + (-z[1] + 0.004 * m * noise(i + 99)).toExponential(5) + '\n'; } return o; }; return x; }),
   dos: function () { var o = 'Frequency (Hz)\tCapacitance (F)\n', kT = 0.02585, A = sample().area > 0 ? sample().area : 0.1; function erfc(x) { var t = 1 / (1 + 0.3275911 * Math.abs(x)), y = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-x * x); return x >= 0 ? y : 2 - y; }
     for (var i = 0; i <= 60; i++) { var f = Math.pow(10, 1 + i * 0.0833), E = kT * Math.log(1e12 / f), c = A * (2.2e-8 + 1.4e-8 * 0.5 * erfc((0.42 - E) / (Math.SQRT2 * 0.035))); o += f.toExponential(4) + '\t' + (c * (1 + 0.0015 * noise(i + 7))).toExponential(5) + '\n'; } return o; }
 };
