@@ -2190,7 +2190,7 @@ function currentSVGs(){ const F=effFig();
   if (opLight() && opSolve()){ const V=opV(); const bc=simBandComp(V, true); if (bc) return [{name:'band-diagram-light', title:'Band diagram under illumination', svg:renderBand(bc, Object.assign({}, F, {mode:'bias', V}))}]; }
   return [{name:'band-diagram', title:'Band diagram', svg:renderBand(comp, F)}]; }
 function shownIndex(){ const n=shownFigs.length; let i=figIdx[currentFig]||0; if (i>n-1) i=n-1; if (i<0) i=0; figIdx[currentFig]=i; return i; }
-/* One figure at a time, fitted to the centre pane; with several plots (Simulate) the arrows, the dots or the arrow keys change the plot. */
+/* One figure at a time, fitted to the centre pane; with several plots (Spatial profiles) the arrows, the dots or the arrow keys change the plot. */
 function renderPreview(){
   shownFigs=currentSVGs(); const n=shownFigs.length, i=shownIndex(), f=shownFigs[i]; const stage=$('#stage'); stage.innerHTML=f?f.svg:''; const svg=stage.firstElementChild;
   const pv=$('#preview'); pv.style.background=figColors(state.fig.figTheme).bg; pv.classList.toggle('rot', currentFig==='d3');

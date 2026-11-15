@@ -6,4 +6,4 @@
   note: "Coupled electronic–ionic device simulator"
 - name: "Fermi"
   url: /fermi/
-  note: "Band diagrams, device cross-sections and J–V simulation"
+  note: "Band diagrams, cross-sections, 3D device views and spatial profiles"
