@@ -1,10 +1,10 @@
 ---
 name: "Dr. Rekib Uddin Ahmed"
-role: "Postdoctoral Research Fellow"
+role: "Institute Postdoctoral Fellow"
 category: alumni
 order: 3
-now: "Postdoctoral researcher, NIT Meghalaya"
-topic: "Compact models of double-gate MOSFETs and phase-change memory"
+now: "Faculty, Rajalakshmi Institute of Technology, Chennai"
+topic: "Modeling of double-gate MOSFETs and phase-change memory"
 areas: [trap-analysis-modelling]
 links:
   orcid: "https://orcid.org/0000-0003-2645-517X"
