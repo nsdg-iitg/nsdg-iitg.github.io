@@ -54,3 +54,14 @@
 .nyq-method li { margin-bottom: .6em; }
 @media (max-width: 860px) { .nyq-pane { grid-template-columns: 1fr; } }
 .nyq-load .nyq-samples { width: auto; flex: 1 1 170px; padding: 6px 9px; font-size: .86rem; font-weight: 600; border-radius: 10px; background: var(--surface); }
+.ced { margin: 0 0 12px; }
+.ced-draw { padding: 10px 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); text-align: center; }
+.ced-draw svg { display: inline-block; width: 100%; height: auto; }
+.ced-el { cursor: pointer; outline: none; }
+.ced-el:hover rect[fill="transparent"] { fill: var(--accent); fill-opacity: .07; }
+.ced-el:focus-visible rect[fill="transparent"] { stroke: var(--accent); stroke-width: 1.2; }
+.ced-what { margin: 6px 0 8px; min-height: 1.4em; }
+.ced-bar { display: flex; flex-wrap: wrap; gap: 6px; }
+.ced-bar select { width: 100%; }
+.ced-bar .btn { padding: 5px 10px; font-size: .82rem; }
+.ced-bar .btn:disabled { opacity: .45; cursor: default; }

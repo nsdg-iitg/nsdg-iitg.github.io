@@ -313,7 +313,7 @@ $('#ms-auto').addEventListener('click', function () { $('#ms-va').value = ''; $(
 
 /* ---------- 2. equivalent-circuit fit ---------- */
 var eis = { ck: null, res: null, data: null, fixed: [], start: null };
-var eisSet = dataset('eis', [{ key: 'f', label: 'Frequency (Hz)' }, { key: 'zre', label: 'First impedance column' }, { key: 'zim', label: 'Second impedance column' }], function (fresh) { if (fresh) { var t = eisSet.table, h = t.heads[eisSet.map.zre] + ' ' + t.heads[eisSet.map.zim]; $('#eis-fmt').value = /\|z\||mod|mag|phase|theta|deg/i.test(h) ? 'polar' : 'cart'; eisData(); if (eis.data) { var pos = eis.data.zim.filter(function (v) { return v > 0; }).length; if ($('#eis-fmt').value === 'cart' && pos > eis.data.zim.length * 0.6) { $('#eis-neg').checked = !$('#eis-neg').checked; } } $('#eis-fa').value = ''; $('#eis-fb').value = ''; } runEIS(true); });
+var eisSet = dataset('eis', [{ key: 'f', label: 'Frequency (Hz)' }, { key: 'zre', label: 'First impedance column' }, { key: 'zim', label: 'Second impedance column' }], function (fresh) { if (fresh) { var t = eisSet.table, h = t.heads[eisSet.map.zre] + ' ' + t.heads[eisSet.map.zim]; $('#eis-fmt').value = /\|z\||mod|mag|phase|theta|deg/i.test(h) ? 'polar' : 'cart'; if ($('#eis-fmt').value === 'cart') { var raw = (eisSet.col('zim') || []).filter(isNum), sum = raw.reduce(function (x, y) { return x + y; }, 0); $('#eis-neg').checked = /^\s*[-−–]/.test(t.heads[eisSet.map.zim]) || sum > 0; } $('#eis-fa').value = ''; $('#eis-fb').value = ''; } runEIS(true); });
 function eisData() { var f = eisSet.col('f'), a = eisSet.col('zre'), b = eisSet.col('zim'); eis.data = null; if (!f || !a || !b) return;
   var polar = $('#eis-fmt').value === 'polar', neg = $('#eis-neg').checked, fa = val('eis-fa'), fb = val('eis-fb'), d = { f: [], zre: [], zim: [], all: { f: [], zre: [], zim: [] } };
   for (var i = 0; i < f.length; i++) { if (!isNum(f[i]) || !(f[i] > 0) || !isNum(a[i]) || !isNum(b[i])) continue; var re = polar ? a[i] * Math.cos(b[i] * Math.PI / 180) : a[i], im = polar ? a[i] * Math.sin(b[i] * Math.PI / 180) : (neg ? -b[i] : b[i]);
@@ -321,7 +321,7 @@ function eisData() { var f = eisSet.col('f'), a = eisSet.col('zre'), b = eisSet.
   if (d.f.length >= 4) eis.data = d; }
 function runEIS(reguess) {
   var out = $('#eis-out'), err = $('#eis-err'); err.textContent = ''; eisData();
-  try { var ck = parseCircuit($('#eis-ckt').value); if (!eis.ck || eis.ck.src !== ck.src) { eis.ck = ck; eis.fixed = ck.params.map(function () { return false; }); eis.start = null; reguess = true; } }
+  try { var ck = parseCircuit($('#eis-ckt').value); if (!eis.ck || eis.ck.src !== ck.src) { eis.ck = ck; eis.fixed = ck.params.map(function () { return false; }); eis.start = null; reguess = true; } cedSync(eis.ck.ast); }
   catch (e) { err.textContent = e.message; eis.res = null; out.innerHTML = ''; drawEIS(); return; }
   if (!eis.data) { eis.res = null; out.innerHTML = eisSet.table ? '<p class="nyq-bad">Fewer than four usable points. Check the columns and the frequency range.</p>' : ''; drawEIS(); return; }
   var d = eis.data; if (2 * d.f.length <= eis.ck.params.length) { err.textContent = 'The circuit has more parameters than the data can determine.'; return; }
@@ -352,6 +352,60 @@ function drawEIS() { var d = eis.data, r = eis.res; if (!d) { ['eis-p1', 'eis-p2
   plot($('#eis-p1'), { series: [{ x: a.zre, y: a.zim.map(function (v) { return -v; }), label: 'Measured' }, { x: fit.re, y: fit.im.map(function (v) { return -v; }), line: 1, color: '--c-model', label: 'Fit' }], xlabel: 'Z′ (Ω)', ylabel: '−Z″ (Ω)', equal: true, h: 360 });
   plot($('#eis-p2'), { w: 380, h: 290, series: [{ x: a.f, y: mod(a.zre, a.zim), label: 'Measured' }, { x: fit.f, y: mod(fit.re, fit.im), line: 1, color: '--c-model', label: 'Fit' }], xlabel: 'Frequency (Hz)', ylabel: '|Z| (Ω)', xlog: true, ylog: true, legend: 'bottom' });
   plot($('#eis-p3'), { w: 380, h: 290, series: [{ x: a.f, y: ph(a.zre, a.zim), label: 'Measured' }, { x: fit.f, y: ph(fit.re, fit.im), line: 1, color: '--c-model', label: 'Fit' }], xlabel: 'Frequency (Hz)', ylabel: '−Phase (degrees)', xlog: true });
+}
+
+/* ---------- circuit drawing and graphical editing ---------- */
+/* The drawing is made from the same tree as the circuit text. A click selects an element; the buttons add an element
+   in series or in parallel with the selection, change it or remove it. The text and the drawing always agree. */
+var ced = { tree: null, sel: null };
+function cedClone(n) { return n.t === 'e' ? { t: 'e', type: n.type, name: n.name } : { t: n.t, k: n.k.map(cedClone) }; }
+function cedNorm(n) { if (n.t === 'e') return n; var k = []; n.k.map(cedNorm).forEach(function (c) { if (c.t === n.t) k = k.concat(c.k); else k.push(c); }); return k.length === 1 ? k[0] : { t: n.t, k: k }; }
+function cedText(n, inside) { if (n.t === 'e') return n.name; var s = n.k.map(function (c) { return cedText(c, true); }).join(n.t === 's' ? '-' : '|'); return inside ? '(' + s + ')' : s; }
+function cedAt(path) { var n = ced.tree; for (var i = 0; i < path.length; i++) n = n.k[path[i]]; return n; }
+function cedNames(n, out) { if (n.t === 'e') out.push(n.name); else n.k.forEach(function (c) { cedNames(c, out); }); return out; }
+function cedNew(type) { var used = cedNames(ced.tree, []), i = 1; while (used.indexOf(type + i) >= 0) i++; return { t: 'e', type: type, name: type + i }; }
+function cedSize(n) { if (n.t === 'e') return { w: 66, h: 46 }; var z = n.k.map(cedSize); if (n.t === 's') return { w: z.reduce(function (a, b) { return a + b.w; }, 0), h: Math.max.apply(null, z.map(function (b) { return b.h; })) };
+  return { w: Math.max.apply(null, z.map(function (b) { return b.w; })) + 28, h: z.reduce(function (a, b) { return a + b.h; }, 0) + 6 * (z.length - 1) }; }
+function cedSymbol(type, cx, cy, col) { var a = 'fill="none" stroke="' + col + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+  if (type === 'R') return '<rect x="' + (cx - 15) + '" y="' + (cy - 6) + '" width="30" height="12" rx="1.5" ' + a + '/>' + cedWire(cx - 33, cx - 15, cy, col) + cedWire(cx + 15, cx + 33, cy, col);
+  if (type === 'C') return '<path d="M' + (cx - 3.5) + ' ' + (cy - 10) + 'v20M' + (cx + 3.5) + ' ' + (cy - 10) + 'v20" ' + a + '/>' + cedWire(cx - 33, cx - 3.5, cy, col) + cedWire(cx + 3.5, cx + 33, cy, col);
+  if (type === 'L') return '<path d="M' + (cx - 16) + ' ' + cy + 'a4 5 0 0 1 8 0a4 5 0 0 1 8 0a4 5 0 0 1 8 0a4 5 0 0 1 8 0" ' + a + '/>' + cedWire(cx - 33, cx - 16, cy, col) + cedWire(cx + 16, cx + 33, cy, col);
+  if (type === 'Q') return '<path d="M' + (cx - 8) + ' ' + (cy - 9) + 'l7 9l-7 9M' + (cx + 1) + ' ' + (cy - 9) + 'l7 9l-7 9" ' + a + '/>' + cedWire(cx - 33, cx - 1, cy, col) + cedWire(cx + 8, cx + 33, cy, col);
+  return '<rect x="' + (cx - 15) + '" y="' + (cy - 7) + '" width="30" height="14" rx="1.5" ' + a + '/><text x="' + cx + '" y="' + (cy + 4) + '" text-anchor="middle" font-size="10" font-weight="600" fill="' + col + '">W</text>' + cedWire(cx - 33, cx - 15, cy, col) + cedWire(cx + 15, cx + 33, cy, col); }
+function cedWire(x1, x2, y, col) { return '<line x1="' + x1 + '" x2="' + x2 + '" y1="' + y + '" y2="' + y + '" stroke="' + col + '" stroke-width="1.6"/>'; }
+function cedDraw(n, x, cy, path, C) { var z = cedSize(n), out = '', key = path.join('.'), on = ced.sel === key;
+  if (n.t === 'e') { var col = on ? C.acc : C.ink, cx = x + z.w / 2;
+    return '<g class="ced-el" data-path="' + key + '" tabindex="0" role="button" aria-pressed="' + on + '" aria-label="' + ELNAME[n.type] + ' ' + esc(n.name) + '">' + (on ? '<rect x="' + (x + 5) + '" y="' + (cy - 21) + '" width="' + (z.w - 10) + '" height="36" rx="6" fill="' + C.acc + '" opacity=".12"/>' : '') + '<rect x="' + x + '" y="' + (cy - 22) + '" width="' + z.w + '" height="40" fill="transparent"/>' + cedSymbol(n.type, cx, cy, col) + '<text x="' + cx + '" y="' + (cy - 12) + '" text-anchor="middle" font-size="10.5" fill="' + col + '">' + esc(n.name) + '</text></g>'; }
+  if (n.t === 's') { var px = x; n.k.forEach(function (c, i) { var cz = cedSize(c); out += cedDraw(c, px, cy, path.concat(i), C); px += cz.w; }); }
+  else { var top = cy - z.h / 2, y1 = null, y2 = null; n.k.forEach(function (c, i) { var cz = cedSize(c), ccy = top + cz.h / 2, inner = z.w - 28, off = x + 14 + (inner - cz.w) / 2; if (y1 == null) y1 = ccy; y2 = ccy;
+      out += cedWire(x + 14, off, ccy, C.ink) + cedDraw(c, off, ccy, path.concat(i), C) + cedWire(off + cz.w, x + z.w - 14, ccy, C.ink); top += cz.h + 6; });
+    out += cedWire(x, x + 14, cy, C.ink) + cedWire(x + z.w - 14, x + z.w, cy, C.ink) + '<path d="M' + (x + 14) + ' ' + y1 + 'V' + y2 + 'M' + (x + z.w - 14) + ' ' + y1 + 'V' + y2 + '" fill="none" stroke="' + C.ink + '" stroke-width="1.6"/>'; }
+  if (on) out += '<rect x="' + (x + 2) + '" y="' + (cy - z.h / 2 - 1) + '" width="' + (z.w - 4) + '" height="' + (z.h + 2) + '" rx="8" fill="' + C.acc + '" fill-opacity=".07" stroke="' + C.acc + '" stroke-dasharray="4 3"/>';
+  return out; }
+var ELNAME = { R: 'Resistor', C: 'Capacitor', L: 'Inductor', Q: 'Constant-phase element', W: 'Warburg element' };
+function cedRender() { var host = $('#eis-draw'); if (!host || !ced.tree) return; if (ced.sel != null) { try { if (!cedAt(ced.sel === '' ? [] : ced.sel.split('.').map(Number))) ced.sel = null; } catch (e) { ced.sel = null; } }
+  var z = cedSize(ced.tree), W = z.w + 36, H = z.h + 16, C = { ink: css('--ink'), acc: css('--accent') }, cy = H / 2;
+  host.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" style="max-width:' + Math.round(W * 1.25) + 'px" font-family="Inter, system-ui, sans-serif" role="group" aria-label="Circuit drawing">' + cedWire(6, 18, cy, C.ink) + cedWire(W - 18, W - 6, cy, C.ink) + '<circle cx="6" cy="' + cy + '" r="3" fill="' + C.ink + '"/><circle cx="' + (W - 6) + '" cy="' + cy + '" r="3" fill="' + C.ink + '"/>' + cedDraw(ced.tree, 18, cy, [], C) + '</svg>';
+  var n = ced.sel == null ? null : cedAt(ced.sel === '' ? [] : ced.sel.split('.').map(Number));
+  $('#ced-what').textContent = n == null ? 'Nothing is selected. A new element is added to the whole circuit. Click an element to select it.' : n.t === 'e' ? 'Selected: ' + ELNAME[n.type].toLowerCase() + ' ' + n.name + '.' : 'Selected: the ' + (n.t === 's' ? 'series' : 'parallel') + ' group ' + cedText(n, true) + '.';
+  $('#ced-del').disabled = n == null || ced.sel === ''; $('#ced-up').disabled = n == null || ced.sel === ''; $('#ced-chg').disabled = !n || n.t !== 'e'; }
+function cedSync(ast) { var t = cedNorm(cedClone(ast)); if (ced.tree && cedText(t, false) === cedText(ced.tree, false)) return; ced.tree = t; cedRender(); }
+function cedCommit() { ced.tree = cedNorm(ced.tree); $('#eis-ckt').value = cedText(ced.tree, false); var pre = $('#eis-preset'); pre.value = $$('option', pre).some(function (o) { return o.value === $('#eis-ckt').value; }) ? $('#eis-ckt').value : ''; runEIS(true); cedRender(); }
+function cedPath() { return ced.sel == null || ced.sel === '' ? [] : ced.sel.split('.').map(Number); }
+function cedFind(node, target, path) { if (node === target) return path; if (node.t === 'e') return null; for (var i = 0; i < node.k.length; i++) { var r = cedFind(node.k[i], target, path.concat(i)); if (r) return r; } return null; }
+function cedAdd(kind) { if (!ced.tree) return; var path = cedPath(), el = cedNew($('#ced-type').value), target = cedAt(path), parent = path.length ? cedAt(path.slice(0, -1)) : null, idx = path[path.length - 1];
+  if (parent && parent.t === kind) parent.k.splice(idx + 1, 0, el);
+  else if (target.t === kind) target.k.push(el);
+  else { var grp = { t: kind, k: [target, el] }; if (parent) parent.k[idx] = grp; else ced.tree = grp; }
+  ced.tree = cedNorm(ced.tree); var np = cedFind(ced.tree, el, []); ced.sel = np ? np.join('.') : null; cedCommit(); }
+if ($('#eis-draw')) {
+  $('#eis-draw').addEventListener('click', function (e) { var g = e.target.closest('.ced-el'); ced.sel = g ? (ced.sel === g.getAttribute('data-path') ? null : g.getAttribute('data-path')) : null; cedRender(); if (g) { var again = $('.ced-el[data-path="' + g.getAttribute('data-path') + '"]'); if (again) again.focus({ preventScroll: true }); } });
+  $('#eis-draw').addEventListener('keydown', function (e) { var g = e.target.closest('.ced-el'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })); } });
+  $('#ced-ser').addEventListener('click', function () { cedAdd('s'); });
+  $('#ced-par').addEventListener('click', function () { cedAdd('p'); });
+  $('#ced-up').addEventListener('click', function () { var p = cedPath(); if (!p.length) return; ced.sel = p.slice(0, -1).join('.'); cedRender(); });
+  $('#ced-del').addEventListener('click', function () { var p = cedPath(); if (!p.length) return; cedAt(p.slice(0, -1)).k.splice(p[p.length - 1], 1); ced.sel = null; cedCommit(); });
+  $('#ced-chg').addEventListener('click', function () { var n = cedAt(cedPath()); if (!n || n.t !== 'e') return; var type = $('#ced-type').value; if (n.type === type) return; n.name = ''; var el = cedNew(type); n.type = type; n.name = el.name; cedCommit(); });
 }
 $('#eis-preset').addEventListener('change', function (e) { if (e.target.value) { $('#eis-ckt').value = e.target.value; runEIS(true); } });
 $('#eis-ckt').addEventListener('change', function () { $('#eis-preset').value = ''; runEIS(true); });
@@ -386,8 +440,9 @@ function drawDOS() { var r = dosRes; if (!r || !r.f.length) { ['dos-p1', 'dos-p2
 ['dos-vbi', 'dos-w', 'dos-nu', 'dos-cu', 'dos-win', 'dos-ea', 'dos-eb'].forEach(function (id) { $('#' + id).addEventListener('change', runDOS); });
 
 /* ---------- shared ---------- */
-function redraw() { drawMS(); drawEIS(); drawDOS(); }
+function redraw() { drawMS(); drawEIS(); drawDOS(); cedRender(); }
 ['s-area', 's-eps', 's-T', 's-d'].forEach(function (id) { $('#' + id).addEventListener('change', function () { runMS(); runDOS(); }); });
 new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+try { cedSync(parseCircuit($('#eis-ckt').value).ast); } catch (e) {}
 redraw();
 })();

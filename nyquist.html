@@ -62,8 +62,20 @@ description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of i
         <option value="Rs-(R1|Q1|(R2-L2))">Arc with a low-frequency inductive loop: Rs-(R1|Q1|(R2-L2))</option>
         <option value="">Custom</option>
       </select></label>
-      <label class="nyq-f"><span>Circuit</span><input type="text" id="eis-ckt" value="Rs-(R1|Q1)-(R2|Q2)" spellcheck="false" autocomplete="off"></label>
-      <p class="muted small">Series with <code>-</code>, parallel with <code>|</code>, brackets to group. Elements by first letter: R resistor, C capacitor, L inductor, Q constant-phase element, W Warburg.</p>
+      <div class="ced">
+        <div class="ced-draw" id="eis-draw"></div>
+        <p class="muted small ced-what" id="ced-what" role="status"></p>
+        <div class="ced-bar">
+          <select id="ced-type" aria-label="Element to add"><option value="R">Resistor (R)</option><option value="C">Capacitor (C)</option><option value="Q">Constant-phase element (Q)</option><option value="L">Inductor (L)</option><option value="W">Warburg (W)</option></select>
+          <button type="button" class="btn btn-ghost" id="ced-ser">Add in series</button>
+          <button type="button" class="btn btn-ghost" id="ced-par">Add in parallel</button>
+          <button type="button" class="btn btn-ghost" id="ced-chg" title="Change the selected element to the type chosen in the list">Change type</button>
+          <button type="button" class="btn btn-ghost" id="ced-up" title="Select the group that contains the current selection">Select group</button>
+          <button type="button" class="btn btn-ghost" id="ced-del">Remove</button>
+        </div>
+      </div>
+      <label class="nyq-f"><span>Circuit as text</span><input type="text" id="eis-ckt" value="Rs-(R1|Q1)-(R2|Q2)" spellcheck="false" autocomplete="off"></label>
+      <p class="muted small">Click an element in the drawing, then add another in series or in parallel with it, or type the circuit. Series with <code>-</code>, parallel with <code>|</code>, brackets to group. Elements by first letter: R resistor, C capacitor, L inductor, Q constant-phase element, W Warburg.</p>
       <p class="nyq-bad" id="eis-err" role="alert"></p>
       <label class="nyq-f"><span>Weighting</span><select id="eis-wt"><option value="mod">Relative (divide by |Z|)</option><option value="unit">None (absolute, in Ω)</option></select></label>
       <h2>Result</h2>
