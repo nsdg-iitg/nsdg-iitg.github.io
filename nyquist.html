@@ -1,0 +1,108 @@
+---
+title: "Nyquist"
+permalink: /nyquist/
+layout: page
+kicker: "Analysis · In the browser"
+heading: "Nyquist"
+logo: nyquist
+lead: "Impedance and capacitance analysis: Mott–Schottky, equivalent-circuit fitting, and trap density of states from C–f."
+description: "Nyquist: Mott–Schottky analysis, equivalent-circuit fitting of impedance spectra and trap density of states from capacitance–frequency data, running in the browser. A tool from NSDG, IIT Guwahati."
+---
+<link rel="stylesheet" href="{{ '/assets/css/nyquist.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+<div id="nyq" class="nyq">
+  <p class="muted small nyq-priv">Data files are read in your browser. They are not uploaded or stored.</p>
+
+  <fieldset class="nyq-sample">
+    <legend>Sample</legend>
+    <label class="nyq-f"><span>Device area (cm²)</span><input type="number" id="s-area" value="0.1" min="0" step="any"></label>
+    <label class="nyq-f" title="Relative permittivity of the layer that holds the depletion region. Si 11.7, GaAs 12.9, MAPbI₃ about 25."><span>Relative permittivity ε<sub>r</sub></span><input type="number" id="s-eps" value="25" min="0" step="any"></label>
+    <label class="nyq-f"><span>Temperature (K)</span><input type="number" id="s-T" value="300" min="1" step="any"></label>
+    <label class="nyq-f" title="Thickness of the absorber or active layer. Used only to check whether the layer is fully depleted."><span>Layer thickness (nm), optional</span><input type="number" id="s-d" min="0" step="any" placeholder="not set"></label>
+  </fieldset>
+
+  <div class="nyq-tabs" role="tablist" aria-label="Analysis">
+    <button type="button" role="tab" aria-selected="true" data-pane="pane-ms">Mott–Schottky (C–V)</button>
+    <button type="button" role="tab" aria-selected="false" data-pane="pane-eis">Circuit fit (impedance)</button>
+    <button type="button" role="tab" aria-selected="false" data-pane="pane-dos">Trap density (C–f)</button>
+  </div>
+
+  <section class="nyq-pane" id="pane-ms" role="tabpanel">
+    <div class="nyq-side">
+      <h2>Data</h2>
+      <div id="ms-data"></div>
+      <label class="nyq-f"><span>Capacitance unit</span><select id="ms-cu"><option value="1">F</option><option value="1e-6">µF</option><option value="1e-9">nF</option><option value="1e-12">pF</option></select></label>
+      <h2>Fit range</h2>
+      <div class="nyq-row"><label class="nyq-f"><span>From (V)</span><input type="number" id="ms-va" step="any"></label><label class="nyq-f"><span>To (V)</span><input type="number" id="ms-vb" step="any"></label></div>
+      <p><button type="button" class="btn btn-ghost" id="ms-auto">Choose the range automatically</button></p>
+      <h2>Result</h2>
+      <div id="ms-out" class="nyq-out"></div>
+    </div>
+    <div class="nyq-plots">
+      <figure><div class="nyq-plot" id="ms-p1"></div><figcaption>Mott–Schottky plot. The shaded band is the fit range. <button type="button" class="nyq-link" data-svg="ms-p1">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="ms-p2"></div><figcaption>Capacitance per unit area. <button type="button" class="nyq-link" data-svg="ms-p2">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="ms-p3"></div><figcaption>Apparent doping profile from the local slope of 1/C². <button type="button" class="nyq-link" data-svg="ms-p3">Save SVG</button></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="nyq-pane" id="pane-eis" role="tabpanel" hidden>
+    <div class="nyq-side">
+      <h2>Data</h2>
+      <div id="eis-data"></div>
+      <label class="nyq-f"><span>The two impedance columns are</span><select id="eis-fmt"><option value="cart">Z′ and Z″ (Ω)</option><option value="polar">|Z| (Ω) and phase (degrees)</option></select></label>
+      <label class="nyq-check"><input type="checkbox" id="eis-neg"> The second column is −Z″</label>
+      <div class="nyq-row"><label class="nyq-f"><span>Fit from (Hz)</span><input type="number" id="eis-fa" step="any" placeholder="lowest"></label><label class="nyq-f"><span>to (Hz)</span><input type="number" id="eis-fb" step="any" placeholder="highest"></label></div>
+      <h2>Circuit</h2>
+      <label class="nyq-f"><span>Common circuits</span><select id="eis-preset">
+        <option value="Rs-(R1|C1)">One arc: Rs-(R1|C1)</option>
+        <option value="Rs-(R1|Q1)">One depressed arc: Rs-(R1|Q1)</option>
+        <option value="Rs-(R1|C1)-(R2|C2)">Two arcs: Rs-(R1|C1)-(R2|C2)</option>
+        <option value="Rs-(R1|Q1)-(R2|Q2)" selected>Two depressed arcs: Rs-(R1|Q1)-(R2|Q2)</option>
+        <option value="Rs-(C1|(R1-(R2|C2)))">Nested (geometric C with a slow branch): Rs-(C1|(R1-(R2|C2)))</option>
+        <option value="Rs-(C1|(R1-W1))">Randles with diffusion: Rs-(C1|(R1-W1))</option>
+        <option value="Rs-(R1|Q1)-(R2|L2)">Arc with a low-frequency inductive loop: Rs-(R1|Q1)-(R2|L2)</option>
+        <option value="">Custom</option>
+      </select></label>
+      <label class="nyq-f"><span>Circuit</span><input type="text" id="eis-ckt" value="Rs-(R1|Q1)-(R2|Q2)" spellcheck="false" autocomplete="off"></label>
+      <p class="muted small">Series with <code>-</code>, parallel with <code>|</code>, brackets to group. Elements by first letter: R resistor, C capacitor, L inductor, Q constant-phase element, W Warburg.</p>
+      <p class="nyq-bad" id="eis-err" role="alert"></p>
+      <label class="nyq-f"><span>Weighting</span><select id="eis-wt"><option value="mod">Relative (divide by |Z|)</option><option value="unit">None (absolute, in Ω)</option></select></label>
+      <h2>Result</h2>
+      <div id="eis-out" class="nyq-out"></div>
+    </div>
+    <div class="nyq-plots">
+      <figure><div class="nyq-plot" id="eis-p1"></div><figcaption>Nyquist plot, with equal scales on both axes. <button type="button" class="nyq-link" data-svg="eis-p1">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="eis-p2"></div><figcaption>Bode plot, magnitude. <button type="button" class="nyq-link" data-svg="eis-p2">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="eis-p3"></div><figcaption>Bode plot, phase. <button type="button" class="nyq-link" data-svg="eis-p3">Save SVG</button></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="nyq-pane" id="pane-dos" role="tabpanel" hidden>
+    <div class="nyq-side">
+      <h2>Data</h2>
+      <div id="dos-data"></div>
+      <label class="nyq-f"><span>Capacitance unit</span><select id="dos-cu"><option value="1">F</option><option value="1e-6">µF</option><option value="1e-9">nF</option><option value="1e-12">pF</option></select></label>
+      <h2>Parameters</h2>
+      <div class="nyq-row"><label class="nyq-f"><span>V<sub>bi</sub> (V)</span><input type="number" id="dos-vbi" step="any" min="0"></label><label class="nyq-f"><span>Depletion width W (nm)</span><input type="number" id="dos-w" step="any" min="0"></label></div>
+      <label class="nyq-f" title="Attempt-to-escape frequency ν₀. Typical values lie between 10¹⁰ and 10¹³ s⁻¹."><span>Attempt-to-escape frequency ν₀ (s⁻¹)</span><input type="number" id="dos-nu" value="1e12" step="any" min="0"></label>
+      <label class="nyq-f" title="Number of neighbouring points used for the local slope of C against ln ω. More points give a smoother but broader result."><span>Smoothing (points for the slope)</span><select id="dos-win"><option>3</option><option selected>5</option><option>7</option><option>9</option><option>11</option></select></label>
+      <div class="nyq-row"><label class="nyq-f"><span>Energy from (eV)</span><input type="number" id="dos-ea" step="any" placeholder="lowest"></label><label class="nyq-f"><span>to (eV)</span><input type="number" id="dos-eb" step="any" placeholder="highest"></label></div>
+      <h2>Result</h2>
+      <div id="dos-out" class="nyq-out"></div>
+    </div>
+    <div class="nyq-plots">
+      <figure><div class="nyq-plot" id="dos-p3"></div><figcaption>Trap density of states against the demarcation energy. <button type="button" class="nyq-link" data-svg="dos-p3">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="dos-p1"></div><figcaption>Capacitance per unit area. <button type="button" class="nyq-link" data-svg="dos-p1">Save SVG</button></figcaption></figure>
+      <figure><div class="nyq-plot" id="dos-p2"></div><figcaption>Slope of the capacitance against ln ω. <button type="button" class="nyq-link" data-svg="dos-p2">Save SVG</button></figcaption></figure>
+    </div>
+  </section>
+
+  <details class="nyq-method">
+    <summary>Methods and assumptions</summary>
+    <ul>
+      <li><strong>Mott–Schottky.</strong> One-sided abrupt junction with uniform doping in the depletion approximation: 1/C² = 2(V<sub>bi</sub> − V − k<sub>B</sub>T/q)/(q ε N), with C per unit area. The doping density follows from the slope and V<sub>bi</sub> from the intercept. The apparent doping profile uses the local slope, N(W) = 2/(q ε |d(1/C²)/dV|) at W = ε/C.</li>
+      <li><strong>Circuit fit.</strong> Complex non-linear least squares on Z′ and Z″ together (Levenberg–Marquardt), started from several automatic guesses. Standard errors come from the covariance matrix of the fit. A constant-phase element has Z = 1/(Q (jω)<sup>n</sup>), and the Warburg element Z = σ(1 − j)/√ω. A good fit does not prove that the circuit is the correct physical model; different circuits can fit the same spectrum.</li>
+      <li><strong>Trap density from C–f.</strong> Method of Walter et al., J. Appl. Phys. 80, 4411 (1996), for a junction with a depletion width W and built-in voltage V<sub>bi</sub>. Only traps that can follow the a.c. signal contribute, so the energy axis is the demarcation energy E<sub>ω</sub> = k<sub>B</sub>T ln(2πν₀/ω).</li>
+    </ul>
+  </details>
+</div>
+<script src="{{ '/assets/js/nyquist.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>

@@ -1,0 +1,55 @@
+/* Nyquist: impedance and C–V analysis page */
+.nyq h2 { font-family: var(--font); font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 22px 0 10px; }
+.nyq-side h2:first-child { margin-top: 0; }
+.nyq-priv { margin: 0 0 14px; }
+.nyq-sample { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 16px; margin: 0 0 20px; padding: 14px 16px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.nyq-sample legend { padding: 0 6px; font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.nyq-f { display: block; margin: 0 0 10px; font-size: .88rem; }
+.nyq-sample .nyq-f { margin: 0; }
+.nyq-f > span { display: block; margin-bottom: 4px; color: var(--muted); }
+.nyq input[type=number], .nyq input[type=text], .nyq select, .nyq textarea { width: 100%; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-size: .92rem; }
+.nyq textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; margin-bottom: 8px; }
+.nyq-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.nyq-check { display: flex; gap: 8px; align-items: center; margin: 0 0 10px; font-size: .88rem; }
+.nyq-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; border-bottom: 1px solid var(--line); }
+.nyq-tabs button { padding: 9px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font: 600 .95rem var(--font); cursor: pointer; margin-bottom: -1px; }
+.nyq-tabs button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.nyq-pane { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.nyq-pane[hidden] { display: none; }
+.nyq-side { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.nyq-load { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.nyq .btn { padding: 7px 13px; font-size: .86rem; }
+.nyq .btn-ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.nyq .btn-ghost:hover { border-color: var(--accent); }
+.nyq-file { cursor: pointer; }
+.nyq-status { margin: 0 0 10px; }
+.nyq-bad { color: var(--c-model); font-size: .9rem; margin: 0 0 10px; }
+.nyq-bad:empty { display: none; }
+.nyq-res { margin: 0 0 12px; }
+.nyq-res > div { display: flex; justify-content: space-between; gap: 14px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+.nyq-res dt { color: var(--muted); }
+.nyq-res dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.nyq-notes { margin: 0 0 12px; padding: 10px 12px 10px 28px; border-left: 3px solid var(--c-energy); background: var(--surface-2); border-radius: 0 8px 8px 0; font-size: .86rem; }
+.nyq-notes li { margin-bottom: .45em; }
+.nyq-notes li:last-child { margin-bottom: 0; }
+.nyq-out p { margin-bottom: 10px; }
+.nyq-out .btn { margin: 0 4px 6px 0; }
+.nyq-tab { width: 100%; border-collapse: collapse; margin: 0 0 12px; font-size: .88rem; }
+.nyq-tab th { text-align: left; font-weight: 600; color: var(--muted); padding: 4px 6px 6px 0; border-bottom: 1px solid var(--line); }
+.nyq-tab td { padding: 5px 6px 5px 0; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.nyq-tab .nyq-pv { width: 100%; min-width: 86px; padding: 4px 6px; font-variant-numeric: tabular-nums; }
+.nyq-tab td:nth-child(3) { padding-left: 8px; }
+.nyq [hidden] { display: none !important; }
+.nyq-plots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+.nyq-plots figure { margin: 0; padding: 10px 10px 8px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.nyq-plots figure:first-child { grid-column: 1 / -1; }
+.nyq-plots figure:first-child .nyq-plot { max-width: 640px; margin: 0 auto; }
+.nyq-plot svg { display: block; width: 100%; height: auto; }
+.nyq-plots figcaption { margin-top: 4px; font-size: .82rem; color: var(--muted); }
+.nyq-link { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.nyq-empty { display: flex; align-items: center; justify-content: center; min-height: 200px; margin: 0; text-align: center; font-size: .9rem; padding: 0 16px; }
+.nyq-method { margin-top: 28px; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-size: .92rem; }
+.nyq-method summary { cursor: pointer; font-weight: 600; }
+.nyq-method ul { margin: 12px 0 4px; padding-left: 1.2em; }
+.nyq-method li { margin-bottom: .6em; }
+@media (max-width: 860px) { .nyq-pane { grid-template-columns: 1fr; } }
