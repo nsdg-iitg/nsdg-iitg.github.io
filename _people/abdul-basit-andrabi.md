@@ -16,12 +16,8 @@ links:
   orcid: "https://orcid.org/0000-0002-4036-1789"
 description: "Abdul Basit Andrabi (IIT Guwahati) works on device physics and simulation of traps and mobile ions in halide perovskite devices, and has written CEISIM, a drift–diffusion device simulator."
 figures:
-  - src: "/assets/img/figures/basit-thesis-simulator.jpg"
-    caption: "Structure of CEISIM, a 1D drift–diffusion simulator in which a single discretised model, with trap occupancy and ion density as unknowns, serves the DC, small-signal and transient solvers."
-  - src: "/assets/img/figures/basit-thesis-anode-mechanism.jpg"
-    caption: "Proposed five-step mechanism by which slow trapped charge at the hole-injecting contact lowers the injection barrier and gives rise to negative capacitance."
-  - src: "/assets/img/figures/transition-voltage-traps-solen2023.jpg"
-    caption: "Shift of the transition peak with trap density (TCAD). From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
+  - src: "/assets/img/figures/transition-voltage-cell-solen2023.jpg"
+    caption: "Trap characterisation from the dark J–V characteristic. (a, b) Dark J–V and its logarithmic slope G(V) for increasing trap density; the transition peak shifts to lower voltage. (c) Energy-level alignment of the simulated ITO/PEDOT:PSS/MAPbI<sub>3</sub>/PCBM/Al cell. (d) Transition voltage V<sub>α</sub> and open-circuit voltage V<sub>OC</sub> against trap density for shallow and deep traps. From A. B. Andrabi and A. T. Mallajosyula, Sol. Energy 264, 112020 (2023)."
   - src: "/assets/img/figures/dlts-memristor-ifetc2022.jpg"
     caption: "DLTS of ionic defects in a flexible perovskite memristor. From H. J. Gogoi, A. B. Andrabi et al., IEEE IFETC (2022)."
 ---
