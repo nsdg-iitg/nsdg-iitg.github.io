@@ -493,3 +493,13 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .edit-box .cite-btn { justify-self: start; }
 .edit-rows { display: grid; gap: 12px; }
 .edit-rows:empty { display: none; }
+
+/* CEISIM page */
+.soon { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c-model); border-radius: var(--radius); padding: 24px 26px; margin: 0 0 28px; max-width: 860px; }
+.soon h2 { margin: 0 0 .4em; }
+.soon p:last-child { margin-bottom: 0; }
+.soon-tag { display: inline-block; margin: 0 0 12px; padding: 3px 12px; border-radius: 99px; background: var(--c-model); color: #fff; font: 600 .78rem var(--font); letter-spacing: .06em; text-transform: uppercase; }
+.soon .btn:disabled { opacity: .5; cursor: not-allowed; }
+.ceisim-grid { display: grid; gap: 28px; align-items: start; }
+@media (min-width: 900px) { .ceisim-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.ceisim-grid .edit-form { margin: 0; }
