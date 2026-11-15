@@ -2186,8 +2186,16 @@ function recompute(){
   const t0=performance.now();
   try { comp = computeStack(state, mats); }
   catch(e){ console.error(e); comp = {R:[], prof:[], analysis:{items:[],hint:''}, warnings:['Error: '+e.message], term:{}, V:0}; }
+  /* Away from equilibrium (applied bias or light) the diagram is drawn from the steady-state drift–diffusion solution:
+     ψ, E_Fn and E_Fp from Poisson and both continuity equations. The fixed quasi-Fermi-level Poisson solution above is
+     exact at equilibrium only; under reverse bias on a Schottky contact and at forward bias near or above V_bi it is not. */
+  if (comp.sol && !state.fig.schematic && (opLight() || Math.abs(opV())>1e-9)){
+    let bc=null; try{ if (opSolve()) bc=simBandComp(opV(), opLight()); }catch(e){ console.error(e); bc=null; }
+    if (bc){ bc.warnings=comp.warnings.slice(); bc.dd=true; comp=bc; }
+    else comp.warnings.push('The drift–diffusion solution did not converge at this operating point; the diagram uses fixed quasi-Fermi levels and is approximate.');
+  }
   const dt=performance.now()-t0;
-  $('#solverStatus').textContent = comp.sol ? `${comp.nodes.length} nodes · ${comp.sol.iterations} Newton it. · ${dt.toFixed(0)} ms` : '';
+  $('#solverStatus').textContent = comp.sol ? (comp.dd ? `${comp.nodes.length} nodes · drift–diffusion · ${dt.toFixed(0)} ms` : `${comp.nodes.length} nodes · ${comp.sol.iterations} Newton it. · ${dt.toFixed(0)} ms`) : '';
   renderPreview(); renderReadouts(); renderHint();
   const cb=$('#captionBox'); if (cb) cb.value=captionText(); if ($('#pngInfo')) updatePngInfo();
 }
@@ -2201,7 +2209,7 @@ function currentSVGs(){ const F=effFig();
   if (currentFig==='prof') return profileFigures(F);
   if (currentFig==='xsec') return [{name:'cross-section', title:'Cross-section', svg:renderXsec(comp, F, state.xs, mats)}];
   if (currentFig==='d3') return [{name:'device-3d', title:'Device, 3D view', svg:renderDevice3D(comp, F, state.xs, mats)}];
-  if (opLight() && opSolve()){ const V=opV(); const bc=simBandComp(V, true); if (bc) return [{name:'band-diagram-light', title:'Band diagram under illumination', svg:renderBand(bc, Object.assign({}, F, {mode:'bias', V}))}]; }
+  if (comp.dd) return [{name:comp.simLight?'band-diagram-light':'band-diagram', title:comp.simLight?'Band diagram under illumination':'Band diagram', svg:renderBand(comp, Object.assign({}, F, {mode:'bias', V:comp.V}))}];
   return [{name:'band-diagram', title:'Band diagram', svg:renderBand(comp, F)}]; }
 function shownIndex(){ const n=shownFigs.length; let i=figIdx[currentFig]||0; if (i>n-1) i=n-1; if (i<0) i=0; figIdx[currentFig]=i; return i; }
 /* One figure at a time, fitted to the centre pane; with several plots (Spatial profiles) the arrows, the dots or the arrow keys change the plot. */
@@ -2519,7 +2527,7 @@ function captionText(){ if (!comp||!comp.R.length) return ''; const R=comp.R; co
   const dop=R.filter(r=>r.kind==='semi'&&r.dop!=='i').map(r=>r.name+': '+(r.dop==='n'?'N_D':'N_A')+' = '+sci(r.N,1)+' cm⁻³'); if (dop.length) parts.push('Doping: '+dop.join('; ')+'.');
   const nums=[]; comp.analysis.items.forEach(it=>{ if (it.type==='schottky') nums.push('φ_B'+(it.ntype?'n':'p')+' = '+fmtE(it.phiB)+' eV, V_bi = '+fmtE(it.Vbi)+' V'+(it.W?', W = '+fmtLen(it.W):'')); if (it.type==='hetero'&&!it.homo) nums.push('ΔE_c = '+fmtE(Math.abs(it.dEc))+' eV, ΔE_v = '+fmtE(Math.abs(it.dEv))+' eV (Anderson)'); if (it.type==='hetero'&&it.homo) nums.push('V_bi = '+fmtE(Math.abs(it.Vbi))+' V, W = '+fmtLen(it.xA+it.xB)); if (it.type==='mos') nums.push('V_FB = '+fmtE(it.VFB)+' V, V_T = '+fmtE(it.VT)+' V'); });
   if (nums.length) parts.push(nums.join('; ')+'.');
-  parts.push('Band alignment by Anderson’s rule (vacuum level continuous, no interface dipoles or Fermi-level pinning); band bending from the one-dimensional Poisson equation with Boltzmann statistics and complete ionization; the depletion-approximation widths are quoted. Horizontal axis not to scale.');
+  parts.push('Band alignment by Anderson’s rule (vacuum level continuous, no interface dipoles or Fermi-level pinning); '+(comp.dd?'bands and quasi-Fermi levels from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, complete ionization)':'band bending from the one-dimensional Poisson equation with Boltzmann statistics and complete ionization')+'; the depletion-approximation widths are quoted. Horizontal axis not to scale.');
   return parts.join(' '); }
 function downloadText(name, text, mime){ downloadBlob(name, new Blob([text],{type:mime})); }
 async function downloadBlob(name, blob){
@@ -2664,7 +2672,7 @@ function renderLicensePanel(){
 /* ---------- help ---------- */
 function helpHTML(){ return `
   <h2 id="helpTitle">Physics model and assumptions</h2>
-  <p>Fermi computes the equilibrium (or quasi-equilibrium) band diagram of the stack by solving the one-dimensional Poisson equation with Boltzmann carrier statistics on every layer at once, so accumulation, depletion, inversion, fully depleted thin layers and multi-junction stacks all come from the same solution. The quantities in the readout strip are the textbook closed-form values so that you can check them against Sze &amp; Ng.</p>
+  <p>Fermi computes the equilibrium band diagram of the stack by solving the one-dimensional Poisson equation with Boltzmann carrier statistics on every layer at once, so accumulation, depletion, inversion, fully depleted thin layers and multi-junction stacks all come from the same solution. The quantities in the readout strip are the textbook closed-form values so that you can check them against Sze &amp; Ng. Under applied bias or light the diagram comes from a steady-state drift–diffusion solution (see below).</p>
   <h3>Band alignment</h3>
   <ul><li>Anderson’s rule: vacuum level continuous across every interface; ΔE_c = χ₁ − χ₂, ΔE_v = (χ₂ + E_g₂) − (χ₁ + E_g₁). No interface dipoles, no Fermi-level pinning, no interface states, no fixed oxide charge.</li>
   <li>Schottky–Mott limit: φ_Bn = φ_m − χ, φ_Bp = χ + E_g − φ_m. Real contacts on Si, GaAs and most III–Vs are partly pinned; enter a measured φ_B by editing φ_m in the layer.</li></ul>
@@ -2677,12 +2685,14 @@ function helpHTML(){ return `
   <li>Depletion width W, E_max and the hetero-partition x_n/x_p in the readouts use the depletion approximation with the solver’s band bending; the drawn curve is the exact Boltzmann solution and therefore has a tail of a few Debye lengths.</li>
   <li>Image-force lowering: Δφ = √(qE_max/4πε_s), x_m = √(q/16πε_s E_max) with the static permittivity. E_max = √(2qN(V_bi − V)/ε_s), i.e. without Sze’s −kT/q correction (1–3 % effect).</li></ul>
   <h3>Applied bias</h3>
-  <ul><li>V is applied to the chosen contact relative to the other. Majority-carrier quasi-Fermi levels are flat in their own quasi-neutral regions and separated by qV; minority quasi-Fermi levels are drawn flat across the depletion region and relax towards the majority level in the quasi-neutral region. This is the standard low-injection picture, not a drift–diffusion solution; it is not valid near V_bi or under illumination.</li>
+  <ul><li>V is applied to the chosen contact relative to the other. The bands and the quasi-Fermi levels E_Fn and E_Fp come from a steady-state drift–diffusion solution (Poisson and both continuity equations), not from the textbook picture of flat quasi-Fermi levels. The difference matters in three cases: reverse bias on a Schottky contact (deep depletion, no inversion layer), forward bias near or above V_bi (the excess voltage drops across the quasi-neutral regions and the contacts), and stacks with transport layers or band offsets that block one carrier.</li>
+  <li>At high forward bias the shape of the bands depends on the mobilities and lifetimes of the layers (Advanced values of each layer) and on the contacts. Contacts with a barrier carry current by thermionic emission only, so a barrier that is ohmic in practice through tunnelling (for example a heavily doped layer on a TCO) appears as a blocking contact here.</li>
+  <li>If the drift–diffusion solution does not converge, the diagram falls back to fixed quasi-Fermi levels and a note says so.</li>
   <li>MOS gate bias: the semiconductor is in equilibrium with its contact (no gate leakage), so inversion layers form as in a quasi-static C–V.</li></ul>
   <h3>Schematic mode</h3>
   <p>Draws every layer at its flat-band alignment (E_F continuous, vacuum level stepping by the work-function difference at each interface) with band offsets and barrier heights annotated but no band bending — the conceptual "before contact / energy-level alignment" figure. Switch it off to get the solved electrostatics.</p>
-  <h3>Illumination and spatial profiles</h3>
-  <ul><li>The band diagram under light and every curve of the Spatial profiles view come from one steady-state solution at the chosen bias: Poisson and the electron and hole continuity equations (drift–diffusion, Scharfetter–Gummel fluxes) with Boltzmann statistics, and SRH, radiative and Auger recombination.</li>
+  <h3>Bias, illumination and spatial profiles</h3>
+  <ul><li>The band diagram under bias or light and every curve of the Spatial profiles view come from one steady-state solution at the chosen bias: Poisson and the electron and hole continuity equations (drift–diffusion, Scharfetter–Gummel fluxes) with Boltzmann statistics, and SRH, radiative and Auger recombination.</li>
   <li>Generation: AM1.5G (ASTM G173-03) with Beer–Lambert absorption. Tabulated α for Si, GaAs, CdTe and MAPbI₃, analytic α₀√(E − E_g) otherwise. No optical interference and no reflection.</li>
   <li>Contacts: thermionic emission over the Schottky–Mott barrier of the band diagram.</li>
   <li>Not modelled: mobile ions, transients, Fermi–Dirac statistics, tunnelling. Fermi does not compute J–V curves; use CEISIM for device simulation.</li></ul>
