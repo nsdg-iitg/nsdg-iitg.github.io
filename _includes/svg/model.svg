@@ -1,15 +1,35 @@
-<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logarithmic slope of a dark J–V curve: the transition-voltage peak moves to lower voltage when traps are present">
-  <g stroke="var(--fig-ink)" stroke-width="2" fill="none" stroke-linecap="round">
-    <path d="M34 20 L34 150 L222 150"/>
-  </g>
-  <path d="M38 140 C 90 138, 120 120, 150 44 C 160 24, 172 40, 184 92 C 196 130, 210 132, 220 134" fill="none" stroke="var(--fig-line)" stroke-width="3"/>
-  <path d="M38 140 C 70 136, 90 112, 112 58 C 120 38, 132 52, 142 96 C 154 132, 196 134, 220 136" fill="none" stroke="var(--c-model)" stroke-width="3.5"/>
-  <path d="M150 30 L124 30" stroke="var(--c-model)" stroke-width="2" marker-end="url(#ah)"/>
+<svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Energy band diagram of a semiconductor at a metal contact, with trap levels in the band gap capturing and emitting electrons">
   <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--c-model)"/></marker></defs>
+  <!-- metal contact -->
+  <rect x="196" y="84" width="26" height="78" fill="var(--fig-metal)" opacity=".55"/>
+  <path d="M196 20 L196 162" stroke="var(--fig-ink)" stroke-width="2"/>
+  <!-- band edges, bending upward in the depletion region -->
+  <g fill="none" stroke="var(--fig-ink)" stroke-width="3" stroke-linecap="round">
+    <path d="M22 62 L104 62 C 150 62, 176 50, 196 26"/>
+    <path d="M22 136 L104 136 C 150 136, 176 124, 196 100"/>
+  </g>
+  <!-- Fermi level -->
+  <path d="M22 84 L222 84" stroke="var(--fig-ink)" stroke-width="1.6" stroke-dasharray="6 5" fill="none"/>
+  <!-- trap levels in the gap, following the bands -->
+  <g stroke="var(--c-model)" stroke-width="3.5" stroke-linecap="round">
+    <path d="M40 102 L54 102"/><path d="M70 102 L84 102"/><path d="M100 102 L114 102"/>
+    <path d="M130 100 L144 98"/><path d="M158 93 L171 87"/><path d="M181 79 L191 70"/>
+  </g>
+  <!-- capture and emission -->
+  <g stroke="var(--c-model)" stroke-width="2" fill="none">
+    <path d="M47 68 L47 95" marker-end="url(#ah)"/>
+    <path d="M107 96 L107 69" marker-end="url(#ah)"/>
+  </g>
+  <circle cx="47" cy="60" r="5.5" fill="var(--c-model)"/>
+  <circle cx="107" cy="60" r="5.5" fill="var(--c-model)"/>
+  <circle cx="77" cy="138" r="5.5" fill="var(--surface)" stroke="var(--fig-ink)" stroke-width="2"/>
   <g class="fig-label">
-    <text x="40" y="18">d log J / d log V</text>
-    <text x="176" y="168">voltage</text>
-    <text x="156" y="22">trap-free</text>
-    <text x="70" y="44" fill="var(--c-model)">with traps</text>
+    <text x="4" y="58">E</text><text x="11" y="61" font-size="8">C</text>
+    <text x="4" y="132">E</text><text x="11" y="135" font-size="8">V</text>
+    <text x="4" y="80">E</text><text x="11" y="83" font-size="8">F</text>
+    <text x="118" y="118" fill="var(--c-model)">trap levels</text>
+    <text x="32" y="50" fill="var(--c-model)">capture</text>
+    <text x="92" y="50" fill="var(--c-model)">emission</text>
+    <text x="196" y="176">metal</text>
   </g>
 </svg>
