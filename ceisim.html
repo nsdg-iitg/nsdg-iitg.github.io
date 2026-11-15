@@ -7,14 +7,14 @@ heading: "CEISIM"
 lead: "Coupled Electronic–Ionic Transport Semiconductor Device Simulator. A one-dimensional drift–diffusion device simulator developed in the group, in which trap occupancy and mobile-ion density are treated as dynamical variables."
 description: "CEISIM, the in-house coupled electronic–ionic drift–diffusion device simulator of NSDG, IIT Guwahati. Online access is coming soon."
 ---
-<div class="soon">
-  <p class="soon-tag">Coming soon</p>
-  <h2>The online simulator will be available on this page</h2>
-  <p>Users with login access will be able to set up a device, run DC, small-signal and transient simulations, and view the results here. Login access will be given after a request through the form below. Requests are not open yet.</p>
-  <p><button type="button" class="btn" disabled>Log in (not yet open)</button></p>
-</div>
-
 <div class="ceisim-grid">
+  <div class="ceisim-left">
+  <div class="soon">
+    <p class="soon-tag">Coming soon</p>
+    <h2>The online simulator will be available on this page</h2>
+    <p>Users with login access will be able to set up a device, run DC, small-signal and transient simulations, and view the results here. Login access will be given after a request through the Request access form. Requests are not open yet.</p>
+    <p><button type="button" class="btn" disabled>Log in (not yet open)</button></p>
+  </div>
   <section class="prose">
     <h2>About the simulator</h2>
     <ul>
@@ -25,6 +25,7 @@ description: "CEISIM, the in-house coupled electronic–ionic drift–diffusion 
     </ul>
     <p>CEISIM is developed by <a href="{{ '/people/abdul-basit-andrabi/' | relative_url }}">Abdul Basit Andrabi</a>. It is used in the group's work on <a href="{{ '/research/trap-analysis-modelling/' | relative_url }}">device physics and modelling</a>.</p>
   </section>
+  </div>
 
   <form class="edit-form" id="ceisim-request" data-to="{{ site.ceisim_email | default: site.contact_email }}">
     <h2>Request access</h2>
