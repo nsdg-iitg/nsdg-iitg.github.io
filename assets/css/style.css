@@ -443,6 +443,9 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .pc-total { font-size: .8rem; font-weight: 600; }
 .pc-year { font-size: .78rem; color: var(--muted); padding-top: 4px; border-top: 1px solid var(--line); margin-top: 1px; }
 .feed-link { margin: 0 0 4px; font-size: .92rem; }
+.feed-link code { font-size: .86rem; overflow-wrap: anywhere; }
+.feed-copy { margin-left: 6px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: inherit; font: 500 .82rem var(--font); cursor: pointer; }
+.feed-copy:hover { border-color: var(--accent); }
 @media print { .pub-actions, .pub-chart, .search-open { display: none !important; } }
 
 /* Chat assistant (only present when chat_endpoint is set) */
