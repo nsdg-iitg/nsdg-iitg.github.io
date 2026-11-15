@@ -67,6 +67,12 @@ header{display:flex;align-items:center;gap:14px;padding:0 14px;background:var(--
 .wordmark .ef:after{content:"E";position:absolute;right:-9px;top:-5px;font-size:9px;font-style:italic;color:var(--accent)}
 .wordmark .tag{font-size:11.5px;color:var(--ink-3)}
 header .grow{flex:1}
+.hbtn.ai{border-color:var(--accent-line);color:var(--accent)}
+.hbtn[hidden]{display:none}
+.aibox textarea{width:100%;min-height:92px;resize:vertical;padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg)}
+.aibox .aimsg{margin:10px 0 0;padding:8px 10px;border-radius:var(--radius);background:var(--panel-2);font-size:12.5px;line-height:1.5}
+.aibox .aimsg.err{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.aibox .aimsg:empty{display:none}
 .hbtn{background:transparent;border:1px solid transparent;border-radius:var(--radius);padding:5px 9px;color:var(--ink-2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .hbtn:hover{background:var(--panel-2);color:var(--ink)}
 .hbtn:disabled{opacity:.4;cursor:default}
@@ -239,6 +245,7 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
 <header>
   <div class="wordmark"><svg class="flogo" viewBox="0 0 40 40" width="30" height="30" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="9" fill="var(--ink)"/><g fill="none" stroke-linecap="round" stroke-width="2.6"><path d="M7 11h7c6 0 6 8 12 8h7" stroke="#5b6cff"/><path d="M7 24h7c6 0 6 8 12 8h7" stroke="#e3a51a"/><path d="M7 21.5h26" stroke="var(--panel)" stroke-width="1.5" stroke-dasharray="3 2.6"/></g></svg><span class="name">Fermi</span><span class="tag hide-m">band diagrams &amp; device figures</span></div>
   <select id="templateSel" class="hsel" aria-label="Load a template" title="Load a template stack"></select>
+  <button class="hbtn ai" id="aiBtn" title="Describe a device in words and let the assistant build the stack" hidden>&#10022;<span class="hide-m"> Describe device</span></button>
   <div class="grow"></div>
   <button class="hbtn" id="undoBtn" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo">&#8630;</button>
   <button class="hbtn" id="redoBtn" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo">&#8631;</button>
@@ -2534,6 +2541,39 @@ function svgToPng(svg, dpi, widthMm){
     img.src=url;
   });
 }
+/* ---------- device assistant ----------
+   The user describes a device in words. The site's relay returns a list of layers chosen from the materials
+   listed here; every layer is checked again before it is loaded. Material parameters never come from the assistant. */
+const aiEndpoint = (()=>{ try{ const u=new URLSearchParams(location.search).get('api')||''; return /^https:\/\/[a-z0-9.-]+\.workers\.dev\/?$/.test(u) ? u : ''; }catch(e){ return ''; } })();
+function aiHTML(){ return `<div class="aibox"><h2 id="helpTitle">Describe your device</h2>
+  <p class="muted small">Write the stack in plain words, in order from the first layer to the last. The assistant chooses the layers from Fermi's material library and loads them. Check the values afterwards; Undo brings back the previous device.</p>
+  <textarea id="aiText" maxlength="600" placeholder="Example: n-i-p perovskite cell: FTO, 50 nm TiO2, 500 nm MAPbI3, Spiro-OMeTAD and a gold contact" aria-label="Device description"></textarea>
+  <div class="aimsg" id="aiMsg" role="status"></div>
+  <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="aiGo">Build device</button><button class="btn" id="helpClose">Close</button></div></div>`; }
+function aiCheck(list){ // returns the layers ready to load, or throws
+  if (!Array.isArray(list) || !list.length || list.length>12) throw new Error('The assistant returned no usable stack.');
+  return list.map(l=>{ const m=mats[l&&l.mat]; if (!m) throw new Error('The assistant chose a material that is not in the library.');
+    const t=Number(l.t_nm); if (!(t>=0.5 && t<=1e6)) throw new Error('The assistant gave a thickness outside the allowed range.');
+    if (m.kind!=='semi') return L(l.mat, t, 'i', 0);
+    let dop=['n','p','i'].includes(l.dop)?l.dop:'i', N=Number(l.N)||0; if (!(N>=0 && N<=1e21)) throw new Error('The assistant gave a doping density outside the allowed range.');
+    if (dop!=='i' && !(N>0)){ dop=m.defType||'i'; N=m.defN||0; }
+    return L(l.mat, t, dop, N); }); }
+async function aiBuild(){ const box=$('#aiText'), msg=$('#aiMsg'), go=$('#aiGo'); const text=box.value.trim();
+  const say=(t,err)=>{ msg.textContent=t; msg.classList.toggle('err', !!err); };
+  if (!text){ say('Please describe the device first.', true); return; }
+  go.disabled=true; say('Building the stack…');
+  try{
+    const r=await fetch(aiEndpoint, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'fermi-device', text, materials:Object.keys(mats).slice(0,120).map(k=>({key:k, name:mats[k].name, kind:mats[k].kind}))})});
+    let j=null; try{ j=await r.json(); }catch(e){}
+    if (r.status===403) throw new Error('The device assistant is not switched on yet.');
+    if (!r.ok || !j || !j.layers) throw new Error(j&&j.error ? j.error : 'The assistant could not be reached. Please try again later.');
+    const layers=aiCheck(j.layers); const prev=snapshot();
+    state.stack={layers}; state.template='custom'; Object.assign(state.fig, {mode:'eq', V:0, lightOn:false}); selectedLayer=null;
+    commit({prev}); rebuildAll();
+    say('Loaded: '+layers.map(l=>mats[l.mat].name).join(' / ')+'.'+(j.note?' Assumed: '+String(j.note).slice(0,400):''));
+  }catch(e){ say(String(e.message||e).slice(0,300), true); }
+  go.disabled=false;
+}
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), 2600); }
 
 /* ---------- licence: offline verification with WebCrypto ----------
@@ -2654,7 +2694,7 @@ function guideHTML(){ return `
   <h2 id="helpTitle">How to use Fermi</h2>
   <p>Fermi draws the band diagram, the cross-section and a 3D view of a layered device, and plots spatial profiles across it. Everything is computed from the material parameters of the layers.</p>
   <h3>1. Build the stack (left panel)</h3>
-  <ol><li>Fermi opens with a p-i-n perovskite cell. Pick another stack from <b>Templates</b> at the top, or choose <b>Custom — blank device</b> and build your own with <b>+ Add layer</b>.</li>
+  <ol><li>Fermi opens with a p-i-n perovskite cell. Pick another stack from <b>Templates</b> at the top, or choose <b>Custom — blank device</b> and build your own with <b>+ Add layer</b>. You can also press <b>Describe device</b> and write the stack in words; the assistant then loads the layers from the material library.</li>
   <li>For each layer choose the material, the thickness and, for a semiconductor, the doping type and density. Layers run from left to right in the band diagram and from bottom to top in the device views.</li>
   <li>The arrows on a layer move it up or down; the dots open its parameters (χ, E_g, ε_r, N_c, N_v or the work function). Mobility, lifetime and absorption are under <b>Advanced</b> and are needed only for illumination and spatial profiles.</li>
   <li>The <b>Materials</b> tab lists the library. You can edit a material or add your own with <b>+ Custom</b>.</li></ol>
@@ -2874,6 +2914,7 @@ function init(){
   $('#themeBtn').style.display='none';
   // help
   const openHelp=(html)=>{ $('#helpBox').innerHTML=html; $('#helpModal').setAttribute('open',''); $('#helpBox').scrollTop=0; $('#helpClose').focus(); };
+  if (aiEndpoint){ const ab=$('#aiBtn'); ab.hidden=false; ab.addEventListener('click', ()=>{ openHelp(aiHTML()); $('#aiText').focus(); $('#aiGo').addEventListener('click', aiBuild); }); }
   $('#helpBtn').addEventListener('click', ()=>openHelp(helpHTML())); $('#guideBtn').addEventListener('click', ()=>openHelp(guideHTML()));
   $('#helpModal').addEventListener('click', e=>{ if (e.target.id==='helpModal' || e.target.id==='helpClose') $('#helpModal').removeAttribute('open'); });
   const psel=$('#profSel'); psel.innerHTML=PROFILE_Q.map((q,i)=>`<option value="${i}">${esc(q[1])}</option>`).join(''); psel.addEventListener('change', ()=>{ showFig(+psel.value, false); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
