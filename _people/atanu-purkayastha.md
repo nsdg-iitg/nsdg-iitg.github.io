@@ -4,7 +4,7 @@ photo: /assets/img/people/atanu-purkayastha.jpg
 role: "MS + PhD, Electronics and Electrical Engineering (2025)"
 category: alumni
 order: 1
-now: "Postdoctoral researcher, CeNSE, IISc Bangalore"
+now: "National Postdoctoral Fellowship (N-PDF),CeNSE, IISc Bangalore"
 topic: "Lead-free perovskite single-junction, tandem and bifacial solar cells"
 areas: [solar-cells]
 thesis: "Efficiency enhancement and sustainability analysis of lead-free hybrid perovskite tandem solar cells"
