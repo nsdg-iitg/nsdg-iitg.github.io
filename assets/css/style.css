@@ -522,3 +522,6 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 }
 @media print { .nav-drop-menu { display: none !important; } }
 .brand-sub { white-space: nowrap; }
+.form-off { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 16px; }
+.form-off:disabled { opacity: .55; }
+.form-off:disabled .btn, .form-off:disabled input, .form-off:disabled textarea { cursor: not-allowed; }

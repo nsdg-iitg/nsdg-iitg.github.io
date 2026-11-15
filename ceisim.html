@@ -10,7 +10,7 @@ description: "CEISIM, the in-house coupled electronic–ionic drift–diffusion 
 <div class="soon">
   <p class="soon-tag">Coming soon</p>
   <h2>The online simulator will be available on this page</h2>
-  <p>Users with login access will be able to set up a device, run DC, small-signal and transient simulations, and view the results here. Login access is given after a request through the form below.</p>
+  <p>Users with login access will be able to set up a device, run DC, small-signal and transient simulations, and view the results here. Login access will be given after a request through the form below. Requests are not open yet.</p>
   <p><button type="button" class="btn" disabled>Log in (not yet open)</button></p>
 </div>
 
@@ -28,13 +28,15 @@ description: "CEISIM, the in-house coupled electronic–ionic drift–diffusion 
 
   <form class="edit-form" id="ceisim-request" data-to="{{ site.ceisim_email | default: site.contact_email }}">
     <h2>Request access</h2>
-    <p class="muted">Fill in the form and press the button. It opens your email program with the request ready to send.</p>
+    <p class="muted">Requests for access are not open yet. This form will be switched on when the simulator is available.</p>
+    <fieldset class="form-off" disabled>
     <label class="edit-field"><span class="edit-label">Name</span><input type="text" name="name" required></label>
     <label class="edit-field"><span class="edit-label">Email</span><input type="email" name="email" required></label>
     <label class="edit-field"><span class="edit-label">Institution</span><input type="text" name="institution" required></label>
     <label class="edit-field"><span class="edit-label">Position</span><input type="text" name="position" placeholder="For example: PhD scholar, faculty member"></label>
     <label class="edit-field"><span class="edit-label">Intended use</span><textarea name="use" rows="4" required placeholder="Device type and the kind of simulation you plan to run"></textarea></label>
-    <button type="submit" class="btn">Request access</button>
+    <button type="submit" class="btn">Request access (not yet open)</button>
+    </fieldset>
     <p class="edit-status" role="status"></p>
   </form>
 </div>
