@@ -1,5 +1,6 @@
 ---
 name: "Dr. Rekib Uddin Ahmed"
+photo: /assets/img/people/rekib-uddin-ahmed.jpg
 role: "Institute Postdoctoral Fellow"
 category: alumni
 order: 3
