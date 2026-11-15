@@ -73,6 +73,10 @@ header .grow{flex:1}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
 .seg button{background:var(--panel);border:0;padding:5px 10px;color:var(--ink-2);border-right:1px solid var(--line)}
 .seg button:last-child{border-right:0}
+.seg button{white-space:nowrap}
+#figSeg{flex:none}
+#profSel{max-width:210px;min-width:0}
+#solverStatus{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:500}
 select.hsel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:5px 8px;max-width:260px}
 
@@ -195,6 +199,9 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
 .modal .box{background:var(--panel);border:1px solid var(--line);border-radius:6px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:18px 22px;box-shadow:var(--shadow)}
 .modal .box h2{font-size:16px;margin-bottom:8px}
 .modal .box h3{font-size:13px;margin:14px 0 4px}
+.modal .box ol,.modal .box ul{padding-left:20px;margin:4px 0}
+.layer .more details{margin-top:6px}
+.layer .more summary{cursor:pointer;font-size:11.5px;color:var(--ink-2);padding:3px 0}
 .modal .box p,.modal .box li{font-size:12.5px;color:var(--ink-2);max-width:64ch}
 .modal .box code{font:11.5px var(--mono);background:var(--panel-2);padding:0 4px;border-radius:3px}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:4px;font-size:12.5px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;max-width:90vw}
@@ -234,6 +241,7 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
   <button class="hbtn" id="undoBtn" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo">&#8630;</button>
   <button class="hbtn" id="redoBtn" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo">&#8631;</button>
   <button class="hbtn hide-m" id="helpBtn" title="Physics model and assumptions">Assumptions</button>
+  <button class="hbtn" id="guideBtn" title="How to use Fermi">Help</button>
   <button class="hbtn" id="themeBtn" title="Toggle interface theme" aria-label="Toggle interface theme">&#9680;</button>
 </header>
 <main>
@@ -269,8 +277,10 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
         <button data-fig="band" aria-pressed="true">Band diagram</button>
         <button data-fig="xsec" aria-pressed="false">Cross-section</button>
         <button data-fig="d3" aria-pressed="false">3D</button>
-        <button data-fig="sim" aria-pressed="false">Simulate</button>
+        <button data-fig="prof" aria-pressed="false">Spatial profiles</button>
       </div>
+      <div class="grow"></div>
+      <select id="profSel" class="hsel" aria-label="Quantity to plot" title="Quantity to plot" hidden></select>
       <div class="grow"></div>
       <span class="muted small" id="solverStatus"></span>
     </div>
@@ -288,11 +298,9 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
   <section class="pane" id="paneRight" data-active="false" aria-label="Figure settings and export">
     <div class="pane-tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="figure">Figure</button>
-      <button role="tab" aria-selected="false" data-tab="simulate">Simulate</button>
       <button role="tab" aria-selected="false" data-tab="export">Export</button>
     </div>
     <div class="pane-body" id="tab-figure"></div>
-    <div class="pane-body" id="tab-simulate" hidden></div>
     <div class="pane-body" id="tab-export" hidden></div>
   </section>
 </main>
@@ -2114,7 +2122,7 @@ const uid = ()=>Math.random().toString(36).slice(2,9);
 const DEFAULT_FIG = { mode:'eq', V:0, biasTerm:'right', T:300, schematic:false, showEvac:true, showEi:false, showLabels:true, showNumbers:true, showLayerNames:true,
   annEg:true, annPhiB:true, annVbi:true, annW:true, annOffsets:true, annAxis:true, axisRef:'EF', imageForce:false, gamma:0.5,
   eWin:'auto', eMin:-2, eMax:2, widthMm:85, aspect:0.62, font:'sans', fontSize:7, lineWt:1, figTheme:'paper', fillBands:false, insHatch:true,
-  fitPane:true,   // the figure takes the shape of the centre pane and fills it
+  fitPane:true, lightOn:false, lightSuns:1, lightSide:'left',   // the figure takes the shape of the centre pane and fills it
   // plots (Simulate view)
   pFrame:'box', pTicks:'in', pMinor:true, pGrid:false, pLegend:'direct', pMarkers:false, pShowPV:true, pShowMPP:true, pShowFit:true,
   pColLight:'#000000', pColDark:'#0072b2', pAspect:0.72, pXauto:'auto', pXmin:-0.2, pXmax:1.3, pYauto:'auto', pYmin:-5, pYmax:25, pXlabel:'Voltage (V)', pYlabel:'Current density (mA cm^{-2})' };
@@ -2166,19 +2174,20 @@ function recompute(){
   catch(e){ console.error(e); comp = {R:[], prof:[], analysis:{items:[],hint:''}, warnings:['Error: '+e.message], term:{}, V:0}; }
   const dt=performance.now()-t0;
   $('#solverStatus').textContent = comp.sol ? `${comp.nodes.length} nodes · ${comp.sol.iterations} Newton it. · ${dt.toFixed(0)} ms` : '';
-  if (sim.res && !sim.running){ const sig=JSON.stringify([state.stack.layers.map(l=>[l.mat,l.t_nm,l.dop,l.N,l.ov,l.x,l.dd]), state.fig.T, state.fig.biasTerm]); if (sim.sig && sig!==sim.sig) markSimStale(); sim.sig=sig; }
-  renderPreview(); renderReadouts(); renderHint(); if (currentFig==='sim') renderSimStatus();
+  renderPreview(); renderReadouts(); renderHint();
   const cb=$('#captionBox'); if (cb) cb.value=captionText(); if ($('#pngInfo')) updatePngInfo();
 }
 
 /* ---------- preview ---------- */
 /* Figure settings as drawn: with "fill the window" on, the figure takes the height/width ratio of the centre pane,
    so it fills the pane with no empty paper around it. The export is the same figure that is shown. */
-function previewBox(){ const pr=$('#preview').getBoundingClientRect(); const many=(currentFig==='sim' && sim.res); const padX=many?46:6, padT=many?40:6, padB=6; return {W:pr.width, H:pr.height, padX, padT, w:pr.width-2*padX, h:pr.height-padT-padB}; }
+function previewBox(){ const pr=$('#preview').getBoundingClientRect(); const many=(currentFig==='prof'); const padX=many?44:6, padT=6, padB=6; return {W:pr.width, H:pr.height, padX, padT, w:pr.width-2*padX, h:pr.height-padT-padB}; }
 function effFig(){ const f=state.fig; if (f.fitPane===false) return f; const b=previewBox(); if (!(b.w>40 && b.h>40)) return f; const a=Math.max(0.35, Math.min(1.6, b.h/b.w)); return Object.assign({}, f, {aspect:a, pAspect:a, fillH:true}); }
-function currentSVGs(){ if (currentFig==='sim') return simFigures(); const F=effFig();
+function currentSVGs(){ const F=effFig();
+  if (currentFig==='prof') return profileFigures(F);
   if (currentFig==='xsec') return [{name:'cross-section', title:'Cross-section', svg:renderXsec(comp, F, state.xs, mats)}];
   if (currentFig==='d3') return [{name:'device-3d', title:'Device, 3D view', svg:renderDevice3D(comp, F, state.xs, mats)}];
+  if (opLight() && opSolve()){ const V=opV(); const bc=simBandComp(V, true); if (bc) return [{name:'band-diagram-light', title:'Band diagram under illumination', svg:renderBand(bc, Object.assign({}, F, {mode:'bias', V}))}]; }
   return [{name:'band-diagram', title:'Band diagram', svg:renderBand(comp, F)}]; }
 function shownIndex(){ const n=shownFigs.length; let i=figIdx[currentFig]||0; if (i>n-1) i=n-1; if (i<0) i=0; figIdx[currentFig]=i; return i; }
 /* One figure at a time, fitted to the centre pane; with several plots (Simulate) the arrows, the dots or the arrow keys change the plot. */
@@ -2186,9 +2195,9 @@ function renderPreview(){
   shownFigs=currentSVGs(); const n=shownFigs.length, i=shownIndex(), f=shownFigs[i]; const stage=$('#stage'); stage.innerHTML=f?f.svg:''; const svg=stage.firstElementChild;
   const pv=$('#preview'); pv.style.background=figColors(state.fig.figTheme).bg; pv.classList.toggle('rot', currentFig==='d3');
   if (svg){ view.w=parseFloat(svg.getAttribute('width'))*96/72; view.h=parseFloat(svg.getAttribute('height'))*96/72; }
-  const many=n>1; $('#figPrev').hidden=!many; $('#figNext').hidden=!many; const bar=$('#figBar'); bar.hidden=!many;
-  if (many) bar.innerHTML=`<span>${esc(f.title||f.name)}</span><span class="mono muted">${i+1} / ${n}</span><span class="dots">${shownFigs.map((g,k)=>`<button data-go="${k}" aria-current="${k===i}" aria-label="${esc(g.title||g.name)}" title="${esc(g.title||g.name)}"></button>`).join('')}</span>`;
-  $('#previewNote').textContent= currentFig==='d3' ? 'Drag to rotate' : '';
+  const many=n>1; $('#figPrev').hidden=!many; $('#figNext').hidden=!many; $('#figBar').hidden=true;
+  const ps=$('#profSel'); ps.hidden=currentFig!=='prof'; if (!ps.hidden) ps.value=String(i);
+  $('#previewNote').textContent= currentFig==='d3' ? 'Drag to rotate' : (currentFig==='band' && opLight() && !sim.ok ? 'The illuminated solution did not converge at this bias; the dark diagram is shown.' : '');
   zoomFit();
 }
 function zoomFit(){ const b=previewBox(); const st=$('#stage'), svg=st.firstElementChild; if (!svg||!b.W||!view.w) return;
@@ -2272,7 +2281,7 @@ function paramFields(Ly, m){
   html+=`<div class="field"><label>Colour</label><div class="row"><input type="color" data-key="color" value="${Ly.color||m.color||'#888888'}" style="width:42px;padding:0;height:24px"><select data-key="hatch" aria-label="Hatch"><option value="">library</option>${['solid','diag','cross','dots','hlines'].map(h=>`<option value="${h}" ${Ly.hatch===h?'selected':''}>${h}</option>`).join('')}</select></div><span></span></div>`;
   html+=`<div class="btnrow"><button class="btn sm reset-ov">Reset to library</button><button class="btn sm dup">Duplicate</button><button class="btn sm del" style="color:var(--crit)">Remove</button></div>`;
   html+=`<div class="src">${esc(m.src||'')}${m.note?' <em>'+esc(m.note)+'</em>':''}</div>`;
-  html+=simParamFields(Ly, m);
+  const adv=simParamFields(Ly, m); if (adv) html+=`<details${Ly.dd&&Object.keys(Ly.dd).length?' open':''}><summary>Advanced: transport and optical values (used for illumination and spatial profiles)</summary>${adv}</details>`;
   return html;
 }
 function bindParamFields(div, Ly, m){
@@ -2335,23 +2344,12 @@ function chk(key, label, obj='fig'){ return `<label class="check"><input type="c
 function renderFigurePanel(){
   const p=$('#tab-figure');
   p.innerHTML = `
-    <div data-for="sim">
+    <div data-for="prof">
     <div class="sec">Plot</div>
     ${ctl('Frame', `<select data-obj="fig" data-key="pFrame"><option value="box">closed box</option><option value="open">left and bottom axes only</option></select>`)}
     ${ctl('Ticks', `<select data-obj="fig" data-key="pTicks"><option value="in">pointing in</option><option value="out">pointing out</option></select>`)}
-    ${chk('pMinor','Minor ticks')}${chk('pGrid','Grid lines')}${chk('pMarkers','Marker at every data point')}
-    ${ctl('Curve names', `<select data-obj="fig" data-key="pLegend"><option value="direct">written next to each curve</option><option value="box">legend above the plot</option><option value="none">none</option></select>`)}
-    ${ctl('Light curve', `<input type="color" data-obj="fig" data-key="pColLight" aria-label="Colour of the light curve">`)}
-    ${ctl('Dark curve', `<input type="color" data-obj="fig" data-key="pColDark" aria-label="Colour of the dark curve">`)}
-    ${chk('pShowPV','J_sc, V_oc, FF and PCE on the plot')}${chk('pShowMPP','Mark the maximum power point')}${chk('pShowFit','Ideality factor fits (semilog plot)')}
-    <div class="fixedShape">${ctl('Plot shape (h/w)', `<input type="number" step="0.02" min="0.4" max="1.4" data-obj="fig" data-key="pAspect">`)}</div>
-    ${ctl('Voltage axis', `<select data-obj="fig" data-key="pXauto"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
-    <div id="pXRow">${ctl('V min, max (V)', `<div class="row"><input type="number" step="0.1" data-obj="fig" data-key="pXmin"><input type="number" step="0.1" data-obj="fig" data-key="pXmax"></div>`)}</div>
-    ${ctl('Current axis', `<select data-obj="fig" data-key="pYauto"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
-    <div id="pYRow">${ctl('J min, max', `<div class="row"><input type="number" step="1" data-obj="fig" data-key="pYmin"><input type="number" step="1" data-obj="fig" data-key="pYmax"></div>`)}</div>
-    ${ctl('x axis title', `<input type="text" data-obj="fig" data-key="pXlabel">`)}
-    ${ctl('y axis title', `<input type="text" data-obj="fig" data-key="pYlabel" title="Use ^{-2} for a superscript and _{sc} for a subscript">`)}
-    <div class="muted small">The run settings (bias range, illumination, contacts) are in the Simulate tab.</div>
+    ${chk('pMinor','Minor ticks')}${chk('pGrid','Grid lines')}
+    ${ctl('Curve names', `<select data-obj="fig" data-key="pLegend"><option value="direct">written next to each curve</option><option value="none">none</option></select>`)}
     </div>
     <div data-for="d3">
     <div class="sec">3D view</div>
@@ -2373,23 +2371,33 @@ function renderFigurePanel(){
     ${ctl('Illumination', `<select data-obj="xs" data-key="light"><option value="none">none</option><option value="top">hν from top</option><option value="bottom">hν from bottom</option></select>`)}
     <div data-for="xsec">${chk('fingers','Top-contact grid fingers','xs')}</div>
     </div>
-    <div data-for="band sim">
-    <div class="sec">Physics</div>
+    <div data-for="band prof">
+    <div class="sec">Operating point</div>
     ${ctl('Mode', `<select data-obj="fig" data-key="mode"><option value="eq">Equilibrium</option><option value="bias">Applied bias</option></select>`)}
     <div id="biasRow">${ctl('V (V)', `<div class="row"><input type="range" min="-3" max="3" step="0.01" data-obj="fig" data-key="V" data-live="1"><input type="number" step="0.01" data-obj="fig" data-key="V" style="width:72px"></div>`)}
     ${ctl('Bias on', `<select data-obj="fig" data-key="biasTerm"><option value="right">right contact</option><option value="left">left contact</option></select>`)}</div>
     ${ctl('T (K)', `<input type="number" step="1" min="50" max="1000" data-obj="fig" data-key="T">`)}
+    ${chk('lightOn','Under illumination (AM1.5G)')}
+    <div id="lightRow">${ctl('Intensity (suns)', `<input type="number" step="0.1" min="0.001" max="100" data-obj="fig" data-key="lightSuns">`)}
+    ${ctl('Light enters', `<select data-obj="fig" data-key="lightSide"><option value="left">from the left (layer 1)</option><option value="right">from the right (last layer)</option></select>`)}
+    <div class="btnrow"><button class="btn sm" id="gotoVoc" title="Find the open-circuit voltage of the illuminated stack and set the bias to it">Set bias to V_oc</button><button class="btn sm" id="gotoSc" title="Short circuit: V = 0">Set bias to 0 (short circuit)</button></div></div>
+    <div class="muted small">With light on, Equilibrium mode means short circuit (V = 0). For J–V curves and transient simulation use CEISIM (Tools menu).</div>
+    </div>
+    <div data-for="band">
+    <div class="sec">Band diagram</div>
     ${chk('imageForce','Image-force lowering inset (Schottky)')}
     ${chk('schematic','Schematic: flat bands aligned at E_F (no bending)')}
-    <div class="sec">Band diagram content</div>
+    <div class="sec">Labels and annotations</div>
     ${chk('showEvac','Vacuum level E_vac')}${chk('showEi','Intrinsic level E_i')}${chk('showLayerNames','Layer names and doping')}${chk('showLabels','Band labels (E_c, E_v, E_F)')}${chk('showNumbers','Numeric values in annotations')}
     ${chk('annEg','E_g arrows')}${chk('annPhiB','Barrier height φ_B')}${chk('annVbi','Band bending qV_bi / qψ_s')}${chk('annW','Depletion width W')}${chk('annOffsets','Band offsets ΔE_c, ΔE_v')}${chk('annAxis','Energy axis')}
     ${ctl('Axis zero', `<select data-obj="fig" data-key="axisRef"><option value="EF">E_F (left contact)</option><option value="Evac">E_vac (far left)</option></select>`)}
     ${chk('fillBands','Tint bands with layer colour')}${chk('insHatch','Hatch insulator gap')}
+    </div>
+    <div data-for="band prof">
     <div class="sec">Geometry</div>
     ${ctl('x compression', `<div class="row"><input type="range" min="0" max="1" step="0.05" data-obj="fig" data-key="gamma" data-live="1" title="0 = equal layer widths, 1 = to scale"><span class="mono small" id="gammaVal"></span></div>`)}
-    ${ctl('Energy window', `<select data-obj="fig" data-key="eWin"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
-    <div id="eWinRow">${ctl('E_min, E_max (eV)', `<div class="row"><input type="number" step="0.1" data-obj="fig" data-key="eMin"><input type="number" step="0.1" data-obj="fig" data-key="eMax"></div>`)}</div>
+    <div data-for="band">${ctl('Energy window', `<select data-obj="fig" data-key="eWin"><option value="auto">auto</option><option value="manual">manual</option></select>`)}</div>
+    <div id="eWinRow" data-for="band">${ctl('E_min, E_max (eV)', `<div class="row"><input type="number" step="0.1" data-obj="fig" data-key="eMin"><input type="number" step="0.1" data-obj="fig" data-key="eMax"></div>`)}</div>
     </div>
     <div class="sec">Style</div>
     ${ctl('Preset', `<select id="stylePreset"><option value="nature">Nature / Science (sans, 7 pt)</option><option value="elsevier">Elsevier / IEEE (serif, 8 pt)</option><option value="acs">ACS (sans, 7 pt, 0.75 pt lines)</option><option value="custom">custom</option><optgroup label="My presets" id="myPresets"></optgroup></select>`)}
@@ -2403,6 +2411,8 @@ function renderFigurePanel(){
     ${ctl('Figure colours', `<select data-obj="fig" data-key="figTheme"><option value="paper">white background, black text</option><option value="dark">dark background (slides)</option></select>`)}
   `;
   bindPanel(p);
+  $('#gotoVoc').addEventListener('click', ()=>{ const v=findVoc(); if (v==null){ toast('No open-circuit voltage found for this stack'); return; } const prev=snapshot(); state.fig.mode='bias'; state.fig.V=Math.round(v*1000)/1000; commit({prev}); syncPanel(p); toast('Bias set to V_oc = '+state.fig.V+' V'); });
+  $('#gotoSc').addEventListener('click', ()=>{ const prev=snapshot(); state.fig.mode='bias'; state.fig.V=0; commit({prev}); syncPanel(p); });
   $('#stylePreset').addEventListener('change', e=>{ const v=e.target.value; const prev=snapshot(); const f=state.fig;
     if (v==='nature'){ f.font='sans'; f.fontSize=7; f.lineWt=1; } else if (v==='elsevier'){ f.font='serif'; f.fontSize=8; f.lineWt=1; } else if (v==='acs'){ f.font='sans'; f.fontSize=7; f.lineWt=0.75; }
     else if (v.startsWith('my:')){ const ps=loadStylePresets()[v.slice(3)]; if (ps) Object.assign(f, ps); }
@@ -2413,7 +2423,7 @@ function renderFigurePanel(){
   $('#delPreset').addEventListener('click', ()=>{ const v=$('#stylePreset').value; if (!v.startsWith('my:')) return; const ps=loadStylePresets(); delete ps[v.slice(3)]; saveStylePresets(ps); syncPresetMenu(); syncPanel(p); toast('Preset deleted'); });
   syncPresetMenu(); syncPanel(p);
 }
-const STYLE_KEYS=['font','fontSize','lineWt','widthMm','aspect','figTheme','pFrame','pTicks','pMinor','pGrid','pLegend','pMarkers','pColLight','pColDark','pAspect'];   // what a saved style preset carries
+const STYLE_KEYS=['font','fontSize','lineWt','widthMm','aspect','figTheme','pFrame','pTicks','pMinor','pGrid','pLegend'];   // what a saved style preset carries
 function loadStylePresets(){ try{ return JSON.parse(localStorage.getItem('fermi.stylePresets')||'{}'); }catch(e){ return {}; } }
 function saveStylePresets(ps){ try{ localStorage.setItem('fermi.stylePresets', JSON.stringify(ps)); }catch(e){} }
 function syncPresetMenu(){ const g=$('#myPresets'); if (!g) return; const ps=loadStylePresets(); const names=Object.keys(ps);
@@ -2436,7 +2446,7 @@ function syncPanel(p, except){
   const f=state.fig; $('#biasRow').style.display = f.mode==='bias'?'':'none'; $('#eWinRow').style.display = f.eWin==='manual'?'':'none';
   $$('[data-for]', p).forEach(d=>{ d.hidden=!d.dataset.for.split(' ').includes(currentFig); });   // only the settings of the view that is open
   $$('.fixedShape', p).forEach(d=>{ if (f.fitPane!==false) d.hidden=true; });
-  $('#pXRow').style.display = f.pXauto==='manual'?'':'none'; $('#pYRow').style.display = f.pYauto==='manual'?'':'none'; $('#d3GapRow').style.display = state.xs.d3Style==='exploded'?'':'none';
+  $('#lightRow').style.display = f.lightOn?'':'none'; if (f.eWin!=='manual') $('#eWinRow').hidden=true; $('#d3GapRow').style.display = state.xs.d3Style==='exploded'?'':'none';
   const g=$('#gammaVal'); if (g) g.textContent = f.gamma>=0.999?'to scale':f.gamma<=0.001?'equal':('γ = '+f.gamma.toFixed(2));
   const sp=$('#stylePreset'); if (sp){ const ps=loadStylePresets(); const mine=Object.keys(ps).find(n=>STYLE_KEYS.every(k=>ps[n][k]===undefined||ps[n][k]===f[k]));
     sp.value = mine ? 'my:'+mine : (f.font==='sans'&&f.fontSize===7&&f.lineWt===1)?'nature':(f.font==='serif'&&f.fontSize===8&&f.lineWt===1)?'elsevier':(f.font==='sans'&&f.fontSize===7&&f.lineWt===0.75)?'acs':'custom';
@@ -2448,7 +2458,6 @@ function inArtifact(){ try{ return /claude(usercontent)?\.(ai|com)$/.test(locati
 function renderExportPanel(){
   const p=$('#tab-export');
   p.innerHTML = `
-    <label class="check"><input type="checkbox" id="expAll"> Export every plot of this view, not only the one shown</label>
     <div class="sec">Vector</div>
     <div class="btnrow"><button class="btn primary" id="dlSvg">Download SVG</button><button class="btn" id="copySvg">Copy SVG</button><button class="btn" id="openSvg">Open in tab</button></div>
     <div class="muted small">Text stays editable text; fonts referenced by family with fallbacks (Helvetica/Arial or Times). Opens cleanly in Illustrator, Inkscape and Affinity.</div>
@@ -2457,8 +2466,8 @@ function renderExportPanel(){
     <div class="btnrow"><button class="btn primary" id="dlPng">Download PNG</button><button class="btn" id="copyPng">Copy PNG</button></div>
     <div class="muted small" id="pngInfo"></div>
     <div class="sec">Data</div>
-    <div class="btnrow"><button class="btn" id="dlCsv">Download J–V data (CSV)</button></div>
-    <div class="muted small">Voltage and current density of the simulated dark and light curves, for plotting in Origin or any other program.</div>
+    <div class="btnrow"><button class="btn" id="dlCsv">Download profile data (CSV)</button></div>
+    <div class="muted small">Position and values of the curve shown in the Spatial profiles view, for plotting in Origin or any other program.</div>
     <div class="sec">Edition</div>
     <div id="licPanel"></div>
     ${inArtifact()?'<div class="callout warn">You are viewing Fermi inside a Claude Artifact: downloads are handed over through a confirmation dialog. If nothing appears, use <b>Copy SVG</b>/<b>Copy PNG</b> or <b>Open in tab</b>, or run the local <code>index.html</code> for direct downloads.</div>':''}
@@ -2476,7 +2485,7 @@ function renderExportPanel(){
   $('#openSvg').addEventListener('click', ()=>{ exportSVGs().forEach(f=>openBlob(f.svg,'image/svg+xml')); });
   $('#dlPng').addEventListener('click', async()=>{ const dpi=exportDpi(); for (const f of exportSVGs()){ try{ const blob=await svgToPng(f.svg, dpi, state.fig.widthMm); downloadBlob(figName()+'_'+f.name+'_'+dpi+'dpi.png', blob); }catch(e){ toast('PNG export failed: '+e.message); } } });
   $('#copyPng').addEventListener('click', async()=>{ const dpi=exportDpi(); const f=exportSVGs()[0]; try{ const blob=await svgToPng(f.svg, dpi, state.fig.widthMm); await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]); toast('PNG copied ('+dpi+' dpi'+(isPro()?'':', free: with mark')+')'); }catch(e){ toast('Clipboard image not available here: '+e.message); } });
-  $('#dlCsv').addEventListener('click', ()=>{ const csv=simCSV(); if (!csv){ toast('Run a simulation first (Simulate tab)'); return; } downloadText(figName()+'_JV.csv', csv, 'text/csv'); });
+  $('#dlCsv').addEventListener('click', ()=>{ if (currentFig!=='prof'){ toast('Open the Spatial profiles view first'); return; } const csv=profileCSV(); if (!csv){ toast('No profile to export'); return; } downloadText(figName()+'_'+PROFILE_Q[figIdx.prof||0][0]+'.csv', csv, 'text/csv'); });
   $('#pngDpi').addEventListener('change', e=>{ e.target.dataset.pref=e.target.value; updatePngInfo(); });
   $('#dpiUpgrade').addEventListener('click', ()=>openCheckout());
   $('#dlJson').addEventListener('click', ()=>downloadText(figName()+'.fermi.json', projectJSON(), 'application/json'));
@@ -2487,12 +2496,11 @@ function renderExportPanel(){
   $('#copyCaption').addEventListener('click', ()=>copyText($('#captionBox').value, 'Caption copied'));
   applyEntitlement();
 }
-function simCSV(){ if (!sim.res) return ''; const src=sim.lumped||sim.res; const rows=new Map(); const put=(pts,k)=>{ (pts||[]).forEach(p=>{ if (!isFinite(p.J)) return; const key=p.V.toFixed(6); if (!rows.has(key)) rows.set(key,{V:p.V}); rows.get(key)[k]=p.J; }); }; put(src.dark,'d'); put(src.light,'l');
-  const out=['V (V),J_dark (A cm^-2),J_light (A cm^-2)']; Array.from(rows.values()).sort((a,b)=>a.V-b.V).forEach(r=>out.push([r.V, r.d==null?'':r.d.toExponential(6), r.l==null?'':r.l.toExponential(6)].join(','))); return out.join('\n')+'\n'; }
 function updatePngInfo(){ const dpi=exportDpi(); const w=Math.round(state.fig.widthMm/25.4*dpi); const h=Math.round(w*(view.w?view.h/view.w:state.fig.aspect)); const el=$('#pngInfo'); if (el) el.textContent = `${state.fig.widthMm} mm wide → ${w} × ${h} px at ${dpi} dpi (white background) · ${isPro()?'no mark':'Free: '+FERMI_CONFIG.freeMaxDpi+' dpi, small mark'}.`; }
 function projectJSON(){ const custom={}; for (const k in mats) if (mats[k].custom) custom[k]=mats[k]; return JSON.stringify({app:'Fermi', version:2, saved:new Date().toISOString(), template:state.template, stack:state.stack, fig:state.fig, xs:state.xs, sim:state.sim, materials:custom}, null, 1); }
-function captionText(){ if (!comp||!comp.R.length) return ''; if (currentFig==='sim') return simCaption(); const R=comp.R; const parts=[];
-  if (currentFig==='xsec'||currentFig==='d3'){ const seq=state.xs.firstAt==='top'?R.slice().reverse():R; return (currentFig==='d3'?'Schematic of the device structure':'Schematic cross-section of the device')+', from bottom to top: '+(state.xs.substrate&&state.xs.firstAt!=='top'?(state.xs.substrateLabel||'Glass')+' substrate / ':'')+seq.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name+' ('+fmtLen(r.t)+')').join(' / ')+(state.xs.substrate&&state.xs.firstAt==='top'?' / '+(state.xs.substrateLabel||'Glass'):'')+'.'+(state.xs.light&&state.xs.light!=='none'?' Light enters from the '+state.xs.light+'.':'')+(state.xs.toScale?'':' Layer thicknesses are not drawn to scale.'); } parts.push('Equilibrium energy-band diagram of the '+R.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name).join('/')+' stack at '+state.fig.T+' K'+(state.fig.mode==='bias'&&state.fig.V?(' under V = '+state.fig.V+' V'):'')+'.');
+function captionText(){ if (!comp||!comp.R.length) return ''; const R=comp.R; const parts=[];
+  if (currentFig==='prof'){ const q=PROFILE_Q[figIdx.prof||0]||PROFILE_Q[0]; return q[1]+' across the '+R.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name).join('/')+' stack at V = '+opV()+' V, '+(opLight()?'under AM1.5G illumination ('+(+state.fig.lightSuns||1)+' sun)':'in the dark')+', from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, SRH, radiative and Auger recombination). No mobile ions and no optical interference.'; }
+  if (currentFig==='xsec'||currentFig==='d3'){ const seq=state.xs.firstAt==='top'?R.slice().reverse():R; return (currentFig==='d3'?'Schematic of the device structure':'Schematic cross-section of the device')+', from bottom to top: '+(state.xs.substrate&&state.xs.firstAt!=='top'?(state.xs.substrateLabel||'Glass')+' substrate / ':'')+seq.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name+' ('+fmtLen(r.t)+')').join(' / ')+(state.xs.substrate&&state.xs.firstAt==='top'?' / '+(state.xs.substrateLabel||'Glass'):'')+'.'+(state.xs.light&&state.xs.light!=='none'?' Light enters from the '+state.xs.light+'.':'')+(state.xs.toScale?'':' Layer thicknesses are not drawn to scale.'); } parts.push((opLight()?'Energy-band diagram under AM1.5G illumination of the ':'Equilibrium energy-band diagram of the ')+R.map(r=>(r.kind==='semi'&&r.dop!=='i'?r.dop+'-':'')+r.name).join('/')+' stack at '+state.fig.T+' K'+(state.fig.mode==='bias'&&state.fig.V?(' under V = '+state.fig.V+' V'):'')+'.');
   const dop=R.filter(r=>r.kind==='semi'&&r.dop!=='i').map(r=>r.name+': '+(r.dop==='n'?'N_D':'N_A')+' = '+sci(r.N,1)+' cm⁻³'); if (dop.length) parts.push('Doping: '+dop.join('; ')+'.');
   const nums=[]; comp.analysis.items.forEach(it=>{ if (it.type==='schottky') nums.push('φ_B'+(it.ntype?'n':'p')+' = '+fmtE(it.phiB)+' eV, V_bi = '+fmtE(it.Vbi)+' V'+(it.W?', W = '+fmtLen(it.W):'')); if (it.type==='hetero'&&!it.homo) nums.push('ΔE_c = '+fmtE(Math.abs(it.dEc))+' eV, ΔE_v = '+fmtE(Math.abs(it.dEv))+' eV (Anderson)'); if (it.type==='hetero'&&it.homo) nums.push('V_bi = '+fmtE(Math.abs(it.Vbi))+' V, W = '+fmtLen(it.xA+it.xB)); if (it.type==='mos') nums.push('V_FB = '+fmtE(it.VFB)+' V, V_T = '+fmtE(it.VT)+' V'); });
   if (nums.length) parts.push(nums.join('; ')+'.');
@@ -2570,7 +2578,7 @@ function applyEntitlement(){ // the single place where the UI reads the entitlem
   renderLicensePanel(); updatePngInfo(); syncPresetMenu();
 }
 function exportDpi(){ const sel=$('#pngDpi'); const d=sel?+sel.value:600; return isPro() ? d : Math.min(d, FERMI_CONFIG.freeMaxDpi); }
-function exportSVGs(){ const all=currentSVGs(); const a=$('#expAll'); const list=(a&&a.checked) ? all : [all[Math.min(figIdx[currentFig]||0, all.length-1)]]; return list.map(f=>({name:f.name, svg:stampSVG(f.svg)})); }
+function exportSVGs(){ const all=currentSVGs(); const list=[all[Math.min(figIdx[currentFig]||0, all.length-1)]]; return list.map(f=>({name:f.name, svg:stampSVG(f.svg)})); }
 function stampSVG(svg){ // free tier: append a 6.5 pt strip below the figure (same width, same background) carrying a 5 pt grey mark — never inside the figure's own area
   if (isPro()) return svg;
   const m=svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); if (!m) return svg;
@@ -2617,7 +2625,7 @@ function helpHTML(){ return `
   <li>A layer whose Fermi level sits within kT ln 2 of a band edge is flagged degenerate; the Fermi level there is approximate (Fermi–Dirac would move it by tens of meV).</li>
   <li>Transparent conductors (ITO, FTO) are treated as metals with a work function. PEDOT:PSS is a heavily p-doped semiconductor (hole transport layer).</li></ul>
   <h3>Electrostatics</h3>
-  <ul><li>Nonlinear Poisson equation solved by damped Newton iteration on a clustered grid (320 nodes per semiconductor layer). Thick layers are truncated to a quasi-neutral domain (marked with a break symbol) so the junction region is resolved.</li>
+  <ul><li>Nonlinear Poisson equation solved by damped Newton iteration on a clustered grid (320 nodes per semiconductor layer). Layers much thicker than their depletion region (beyond a few hundred nm) are truncated to a quasi-neutral domain, marked with a break symbol, so the junction region is resolved.</li>
   <li>Depletion width W, E_max and the hetero-partition x_n/x_p in the readouts use the depletion approximation with the solver’s band bending; the drawn curve is the exact Boltzmann solution and therefore has a tail of a few Debye lengths.</li>
   <li>Image-force lowering: Δφ = √(qE_max/4πε_s), x_m = √(q/16πε_s E_max) with the static permittivity. E_max = √(2qN(V_bi − V)/ε_s), i.e. without Sze’s −kT/q correction (1–3 % effect).</li></ul>
   <h3>Applied bias</h3>
@@ -2625,17 +2633,44 @@ function helpHTML(){ return `
   <li>MOS gate bias: the semiconductor is in equilibrium with its contact (no gate leakage), so inversion layers form as in a quasi-static C–V.</li></ul>
   <h3>Schematic mode</h3>
   <p>Draws every layer at its flat-band alignment (E_F continuous, vacuum level stepping by the work-function difference at each interface) with band offsets and barrier heights annotated but no band bending — the conceptual "before contact / energy-level alignment" figure. Switch it off to get the solved electrostatics.</p>
-  <h3>Simulate (drift–diffusion)</h3>
-  <ul><li>Steady-state 1-D Poisson + electron and hole continuity with Scharfetter–Gummel fluxes on the band-diagram grid (thick layers extended to full thickness), Boltzmann statistics, coupled Newton with voltage continuation. SRH (τ_n, τ_p, E_t), radiative (B) and Auger (C_n, C_p) recombination; optional interface recombination velocities.</li>
-  <li>Contacts: thermionic emission with the Schottky–Mott barrier of the band diagram (A*), carriers pinned (S = ∞), or ideal flat-band ohmic with surface recombination velocities for the minority carriers.</li>
-  <li>Generation: uniform G, or AM1.5G (ASTM G173-03, embedded) with Beer–Lambert absorption — tabulated α for Si, GaAs, CdTe, MAPbI₃, analytic α₀√(E − E_g) otherwise; no interference, no reflection unless R_back is set.</li>
-  <li>Physical-limit checks compare J_sc, V_oc, FF and PCE with the detailed-balance (Shockley–Queisser) values computed from the same spectrum for the absorber gap, and the radiative V_oc limit for the actual J_sc; red = impossible, amber = look at the named input.</li>
-  <li>Not modelled: optical interference, mobile ions, transients, Fermi–Dirac statistics, tunnelling, image-force lowering of the thermionic barrier.</li></ul>
+  <h3>Illumination and spatial profiles</h3>
+  <ul><li>The band diagram under light and every curve of the Spatial profiles view come from one steady-state solution at the chosen bias: Poisson and the electron and hole continuity equations (drift–diffusion, Scharfetter–Gummel fluxes) with Boltzmann statistics, and SRH, radiative and Auger recombination.</li>
+  <li>Generation: AM1.5G (ASTM G173-03) with Beer–Lambert absorption. Tabulated α for Si, GaAs, CdTe and MAPbI₃, analytic α₀√(E − E_g) otherwise. No optical interference and no reflection.</li>
+  <li>Contacts: thermionic emission over the Schottky–Mott barrier of the band diagram.</li>
+  <li>Not modelled: mobile ions, transients, Fermi–Dirac statistics, tunnelling. Fermi does not compute J–V curves; use CEISIM for device simulation.</li></ul>
   <h3>Figure conventions</h3>
   <ul><li>The horizontal axis is compressed layer by layer (width ∝ thickness^γ) unless γ = 1, in which case a scale bar is drawn and metals keep a fixed width.</li>
   <li>Exported SVG uses points: a 7 pt label is 7 pt at the stated column width. PNGs are rendered at the stated dpi for that width.</li>
   <li>In this edition all exports are open: PNG at 300, 600 and 1200 dpi, with no mark on the figure.</li></ul>
-  <p>Keyboard: <kbd>Ctrl/⌘ Z</kbd> undo, <kbd>Ctrl/⌘ ⇧ Z</kbd> redo, <kbd>Alt ↑/↓</kbd> move the selected layer, <kbd>Ctrl/⌘ +/−/0</kbd> zoom.</p>
+  <p>Keyboard: <kbd>Ctrl/⌘ Z</kbd> undo, <kbd>Ctrl/⌘ ⇧ Z</kbd> redo, <kbd>Alt ↑/↓</kbd> move the selected layer, <kbd>←</kbd> <kbd>→</kbd> change the quantity in Spatial profiles.</p>
+  <div class="btnrow"><button class="btn" id="helpClose">Close</button></div>`; }
+
+function guideHTML(){ return `
+  <h2 id="helpTitle">How to use Fermi</h2>
+  <p>Fermi draws the band diagram, the cross-section and a 3D view of a layered device, and plots spatial profiles across it. Everything is computed from the material parameters of the layers.</p>
+  <h3>1. Build the stack (left panel)</h3>
+  <ol><li>Pick a ready stack from <b>Templates</b> at the top, or press <b>+ Add layer</b>.</li>
+  <li>For each layer choose the material, the thickness and, for a semiconductor, the doping type and density. Layers run from left to right in the band diagram and from bottom to top in the device views.</li>
+  <li>The arrows on a layer move it up or down; the dots open its parameters (χ, E_g, ε_r, N_c, N_v or the work function). Mobility, lifetime and absorption are under <b>Advanced</b> and are needed only for illumination and spatial profiles.</li>
+  <li>The <b>Materials</b> tab lists the library. You can edit a material or add your own with <b>+ Custom</b>.</li></ol>
+  <h3>2. Choose the view (centre)</h3>
+  <ul><li><b>Band diagram</b>: E_c, E_v, E_F and the vacuum level, with barrier heights, band offsets and depletion widths marked.</li>
+  <li><b>Cross-section</b>: a flat drawing of the layers with their thicknesses.</li>
+  <li><b>3D</b>: the device as stacked slabs. Drag the figure to rotate it.</li>
+  <li><b>Spatial profiles</b>: choose the quantity from the dropdown: carrier densities, space charge, electric field, electrostatic potential, generation and recombination, or quasi-Fermi level splitting.</li></ul>
+  <h3>3. Set the operating point (Figure tab, right panel)</h3>
+  <ul><li><b>Mode</b>: Equilibrium, or Applied bias with the voltage V and the contact it is applied to.</li>
+  <li><b>Under illumination</b>: switches on AM1.5G light. The band diagram then shows the quasi-Fermi levels E_Fn and E_Fp. <b>Set bias to V_oc</b> finds the open-circuit voltage for you.</li>
+  <li>The values below the figure (barrier height, V_bi, depletion width W, maximum field) update as you change the stack. Click a value to see its formula.</li></ul>
+  <h3>4. Style the figure (Figure tab)</h3>
+  <ul><li>The Figure tab shows only the settings of the view that is open: labels and annotations for the band diagram, layout and top electrode for the 3D view, and so on.</li>
+  <li><b>Style</b> sets the column width, font, font size and line weight. The presets follow common journal requirements.</li></ul>
+  <h3>5. Export (Export tab)</h3>
+  <ul><li><b>SVG</b> keeps text editable in Illustrator or Inkscape. <b>PNG</b> is available at 300, 600 and 1200 dpi.</li>
+  <li><b>Download profile data (CSV)</b> saves the curve of the Spatial profiles view.</li>
+  <li><b>Project JSON</b> saves the whole stack and settings so that you can load it again later. Your work is also kept in this browser between visits.</li>
+  <li>The caption helper writes a figure caption with the main numbers.</li></ul>
+  <p>The physics behind the figures is described under <b>Assumptions</b>. Undo and redo are at the top right.</p>
   <div class="btnrow"><button class="btn" id="helpClose">Close</button></div>`; }
 
 /* SIMULATE UI */
@@ -2656,140 +2691,32 @@ function layerDD(Ly){ const base=FermiDD.DD_LIBRARY[Ly.mat]||FermiDD.DD_GENERIC;
   d.opt = d.alpha==='table' && FermiDD.ALPHA_TABLES[Ly.mat] ? {model:'table', table:Ly.mat} : d.alpha==='none' ? {model:'none'} : {model:'analytic', alpha0:d.alpha0};
   return d; }
 /* build the plain-JSON problem specification from the current stack */
-function simSpec(){
+function simSpec(Vspan){
   const S=simState(); const T=state.fig.T||300; const R=state.stack.layers.map(L=>resolveLayer(L, T, mats)); if (!R.length) return null;
-  assignTerminals(R, 0, state.fig.biasTerm||'right'); const Vmax=Math.max(Math.abs(S.V0), Math.abs(S.V1), 0.5); const nodes=buildGrid(R, Vmax, false);
+  assignTerminals(R, 0, state.fig.biasTerm||'right'); const Vmax=Math.max(Vspan||0, 0.5); const nodes=buildGrid(R, Vmax, false);
   const semis=R.filter(r=>r.kind==='semi'); const Egmin=semis.length?Math.min(...semis.map(r=>r.Eg)):0;
   const dd=state.stack.layers.map((Ly,i)=>{ const d=layerDD(Ly); const r=R[i]; if (d.absorb==null) d.absorb = r.kind==='semi' && (S.light.model==='bl' ? true : r.Eg<=Egmin+0.05); return d; });
   const strip=r=>{ const o={}; for (const k in r){ const v=r[k]; if (typeof v==='function') continue; o[k]=v; } return o; };
   return { R:R.map(strip), nodes, dd, contacts:S.contacts, biasTerm:state.fig.biasTerm||'right', T };
-}
-function simCfg(){ const S=simState(); return { V0:S.V0, V1:S.V1, dV:Math.max(0.005, S.dV||0.02), dark:true, store:true, light:Object.assign({}, S.light) }; }
-/* worker from the two physics blocks (dependency-free, inline Blob) */
-function simWorker(){
-  if (sim.worker) return sim.worker;
-  const src = $('#fermi-physics').textContent + '\n' + $('#fermi-dd').textContent + `
-    onmessage = (e)=>{ const {spec, cfg} = e.data; try{ const res = FermiDD.sweep(spec, cfg, (p)=>postMessage({type:'progress', done:p.done, total:p.total}));
-      postMessage({type:'done', res:{dark:res.dark, light:res.light, gen:res.gen, Ge:res.Ge, timing:res.timing, eqIter:res.eqIter, refined:res.refined?{Voc:res.refined.Voc, Vmp:res.refined.Vmp, Pmax:res.refined.Pmax, Jmp:res.refined.Jmp, iters:res.refined.iters}:null}}); }
-      catch(err){ postMessage({type:'error', message:String(err&&err.message||err), stack:String(err&&err.stack||'')}); } };`;
-  const blob=new Blob([src], {type:'application/javascript'}); sim.worker=new Worker(URL.createObjectURL(blob)); return sim.worker;
-}
-function runSim(){
-  if (sim.running) return; const spec=simSpec(); if (!spec){ toast('Add a layer first'); return; }
-  if (!spec.R.some(r=>r.kind==='semi')){ toast('The stack has no semiconductor layer'); return; }
-  const cfg=simCfg(); sim.running=true; sim.progress={done:0,total:1}; sim.stale=false; renderSimPanel(); renderSimStatus();
-  const t0=performance.now(); let w;
-  try{ w=simWorker(); }catch(e){ w=null; }
-  const finish=(res)=>{ sim.running=false; sim.spec=spec; sim.P=FermiDD.prepare(spec); res.P=sim.P; res.cfg=Object.assign({}, cfg, {newton:{maxIt:80,tol:1e-11}}); if (!res.Ge && res.light) res.Ge=FermiDD.generation(sim.P, cfg.light).Ge; sim.res=res; sim.wall=performance.now()-t0; analyseSim(); const S=simState(); S.bias=Math.min(Math.max(S.bias||0, S.V0), S.V1); if (currentFig!=='sim'){ currentFig='sim'; $$('[data-fig]').forEach(x=>x.setAttribute('aria-pressed', x.dataset.fig==='sim'?'true':'false')); } sim.figCache={}; renderPreview(); zoomFit(); renderSimPanel(); renderSimStatus(); renderReadouts(); if ($('#captionBox')) $('#captionBox').value=captionText(); };
-  const fail=(msg)=>{ sim.running=false; renderSimPanel(); renderSimStatus(); toast('Simulation failed: '+msg); console.error('Fermi Simulate:', msg); };
-  if (w){ w.onmessage=(e)=>{ const m=e.data; if (m.type==='progress'){ sim.progress={done:m.done,total:m.total}; renderSimStatus(); } else if (m.type==='done') finish(m.res); else if (m.type==='error'){ fail(m.message); console.error(m.stack); } }; w.onerror=(e)=>{ fail(e.message||'worker error'); sim.worker=null; }; w.postMessage({spec, cfg}); }
-  else { setTimeout(()=>{ try{ const res=FermiDD.sweep(spec, cfg, (p)=>{ sim.progress=p; }); finish(res); }catch(e){ fail(e.message); } }, 20); }
-}
-function analyseSim(){
-  const res=sim.res; if (!res) return; const S=simState();
-  sim.pv = res.light ? FermiDD.pvParams(res) : null;
-  const A = FermiDD.DD_GENERIC && sim.P.layers.filter(L=>L.kind==='semi' && L.absorb).reduce((m,L)=>(!m||L.Eg<m.Eg)?L:m, null) || sim.P.layers.find(L=>L.kind==='semi');
-  sim.absorber=A; sim.fit = FermiDD.darkFit(res, A?A.Eg:1.12); sim.shockley=FermiDD.shockleyJ0(sim.P);
-  sim.flags = FermiDD.flags(res, sim.pv, sim.fit); sim.sq = sim.flags.sq;
-  sim.budget=null; if (sim.pv && sim.pv.Voc!=null && !sim.pv.VocMissing){ try{ const sol=FermiDD.solveAt(res, sim.pv.fs*sim.pv.Voc, true); if (sol&&sol.converged) sim.budget=FermiDD.budget(sim.P, sol.st, res.Ge); }catch(e){ console.warn('budget', e); } }
-  if (S.Rs>0 || S.Rsh>0){ sim.lumped={dark:res.dark&&FermiDD.lumped(res.dark, S.Rs, S.Rsh), light:res.light&&FermiDD.lumped(res.light, S.Rs, S.Rsh)}; } else sim.lumped=null;
 }
 function simStateAt(V, light){ // solved state at an arbitrary bias (stored point if it exists, else a few Newton steps from the nearest)
   const res=sim.res; if (!res) return null; const pts=light?res.light:res.dark; if (!pts) return null;
   const hit=pts.find(p=>Math.abs(p.V-V)<1e-9 && p.st); if (hit) return {psi:Float64Array.from(hit.st.psi), Fn:Float64Array.from(hit.st.Fn), Fp:Float64Array.from(hit.st.Fp)};
   const sol=FermiDD.solveAt(res, V, light); return sol&&sol.converged ? sol.st : null;
 }
-function renderSimStatus(){ const el=$('#solverStatus'); if (!el) return; if (sim.running){ const p=sim.progress||{done:0,total:1}; el.textContent='Simulating… '+Math.round(100*p.done/Math.max(p.total,1))+' %'; return; }
-  if (currentFig==='sim' && sim.res){ const r=sim.res; const it=(pts)=>pts?pts.reduce((a,p)=>a+p.iters,0):0; el.textContent=`${sim.P.N} nodes · ${it(r.dark)+it(r.light)} Newton it. · ${Math.round(sim.wall)} ms`+(sim.stale?' · stack changed — re-run':''); } }
-function markSimStale(){ if (sim.res){ sim.stale=true; sim.figCache={}; } }
-
-/* ---------- Simulate panel (right pane, third tab) ---------- */
 function simNum(v, d=3){ if (v==null || !isFinite(v)) return '—'; return sci(v, d); }
 function simFixed(v, d=3){ if (v==null || !isFinite(v)) return '—'; return Number(v).toFixed(d); }
-function renderSimPanel(){
-  const p=$('#tab-simulate'); if (!p) return; const S=simState(); const sel=(k, opts, v)=>`<select data-sim="${k}">${opts.map(([val,lab])=>`<option value="${val}" ${String(v)===String(val)?'selected':''}>${lab}</option>`).join('')}</select>`;
-  const num=(k, v, step, extra='')=>`<input type="number" step="${step}" data-sim="${k}" value="${v}" ${extra}>`;
-  const sci_=(k, v)=>`<input type="text" data-sim="${k}" data-sci="1" value="${v==null?'':sci(v,2)}">`;
-  const contact=(side)=>{ const c=S.contacts[side]; const end = side==='left' ? state.stack.layers[0] : state.stack.layers[state.stack.layers.length-1]; const m=end&&mats[end.mat]; const isMetal=m&&m.kind==='metal';
-    return ctl(side+' contact', sel('contacts.'+side+'.model', isMetal?[['auto','auto (thermionic, φ_B from the band diagram)'],['schottky','Schottky: thermionic emission'],['pinned','Schottky: carriers pinned (S = ∞)'],['ohmic','ideal ohmic (flat band)']]:[['ohmic','ideal ohmic (flat band; no metal in the stack)']], isMetal?c.model:'ohmic'))
-      + (isMetal && (c.model==='auto'||c.model==='schottky') ? ctl('A* n, p (A cm⁻² K⁻²)', `<div class="row">${num('contacts.'+side+'.An', c.An, 1)}${num('contacts.'+side+'.Ap', c.Ap, 1)}</div>`) : '')
-      + ((!isMetal || c.model==='ohmic') ? ctl('S_n, S_p (cm/s)', `<div class="row">${sci_('contacts.'+side+'.Sn', c.Sn)}${sci_('contacts.'+side+'.Sp', c.Sp)}</div>`) : ''); };
-  p.innerHTML = `
-    <div class="sec">Illumination</div>
-    ${ctl('Generation', sel('light.model', [['bl','AM1.5G, Beer–Lambert'],['uniform','uniform G in the absorber'],['none','dark only']], S.light.model))}
-    <div id="simLightBL" ${S.light.model!=='bl'?'hidden':''}>${ctl('Intensity (suns)', num('light.suns', S.light.suns, 0.1, 'min="0"'))}${ctl('Light enters', sel('light.side', [['left','from the left (layer 1)'],['right','from the right']], S.light.side))}${ctl('Back reflectance', num('light.Rback', S.light.Rback, 0.05, 'min="0" max="1"'))}</div>
-    <div id="simLightU" ${S.light.model!=='uniform'?'hidden':''}>${ctl('G (cm⁻³ s⁻¹)', sci_('light.G', S.light.G))}${ctl('Nominal P_in (suns)', num('light.suns', S.light.suns, 0.1, 'min="0"'))}</div>
-    <div class="muted small">Light passes TCO/metal layers with the transmission set on each layer (default 90 % ITO/FTO/PEDOT, 0 % metals); no interference, no reflection unless R_back is set. Per-layer absorption model: layer ⋯ panel.</div>
-    <div class="sec">Bias sweep</div>
-    ${ctl('V from, to (V)', `<div class="row">${num('V0', S.V0, 0.1)}${num('V1', S.V1, 0.1)}</div>`)}
-    ${ctl('Step (V)', num('dV', S.dV, 0.005, 'min="0.005" max="0.2"'))}
-    <div class="muted small">${comp&&comp.analysis&&comp.analysis.hint?esc(comp.analysis.hint):''} Bias on the <b>${esc(state.fig.biasTerm||'right')}</b> contact (Figure tab).</div>
-    <div class="sec">Contacts</div>
-    ${contact('left')}${contact('right')}
-    <div class="sec">Lumped parasitics (post-processing)</div>
-    ${ctl('R_s, R_sh (Ω cm²)', `<div class="row">${num('Rs', S.Rs, 0.1, 'min="0"')}${sci_('Rsh', S.Rsh)}</div>`)}
-    <div class="sec">Figures</div>
-    ${chkSim('pvSign','Photovoltaic sign (plot −J, photocurrent positive)')}${chkSim('showLog','Semilog |J|–V panel (dark)')}${chkSim('showProfiles','Carrier, generation and recombination profiles')}
-    <div class="btnrow"><button class="btn primary" id="simRun" ${sim.running?'disabled':''}>${sim.running?'Running…':'Run simulation'}</button></div>
-    <div id="simResults">${simResultsHTML()}</div>`;
-  $$('[data-sim]',p).forEach(inp=>{ inp.addEventListener('change', ()=>{ const prev=snapshot(); const path=inp.dataset.sim.split('.'); let o=simState(); for (let i=0;i<path.length-1;i++) o=o[path[i]]; const k=path[path.length-1];
-    let v; if (inp.type==='checkbox') v=inp.checked; else if (inp.dataset.sci) v=parseFloat(String(inp.value).replace(/[×x]\s*10\^?/,'e').replace(/\s/g,'')); else if (inp.type==='number') v=parseFloat(inp.value); else v=inp.value;
-    if (inp.type!=='checkbox' && inp.tagName!=='SELECT' && !isFinite(v)) { renderSimPanel(); return; }
-    o[k]=v; if (k==='V0'&&S.V0>S.V1) S.V1=S.V0+0.1; commit({prev}); if (['pvSign','showLog','showProfiles','Rs','Rsh'].includes(k)){ sim.figCache={}; if (sim.res) analyseSim(); if (currentFig==='sim'){ renderPreview(); } } else markSimStale(); renderSimPanel(); renderSimStatus(); }); });
-  const rb=$('#simRun',p); if (rb) rb.addEventListener('click', runSim);
-  bindSimResults(p);
-}
-function chkSim(key, label){ const S=simState(); return `<label class="check"><input type="checkbox" data-sim="${key}" ${S[key]?'checked':''}> ${label}</label>`; }
-function simResultsHTML(){
-  if (!sim.res) return `<div class="callout small">Run the simulation to get the dark and illuminated J–V, the band diagram at any bias under illumination, carrier profiles and the physical-limit checks. The equilibrium figure is unaffected.</div>`;
-  const S=simState(); const pv=sim.pv, fit=sim.fit, sq=sim.sq, fl=sim.flags, b=sim.budget; const mA=v=>v==null||!isFinite(v)?'—':(v*1e3).toFixed(2);
-  const row=(k,v,f)=>`<button class="ro" aria-expanded="false" style="min-width:0;flex:1 1 46%"><div class="k">${k}</div><div class="v">${v}</div>${f?`<div class="f">${esc(f)}</div>`:''}</button>`;
-  let h=''; if (sim.stale) h+=`<div class="callout warn small">The stack or settings changed after this run — results below are from the previous run. Run again.</div>`;
-  if (pv){ const vr=FermiDD.vocRad(pv.Jsc, sim.absorber?sim.absorber.Eg:1.1, sim.P.T);
-    h+=`<div class="sec">Illuminated J–V</div><div style="display:flex;flex-wrap:wrap;gap:6px">`
-      +row('J_sc (mA cm⁻²)', mA(pv.Jsc), 'Short-circuit current density = −J(V = 0). Generated: q∫G dx = '+mA(sim.res.gen.Jgen)+' mA cm⁻²'+(sim.res.gen.absorbed?'; absorbed photon flux '+sci(sim.res.gen.absorbed,3)+' cm⁻² s⁻¹ of '+sci(sim.res.gen.incident,3)+' incident':''))
-      +row('V_oc (V)', pv.VocMissing?'> '+simFixed(pv.Vend,2):simFixed(pv.Voc,4), pv.VocMissing?'Open circuit lies outside the sweep: extend V₁.':'Zero crossing of the illuminated J–V, refined by Newton solves ('+(pv.refined?'exact':'grid interpolation')+'). Radiative limit for this J_sc and E_g = '+simFixed(sim.absorber.Eg,2)+' eV: '+simFixed(vr.Voc,4)+' V; SQ: '+simFixed(sq.Voc,4)+' V.')
-      +row('FF', simFixed(pv.FF,4), 'P_max/(J_sc V_oc); P_max from a golden-section search. SQ FF for this gap: '+simFixed(sq.FF,4))
-      +row('PCE (%)', simFixed(pv.PCE*100,2), 'P_max / P_in with P_in = '+(pv.Pin*1e3).toFixed(2)+' mW cm⁻² ('+(S.light.model==='bl'?'integrated AM1.5G × suns':'nominal 100 mW cm⁻² × suns')+'). SQ limit for E_g = '+simFixed(sq.Eg,2)+' eV: '+simFixed(sq.PCE*100,2)+' %')
-      +row('V_mp, J_mp', simFixed(pv.Vmp,3)+' V, '+mA(pv.Jmp)+' mA', 'Maximum-power point')+'</div>'; }
-  if (fit){ const mid=fit.mid, low=fit.low, n1=fit.n1, sh=sim.shockley;
-    h+=`<div class="sec">Dark J–V fit</div><div style="display:flex;flex-wrap:wrap;gap:6px">`
-      +row('n, J₀ (diffusion window)', mid?simFixed(mid.n,3)+', '+sci(mid.J0,2)+' A cm⁻²':'—', mid?'Least squares of ln J = ln J₀ + V/(n kT) over '+simFixed(mid.V0,2)+'–'+simFixed(mid.V1,2)+' V (0.30–0.52 E_g), '+mid.pts+' points':'window has no points')
-      +row('n, J₀ (low-bias window)', low?simFixed(low.n,3)+', '+sci(low.J0,2)+' A cm⁻²':'—', low?'Same fit over '+simFixed(low.V0,2)+'–'+simFixed(low.V1,2)+' V (0.10–0.30 E_g); SRH in the depletion region drives n toward 2 here':'window has no points')
-      +row('J₀ at n = 1', n1?sci(n1.J0,2)+' A cm⁻²':'—', n1?'J/(exp(V/kT) − 1) at V = '+simFixed(n1.V,3)+' V where the local ideality is smallest (n = '+simFixed(n1.n,4)+')'+(sh?'\nShockley long-base J₀ = q n_i² (D_n/(L_n N_A) + D_p/(L_p N_D)) = '+sci(sh.J0,2)+' A cm⁻² for '+sh.pL+'/'+sh.nL+' (L_n = '+fmtLen(sh.Ln)+', L_p = '+fmtLen(sh.Lp)+'); finite bases with S = ∞ contacts: '+sci(sh.J0coth,2)+'; with S = 0 (selective) contacts: '+sci(sh.J0tanh,2):''):'')
-      +row('J (reverse end)', fit.Jsat!=null?sci(fit.Jsat,2)+' A cm⁻²':'—', 'Dark current at the most negative bias of the sweep (generation current in the depletion region)')+'</div>'; }
-  if (sq) h+=`<div class="muted small" style="margin-top:6px">Shockley–Queisser reference for the absorber ${esc(fl.absorber)} (E_g = ${simFixed(sq.Eg,2)} eV, AM1.5G, ${sim.P.T} K, one-sided emission): J_sc,SQ = ${mA(sq.Jsc)} mA cm⁻², V_oc,SQ = ${simFixed(sq.Voc,3)} V, FF_SQ = ${simFixed(sq.FF,3)}, PCE_SQ = ${simFixed(sq.PCE*100,2)} %.</div>`;
-  if (fl){ h+=`<div class="sec">Physical-limit checks</div>`; if (!fl.items.length) h+=`<div class="callout good small">No limit exceeded, no parameter outside its library range, all bias points converged.</div>`;
-    for (const f of fl.items) h+=`<div class="callout ${f.level==='red'?'crit':'warn'} small"><b>${esc(f.title)}</b><br>${esc(f.detail)}<br><span class="muted">Look at: ${esc(f.input)}</span></div>`; }
-  if (b){ const tot=b.total||1; const pct=v=>(100*v/tot).toFixed(1)+' %';
-    h+=`<div class="sec">Recombination at V_oc</div><div class="small" style="overflow-x:auto"><table class="simtab"><tr><th>where</th><th>SRH</th><th>radiative</th><th>Auger</th></tr>`;
-    for (const i in b.per){ const r=b.per[i]; if (r.srh+r.rad+r.aug<=0) continue; h+=`<tr><td>${esc(r.name)}</td><td>${mA(r.srh)}</td><td>${mA(r.rad)}</td><td>${mA(r.aug)}</td></tr>`; }
-    h+=`<tr><td>interfaces</td><td colspan="3">${mA(b.ifc)}</td></tr><tr><td>contacts (left, right)</td><td colspan="3">${mA(b.contacts[0].J)}, ${mA(b.contacts[1].J)}</td></tr><tr><th>total</th><td colspan="3">${mA(b.total)} mA cm⁻² of ${mA(b.gen)} generated (SRH ${pct(b.srh)}, rad ${pct(b.rad)}, Auger ${pct(b.aug)}, contacts ${pct(b.con)})</td></tr></table></div>`; }
-  const r=sim.res; const nc=(r.dark?r.dark.filter(p=>!p.converged).length:0)+(r.light?r.light.filter(p=>!p.converged).length:0);
-  h+=`<div class="sec">Band diagram and profiles at</div>${ctl('Bias V (V)', `<div class="row"><input type="range" id="simBias" min="${S.V0}" max="${S.V1}" step="${S.dV}" value="${S.bias}"><input type="number" id="simBiasN" step="${S.dV}" value="${S.bias}" style="width:72px"></div>`)}
-    <label class="check"><input type="checkbox" id="simBiasLight" ${S.biasLight&&r.light?'checked':''} ${r.light?'':'disabled'}> under illumination</label>
-    <div class="muted small">Run: ${sim.P.N} nodes, ${Math.round(sim.wall)} ms${r.timing?' (dark '+Math.round(r.timing.dark||0)+' ms, light '+Math.round(r.timing.light||0)+' ms)':''}; ${nc?nc+' non-converged point'+(nc>1?'s':''):'all points converged'}; max continuity error ${pv?(pv.devMax*100).toExponential(1)+' %':'—'} (relative to |J| or 10⁻³ of the largest |J|).</div>`;
-  return h;
-}
-function bindSimResults(p){
-  $$('.ro',p).forEach(b=>b.addEventListener('click',()=>{ const o=b.getAttribute('aria-expanded')==='true'; b.setAttribute('aria-expanded', o?'false':'true'); }));
-  const sl=$('#simBias',p), nn=$('#simBiasN',p), lt=$('#simBiasLight',p); const S=simState();
-  const upd=(v)=>{ S.bias=v; if (sl) sl.value=v; if (nn) nn.value=v; sim.figCache={}; if (currentFig==='sim') renderPreview(); try{ localStorage.setItem('fermi.project', snapshot()); }catch(e){} };
-  if (sl) sl.addEventListener('input', ()=>upd(parseFloat(sl.value))); if (nn) nn.addEventListener('change', ()=>upd(Math.min(S.V1, Math.max(S.V0, parseFloat(nn.value)||0))));
-  if (lt) lt.addEventListener('change', ()=>{ S.biasLight=lt.checked; sim.figCache={}; if (currentFig==='sim') renderPreview(); });
-}
-/* per-layer transport and optics fields (appended to the layer ⋯ panel) */
 function simParamFields(Ly, m){
   if (!(m.kind==='semi'||m.kind==='metal')) return '';
   const d=layerDD(Ly); const o=Ly.dd||{}; const f=(k,lab,val,title)=>`<div class="field"><label title="${esc(title||'')}">${lab}</label><input type="text" data-dd="${k}" value="${val}" aria-label="${lab}"><span class="muted small">${o[k]!=null?'edited':''}</span></div>`;
   const rng=d.rng||{}; const rs=(r)=>r?' ('+sci(r[0],1)+'–'+sci(r[1],1)+')':'';
-  if (m.kind==='metal') return `<div class="sec">Simulate</div>`+f('Tf','Transmission', d.Tf, 'Fraction of the spectrum transmitted when light enters through this layer (Beer–Lambert model)')+`<div class="src">Optical transmission of a front TCO/metal; 0.9 is a typical TCO, metals block the light.</div>`;
+  if (m.kind==='metal') return f('Tf','Transmission', d.Tf, 'Fraction of the spectrum transmitted when light enters through this layer (Beer–Lambert model)')+`<div class="src">Optical transmission of a front TCO/metal; 0.9 is a typical TCO, metals block the light.</div>`;
   const hasTable=!!FermiDD.ALPHA_TABLES[Ly.mat]; const isLast = state.stack.layers.indexOf(Ly)===state.stack.layers.length-1; const next = state.stack.layers[state.stack.layers.indexOf(Ly)+1]; const nextSemi = next && mats[next.mat] && mats[next.mat].kind==='semi';
-  return `<div class="sec">Simulate: transport</div>`
+  return `<div class="sec">Transport</div>`
     + f('mun','μ_n (cm²/Vs)'+rs(rng.mun), sci(d.mun,2), 'Electron mobility; range = library spread') + f('mup','μ_p (cm²/Vs)'+rs(rng.mup), sci(d.mup,2), 'Hole mobility')
     + f('taun','τ_n (s)'+rs(rng.tau), sci(d.taun,2), 'SRH electron lifetime') + f('taup','τ_p (s)'+rs(rng.tau), sci(d.taup,2), 'SRH hole lifetime')
     + f('Et','E_t − E_i (eV)', d.Et, 'SRH trap level measured from midgap (+ toward E_c)') + f('B','B (cm³/s)', sci(d.B,2), 'Radiative coefficient') + f('Cn','C_n (cm⁶/s)', sci(d.Cn,2), 'Auger coefficient (electrons)') + f('Cp','C_p (cm⁶/s)', sci(d.Cp,2), 'Auger coefficient (holes)')
-    + `<div class="sec">Simulate: optics</div><div class="field"><label>α model</label><select data-dd="alpha">${hasTable?`<option value="table" ${d.alpha==='table'?'selected':''}>tabulated α(λ)</option>`:''}<option value="analytic" ${d.alpha==='analytic'?'selected':''}>analytic α₀√(E − E_g)</option><option value="none" ${d.alpha==='none'?'selected':''}>transparent</option></select><span></span></div>`
+    + `<div class="sec">Optics</div><div class="field"><label>α model</label><select data-dd="alpha">${hasTable?`<option value="table" ${d.alpha==='table'?'selected':''}>tabulated α(λ)</option>`:''}<option value="analytic" ${d.alpha==='analytic'?'selected':''}>analytic α₀√(E − E_g)</option><option value="none" ${d.alpha==='none'?'selected':''}>transparent</option></select><span></span></div>`
     + (d.alpha==='analytic'?f('alpha0','α₀ (cm⁻¹ eV^−½)', sci(d.alpha0,2), 'SCAPS convention: α = α₀ √(hν − E_g)'):'')
     + `<label class="check"><input type="checkbox" data-dd="absorb" ${d.absorb!==false?'checked':''}> absorbs light / receives uniform G</label>`
     + (nextSemi ? f('Sn','S_n interface (cm/s)', sci(d.Sn,2), 'Interface recombination velocity at this layer’s right interface (electrons)') + f('Sp','S_p interface (cm/s)', sci(d.Sp,2), 'Interface recombination velocity at this layer’s right interface (holes)') : '')
@@ -2798,18 +2725,7 @@ function simParamFields(Ly, m){
 function bindSimFields(div, Ly){
   $$('[data-dd]',div).forEach(inp=>{ inp.addEventListener('change', ()=>{ const prev=snapshot(); const k=inp.dataset.dd; Ly.dd=Ly.dd||{};
     if (inp.type==='checkbox') Ly.dd[k]=inp.checked; else if (inp.tagName==='SELECT') Ly.dd[k]=inp.value; else { const v=parseFloat(String(inp.value).replace(/[×x]\s*10\^?/,'e').replace(/\s/g,'')); if (isFinite(v)) Ly.dd[k]=v; }
-    markSimStale(); commit({prev}); renderLayers(); }); });
-}
-/* ---------- figures ---------- */
-function simFigures(){ // the SVGs shown in Simulate mode; all pass through exportSVGs() like the other figures
-  if (!sim.res) return [{name:'jv', title:'J–V characteristics', svg:emptyFigure('Run a simulation (Simulate tab) to see the J–V curve, the band diagram at any bias and the carrier profiles')}];
-  const S=simState(); const out=[]; const F=effFig(); const key=JSON.stringify([S.bias,S.biasLight,S.pvSign,S.showLog,S.showProfiles,F,sim.stale]);
-  if (sim.figCache.key===key) return sim.figCache.figs;
-  if (sim.res.light) out.push({name:'jv', title:'J–V characteristics', svg:renderJV(F, false)});
-  if (S.showLog || !sim.res.light) out.push({name:'jv-log', title:'J–V, semilog', svg:renderJV(F, true)});
-  const bc=simBandComp(S.bias, S.biasLight && !!sim.res.light); if (bc) out.push({name:'band-diagram-'+String(S.bias).replace('-','m')+'V', title:'Band diagram at V = '+S.bias+' V', svg:renderBand(bc, Object.assign({}, F, {mode:'bias', V:S.bias}))});
-  if (S.showProfiles){ const pr=renderProfiles(S.bias, S.biasLight && !!sim.res.light, F); if (pr) out.push({name:'profiles', title:'Carrier profiles at V = '+S.bias+' V', svg:pr}); }
-  sim.figCache={key, figs:out}; return out;
+    commit({prev}); renderLayers(); }); });
 }
 function emptyFigure(msg){ const C=figColors(state.fig.figTheme); const W=(state.fig.widthMm||85)/25.4*72, H=W*(effFig().fillH?effFig().aspect:0.5); return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}pt" height="${H}pt" viewBox="0 0 ${W} ${H}" font-family="${FONTS[state.fig.font||'sans']}"><rect width="${W}" height="${H}" fill="${C.bg}"/><text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="${state.fig.fontSize||7}" fill="${C.ink2}">${esc(msg)}</text></svg>`; }
 function simBandComp(V, light){
@@ -2843,114 +2759,80 @@ function plotAxes(F, fig, a){ const {C, fs, lwa}=F; const box=fig.pFrame!=='open
   if (a.ylabel) o+=`<text transform="translate(${(fs*1.05).toFixed(2)} ${((y0+y1)/2).toFixed(2)}) rotate(-90)" text-anchor="middle" font-size="${(a.ylabelFs||fs)}" fill="${C.ink}">${T(a.ylabel)}</text>`;
   return o; }
 function seriesCol(fig, which){ const C=figColors(fig.figTheme); let c= which==='light' ? (fig.pColLight||'#000000') : (fig.pColDark||'#0072b2'); if (fig.figTheme==='dark' && hexRGB(c).reduce((s,v)=>s+v,0)<150) c=C.ink; return c; }
-function renderJV(fig, logPanel){
-  const legendRow=fig.pLegend==='box'; const F=plotFrame(fig, Math.max(0.4, Math.min(1.4, +fig.pAspect||0.72)), legendRow?(fig.fontSize||7)*1.5:0); const {C, fs, lw, lwa, W, H, font} = F; const S=simState(); const res=sim.res; const src=sim.lumped||res; const sg=S.pvSign?-1:1;
-  const dark=src.dark||null, light=src.light||null; const kT=sim.P.kT;
-  const uid='jv'+Math.random().toString(36).slice(2,7);
-  let Vlo=Math.min(S.V0, 0), Vhi=Math.max(S.V1, 0); if (fig.pXauto==='manual' && isFinite(+fig.pXmin) && isFinite(+fig.pXmax) && +fig.pXmax>+fig.pXmin){ Vlo=+fig.pXmin; Vhi=+fig.pXmax; }
-  const X=v=>F.x0+(v-Vlo)/(Vhi-Vlo)*(F.x1-F.x0);
-  let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}" data-x0="${F.x0.toFixed(3)}" data-x1="${F.x1.toFixed(3)}" data-vlo="${Vlo}" data-vhi="${Vhi}"><title>${logPanel?'Dark current–voltage characteristic (semilog)':'Current–voltage characteristics'}: ${esc(state.stack.layers.map(l=>(mats[l.mat]||{}).name||l.mat).join(' / '))}</title>`;
-  out+=`<rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/><defs><clipPath id="${uid}c"><rect x="${F.x0}" y="${F.y0}" width="${F.x1-F.x0}" height="${F.y1-F.y0}"/></clipPath></defs>`;
-  const lay=new Layout(fs, font, {x0:fs*0.15,y0:fs*0.15,x1:W-fs*0.15,y1:H-fs*0.15}, C, lwa);
-  const series=[]; const colD=seriesCol(fig,'dark'), colL=seriesCol(fig,'light'); const mk=!!fig.pMarkers;
-  const tx=axisTicks(Vlo, Vhi, 6); const xt=tx.ticks.map(v=>({p:X(v), lab:fmtTick(v)})), xm=minorVals(Vlo, Vhi, tx.step).map(X);
-  const xlabel=fig.pXlabel||'Voltage (V)';
-  const inX=p=>p.V>=Vlo-1e-9 && p.V<=Vhi+1e-9;
-  const legend=()=>{ let o='';
-    if (fig.pLegend==='none') return o;
-    if (legendRow){ let x=F.x1; const y=F.y0-fs*0.8; for (const s of series.slice().reverse()){ const w=textW(s.name, fs*0.9); o+=label(x-w, y+fs*0.32, s.name, {fs:fs*0.9, fill:C.ink}); o+=`<line x1="${(x-w-fs*2.6).toFixed(2)}" y1="${y.toFixed(2)}" x2="${(x-w-fs*0.5).toFixed(2)}" y2="${y.toFixed(2)}" stroke="${s.col}" stroke-width="${lw}" stroke-linecap="round"/>`; if (mk) o+=`<circle cx="${(x-w-fs*1.55).toFixed(2)}" cy="${y.toFixed(2)}" r="${(fs*0.2).toFixed(2)}" fill="${s.col}"/>`; x-=w+fs*4.0; } return o; }
-    for (const s of series) lay.add({txt:s.name, fs:fs*0.9, fill:s.col, halo:C.bg, pri:1, home:{x:s.x,y:s.y}, cands:[{x:s.x-fs*0.3, y:s.y-fs*0.5, anchor:'end'},{x:s.x-fs*0.3, y:s.y+fs*1.1, anchor:'end'},{x:s.x+fs*0.3, y:s.y+fs*0.35, anchor:'start'}]});
-    return o; };
-  if (!logPanel){
-    const yv=p=>sg*p.J*1e3; let lo=0, hi=0; if (light){ for (const p of light){ if (!inX(p)) continue; const y=yv(p); if (!isFinite(y)) continue; if (y<lo) lo=y; if (y>hi) hi=y; } }
-    if (light && sim.pv && isFinite(sim.pv.Jsc) && sim.pv.Jsc>0){ const J=sim.pv.Jsc*1e3; if (sim.pv.VocMissing){ lo=Math.min(lo, sg>0?-1.15*J:-0.2*J); hi=Math.max(hi, sg>0?0.2*J:1.15*J); } else { lo= sg>0?-1.12*J:-0.22*J; hi= sg>0?0.22*J:1.12*J; } }   // the power quadrant fills the plot, as in a solar cell paper else if (dark){ const ys=dark.filter(inX).map(yv).filter(isFinite); lo=Math.min(...ys,0); hi=Math.max(...ys,0); }
-    if (!(hi>lo)){ lo=-1; hi=1; } const pad=(hi-lo)*0.06; lo-=pad; hi+=pad;
-    if (fig.pYauto==='manual' && isFinite(+fig.pYmin) && isFinite(+fig.pYmax) && +fig.pYmax>+fig.pYmin){ lo=+fig.pYmin; hi=+fig.pYmax; }
-    const Y=y=>F.y1-(y-lo)/(hi-lo)*(F.y1-F.y0);
-    const ty=axisTicks(lo, hi, 6);
-    out+=plotAxes(F, fig, {xt, xm, yt:ty.ticks.map(v=>({p:Y(v), lab:fmtTick(v)})), ym:minorVals(lo, hi, ty.step).map(Y), xlabel, ylabel:fig.pYlabel||'Current density (mA cm^{-2})'});
-    if (lo<0&&hi>0) out+=`<line x1="${F.x0}" y1="${Y(0).toFixed(2)}" x2="${F.x1}" y2="${Y(0).toFixed(2)}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`; if (Vlo<0&&Vhi>0) out+=`<line x1="${X(0).toFixed(2)}" y1="${F.y0}" x2="${X(0).toFixed(2)}" y2="${F.y1}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`;
-    out+=`<g clip-path="url(#${uid}c)">`;
-    const draw=(pts, col, name)=>{ if (!pts) return; const P=pts.filter(p=>isFinite(p.J)).map(p=>[X(p.V), Y(yv(p))]); if (!P.length) return; out+=`<polyline points="${P.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round" stroke-linecap="round"/>`; lay.line(P,'band');
-      if (mk) for (const q of P) out+=`<circle cx="${q[0].toFixed(2)}" cy="${q[1].toFixed(2)}" r="${(fs*0.17).toFixed(2)}" fill="${col}"/>`;
-      for (const p of pts) if (!p.converged) out+=`<circle cx="${X(p.V).toFixed(2)}" cy="${Y(yv(p)).toFixed(2)}" r="${fs*0.22}" fill="${C.bg}" stroke="${col}" stroke-width="${lwa}"/>`;
-      const inside=P.filter(q=>q[1]>=F.y0&&q[1]<=F.y1&&q[0]>=F.x0&&q[0]<=F.x1); const e=inside.length?inside[inside.length-1]:P[P.length-1]; series.push({name, col, x:e[0], y:e[1]}); };
-    draw(dark, colD, 'Dark'); draw(light, colL, 'Light');
-    if (fig.pShowMPP!==false && light && sim.pv && !sim.pv.VocMissing){ const fs_=sim.pv.fs; out+=`<circle cx="${X(fs_*sim.pv.Vmp).toFixed(2)}" cy="${Y(sg*-sim.pv.Jmp*1e3).toFixed(2)}" r="${fs*0.3}" fill="${C.bg}" stroke="${colL}" stroke-width="${lwa*1.2}"/>`; lay.rect(X(fs_*sim.pv.Vmp)-fs*0.35, Y(sg*-sim.pv.Jmp*1e3)-fs*0.35, X(fs_*sim.pv.Vmp)+fs*0.35, Y(sg*-sim.pv.Jmp*1e3)+fs*0.35, 'mark'); }
-    out+=`</g>`;
-    out+=legend();
-    if (fig.pShowPV!==false && light && sim.pv){ const pv=sim.pv; const lines=['J_{sc} = '+(pv.Jsc*1e3).toFixed(2)+' mA cm^{-2}'].concat(pv.VocMissing?['V_{oc} > '+simFixed(pv.Vend,2)+' V']:['V_{oc} = '+pv.Voc.toFixed(3)+' V','FF = '+(pv.FF*100).toFixed(1)+' %','PCE = '+(pv.PCE*100).toFixed(2)+' %']);
-      const bx=Math.max(F.x0, Vlo<0&&Vhi>0?X(0):F.x0)+fs*1.0, z0=(lo<0&&hi>0)?Y(0):null, by0 = sg>0 ? Math.max(F.y0+fs*1.6, z0==null?0:z0+fs*1.7) : Math.min(F.y1-fs*1.0, z0==null?1e9:z0-fs*1.0)-fs*1.3*(lines.length-1); lines.forEach((t,i)=>{ out+=lay.fix(t, {x:bx, y:by0+i*fs*1.3, anchor:'start'}, fs*0.9, {fill:C.ink, halo:C.bg}); }); }
-    out+=lay.resolve();
-  } else {
-    const pts=(arr)=>arr?arr.filter(p=>isFinite(p.J)&&p.J!==0&&inX(p)).map(p=>({V:p.V, y:Math.log10(Math.abs(p.J)*1e3), conv:p.converged})):[];
-    const D=pts(dark), Lg=light?pts(light):[]; const all=D.concat(Lg); if (!all.length) return emptyFigure('no dark curve');
-    let lo=Math.floor(Math.min(...all.map(p=>p.y))), hi=Math.ceil(Math.max(...all.map(p=>p.y))); if (hi-lo<2) hi=lo+2; const Y=y=>F.y1-(y-lo)/(hi-lo)*(F.y1-F.y0);
-    const stepD=Math.max(1, Math.ceil((hi-lo)/7)); const yt=[]; for (let e=lo; e<=hi; e+=stepD) yt.push({p:Y(e), lab:pow10Label(e)});
-    const ym=[]; if (stepD===1 && hi-lo<=8){ for (let e=lo; e<hi; e++) for (let m=2; m<=9; m++) ym.push(Y(e+Math.log10(m))); } else if (stepD>1){ for (let e=lo; e<=hi; e++) if ((e-lo)%stepD) ym.push(Y(e)); }
-    out+=plotAxes(F, fig, {xt, xm, yt, ym, xlabel, ylabel:'|J| (mA cm^{-2})'});
-    if (Vlo<0&&Vhi>0) out+=`<line x1="${X(0).toFixed(2)}" y1="${F.y0}" x2="${X(0).toFixed(2)}" y2="${F.y1}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`;
-    out+=`<g clip-path="url(#${uid}c)">`;
-    const draw=(P, col, name)=>{ if (!P.length) return; const fwd=P.filter(p=>p.V>=0), rev=P.filter(p=>p.V<=0); for (const seg of [rev,fwd]){ if (seg.length<2) continue; const pp=seg.map(p=>[X(p.V), Y(p.y)]); out+=`<polyline points="${pp.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round"/>`; lay.line(pp,'band'); if (mk) for (const q of pp) out+=`<circle cx="${q[0].toFixed(2)}" cy="${q[1].toFixed(2)}" r="${(fs*0.17).toFixed(2)}" fill="${col}"/>`; }
-      for (const p of P) if (!p.conv) out+=`<circle cx="${X(p.V).toFixed(2)}" cy="${Y(p.y).toFixed(2)}" r="${fs*0.22}" fill="${C.bg}" stroke="${col}" stroke-width="${lwa}"/>`; const e=P[P.length-1]; series.push({name, col, x:X(e.V), y:Y(e.y)}); };
-    draw(D, colD, 'Dark'); if (Lg.length) draw(Lg, colL, 'Light');
-    if (fig.pShowFit!==false && sim.fit){ const fs_=sim.fit.fs; for (const w of [sim.fit.mid, sim.fit.low]){ if (!w) continue; const a=fs_*w.V0, b=fs_*w.V1; const y=(V)=>Math.log10(w.J0*Math.exp(fs_*V/(w.n*kT))*1e3); const ext=(b-a)*0.35; const V1=a-ext*fs_, V2=b+ext*fs_;
-        out+=`<line x1="${X(V1).toFixed(2)}" y1="${Y(y(V1)).toFixed(2)}" x2="${X(V2).toFixed(2)}" y2="${Y(y(V2)).toFixed(2)}" stroke="${C.ink2}" stroke-width="${lwa}" stroke-dasharray="2 1.5"/>`;
-        lay.add({txt:'n = '+w.n.toFixed(2)+', J_0 = '+sciU(w.J0)+' A cm^{-2}', fs:fs*0.8, fill:C.ink2, halo:C.bg, pri:2, home:{x:X(b), y:Y(y(b))}, cands:[{x:X(b)+fs*0.4, y:Y(y(b))+fs*0.3, anchor:'start'},{x:X(a)-fs*0.4, y:Y(y(a))+fs*0.3, anchor:'end'},{x:X(b)+fs*0.4, y:Y(y(b))-fs*0.6, anchor:'start'}]}); } }
-    out+=`</g>`;
-    out+=legend();
-    out+=lay.resolve();
-  }
-  return out+`</svg>`;
+/* ---------- operating point: one drift–diffusion solution at the chosen bias, dark or illuminated ----------
+   The J–V sweep is gone; the solver is used for a single point only. It gives the band diagram under light
+   (quasi-Fermi level splitting) and every curve of the Spatial profiles view. */
+function opV(){ return state.fig.mode==='bias' ? (+state.fig.V||0) : 0; }
+function opLight(){ return !!state.fig.lightOn; }
+function opLightCfg(){ const f=state.fig; return {model:'bl', suns:Math.max(0.001, +f.lightSuns||1), G:1e21, side:f.lightSide==='right'?'right':'left', Rback:0}; }
+function opSolve(){
+  const V=opV(), light=opLight(); const S=simState(); S.light=opLightCfg(); let spec=null; try{ spec=simSpec(Math.max(Math.abs(V), 0.5)); }catch(e){ spec=null; }
+  if (!spec || !spec.R.some(r=>r.kind==='semi')){ sim.res=null; sim.key=null; sim.ok=false; return false; }
+  const key=JSON.stringify([spec.R.map(r=>[r.kind,r.chi,r.Eg,r.epsr,r.Nc,r.Nv,r.phi,r.dop,r.N,r.t]), spec.dd.map(d=>[d.mun,d.mup,d.taun,d.taup,d.Et,d.B,d.Cn,d.Cp,d.alpha,d.alpha0,d.absorb,d.Tf,d.Sn,d.Sp]), spec.T, spec.biasTerm, V, light, light?S.light:0]);
+  if (sim.key===key) return sim.ok;
+  sim.key=key; sim.ok=false; sim.res=null;
+  const cfg={V0:Math.min(V,0), V1:Math.max(V,0), dV:Math.max(Math.abs(V), 0.05), dark:!light, store:true, refine:false, light: light ? S.light : {model:'none'}};
+  try{ const res=FermiDD.sweep(spec, cfg); sim.spec=spec; sim.P=res.P; sim.res=res; const pts=(light?res.light:res.dark)||[]; const pt=pts.find(p=>Math.abs(p.V-V)<1e-6); sim.ok=!!(pt && pt.converged && pt.st); }
+  catch(e){ console.error('Fermi operating point:', e); sim.res=null; sim.ok=false; }
+  return sim.ok;
 }
-function renderProfiles(V, light, figE){
+/* open-circuit voltage of the illuminated stack, by a coarse sweep on both bias polarities and the solver's own refinement */
+function findVoc(){
+  const S=simState(); S.light=opLightCfg(); const spec=simSpec(1.6); if (!spec) return null;
+  try{ const res=FermiDD.sweep(spec, {V0:-1.6, V1:1.6, dV:0.05, dark:true, store:true, light:S.light}); const pv=FermiDD.pvParams(res); if (!pv || pv.VocMissing || !isFinite(pv.Voc)) return null; return pv.fs*pv.Voc; }catch(e){ console.error(e); return null; }
+}
+const PROFILE_Q=[['np','Carrier densities'],['rho','Space charge'],['field','Electric field'],['pot','Electrostatic potential'],['gr','Generation and recombination'],['qfl','Quasi-Fermi level splitting']];
+let lastProfiles={};   // data behind the plots, for the CSV export
+function profileFigures(F){
+  if (!opSolve()) return [{name:'profile', title:'Spatial profiles', svg:emptyFigure(comp&&comp.R.some(r=>r.kind==='semi') ? 'The solver did not converge at this bias. Try a smaller bias.' : 'Add a semiconductor layer to see the spatial profiles.')}];
+  const V=opV(), light=opLight(); lastProfiles={};
+  return PROFILE_Q.map(([q,title])=>({name:'profile-'+q, title, svg:renderProfile(q, V, light, F)||emptyFigure('No data')}));
+}
+function renderProfile(q, V, light, figE){
   const st=simStateAt(V, light); if (!st) return null; const P=sim.P; const pr=FermiDD.profiles(P, st, light?sim.res.Ge:null); const fig=figE||state.fig;
   const C=figColors(fig.figTheme); const fs=fig.fontSize||7, lw=fig.lineWt||1, lwa=Math.max(0.35, lw*0.5); const W=(fig.widthMm||85)/25.4*72; const font=FONTS[fig.font||'sans'];
-  const PF=plotFrame(fig, 1); const panels=3, gap=fs*1.3, mT=fs*2.6, mB=fs*2.6, mL=PF.x0, mR=fs*1.6; const ph= fig.fillH ? Math.max(W*0.1, (W*fig.aspect-mT-mB-(panels-1)*gap)/panels) : W*0.26; const H=mT+panels*ph+(panels-1)*gap+mB;
-  const gamma=fig.gamma==null?0.5:fig.gamma; const Ls=P.layers.filter(L=>L.kind!=='metal'); const wsum=Ls.reduce((s,L)=>s+Math.pow(Math.max(L.tphys,1e-7)*1e7,gamma),0)||1; const pw=W-mL-mR;
-  let xc=mL; const Xl={}; for (const L of Ls){ const w=pw*Math.pow(Math.max(L.tphys,1e-7)*1e7,gamma)/wsum; Xl[L.i]={X0:xc, Xw:w, xa:P.x[L.ns], xb:P.x[L.ne]}; xc+=w; }
+  const PF=plotFrame(fig, 1); const mT=fs*2.8, mB=fs*2.6, mL=PF.x0+fs*0.6, mR=fs*1.6; const H= fig.fillH ? W*fig.aspect : W*0.72; const y0=mT, y1=H-mB, ph=y1-y0;
+  const N=P.N; const gamma=fig.gamma==null?0.5:fig.gamma; const Ls=P.layers.filter(L=>L.kind!=='metal'); const tOf=L=>Math.max(L.tphys||L.t||L.tdom||0, 1e-7)*1e7; const wsum=Ls.reduce((s,L)=>s+Math.pow(tOf(L),gamma),0)||1; const pw=W-mL-mR;
+  let xc=mL; const Xl={}; for (const L of Ls){ const w=pw*Math.pow(tOf(L),gamma)/wsum; Xl[L.i]={X0:xc, Xw:w, xa:P.x[L.ns], xb:P.x[L.ne]}; xc+=w; }
   const X=(k)=>{ let L=P.layers[P.Rn[k]]; if (L.kind==='metal') L=P.layers[P.Ln[k]]; const m=Xl[L.i]; if (!m) return mL; const t=m.xb>m.xa?(P.x[k]-m.xa)/(m.xb-m.xa):0; return m.X0+t*m.Xw; };
-  let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}"><title>Carrier, generation and recombination profiles at V = ${V} V</title><rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/>`;
+  const semiNode=k=>P.layers[P.Rn[k]].kind==='semi' || P.layers[P.Ln[k]].kind==='semi'; const bodyNode=k=>P.layers[P.Rn[k]].kind!=='metal' || P.layers[P.Ln[k]].kind!=='metal';
+  // the quantity
+  let series, ylab, logY=false, floor=0, pick=semiNode;
+  if (q==='np'){ series=[{arr:pr.n, col:PAL.blue, name:'n'},{arr:pr.p, col:PAL.orange, name:'p'}]; ylab='Carrier density (cm^{-3})'; logY=true; floor=1; }
+  else if (q==='gr'){ series=[{arr:pr.Rsrh, col:PAL.blue, name:'R_{SRH}'},{arr:pr.Rrad, col:PAL.orange, name:'R_{rad}'},{arr:pr.Raug, col:PAL.aqua, name:'R_{Auger}'}]; if (light) series.unshift({arr:pr.G, col:C.ink, name:'G', dash:'3 1.5'}); ylab='Rate (cm^{-3} s^{-1})'; logY=true; floor=1e6; }
+  else if (q==='qfl'){ const a=new Float64Array(N); for (let k=0;k<N;k++) a[k]=pr.Efn[k]-pr.Efp[k]; series=[{arr:a, col:C.ink, name:'E_{Fn} − E_{Fp}'}]; ylab='E_{Fn} − E_{Fp} (eV)'; }
+  else if (q==='rho'){ const a=new Float64Array(N); for (let k=0;k<N;k++){ const L=P.layers[pr.layer[k]]; a[k]= L&&L.kind==='semi' ? pr.p[k]-pr.n[k]+(L.Nd||0)-(L.Na||0) : NaN; } series=[{arr:a, col:C.ink, name:''}]; ylab='Space charge ρ/q'; }
+  else if (q==='field'){ const a=new Float64Array(N); for (let k=0;k<N;k++){ const j=Math.min(k, N-2), h=P.x[j+1]-P.x[j]; a[k]= h>0 ? -(st.psi[j+1]-st.psi[j])/h : NaN; } series=[{arr:a, col:C.ink, name:''}]; ylab='Electric field'; pick=bodyNode; }
+  else { const a=new Float64Array(N); for (let k=0;k<N;k++) a[k]=st.psi[k]-st.psi[0]; series=[{arr:a, col:C.ink, name:''}]; ylab='Electrostatic potential (V)'; pick=bodyNode; }
+  // linear axes with large or small numbers carry a power of ten in the axis title
+  let pow=0; if (!logY && (q==='rho'||q==='field')){ let mx=0; for (const s of series) for (let k=0;k<N;k++) if (pick(k) && isFinite(s.arr[k])) mx=Math.max(mx, Math.abs(s.arr[k])); if (mx>0) pow=Math.floor(Math.log10(mx)); const sc=Math.pow(10,pow); for (const s of series) s.arr=s.arr.map(v=>v/sc);
+    ylab += q==='rho' ? ' (10^{'+pow+'} cm^{-3})' : ' (10^{'+pow+'} V cm^{-1})'; }
+  let out=`<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}"><title>${esc(ylab.replace(/[\^_{}]/g,''))} at V = ${V} V</title><rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/>`;
   const lay=new Layout(fs, font, {x0:fs*0.15,y0:fs*0.15,x1:W-fs*0.15,y1:H-fs*0.15}, C, lwa);
-  // layer names and interfaces
   Ls.forEach(L=>{ const m=Xl[L.i]; if (m.Xw>fs*1.2) out+=lay.fix((L.dop&&L.dop!=='i'?L.dop+'-':'')+L.name, {x:m.X0+m.Xw/2, y:mT-fs*0.9, anchor:'middle'}, fs, {fill:C.ink}); });
-  for (let i=0;i<Ls.length-1;i++){ const x=Xl[Ls[i].i].X0+Xl[Ls[i].i].Xw; out+=`<line x1="${x.toFixed(2)}" y1="${mT}" x2="${x.toFixed(2)}" y2="${(H-mB).toFixed(2)}" stroke="${C.grid}" stroke-width="${lwa}" stroke-dasharray="1.5 1.5"/>`; }
-  const N=P.N; const semiNode=k=>{ const L=P.layers[P.Rn[k]]; return L.kind==='semi' || P.layers[P.Ln[k]].kind==='semi'; };
-  const panel=(idx, title, series, ylab, logY, floor)=>{ const y0=mT+idx*(ph+gap), y1=y0+ph; let lo=Infinity, hi=-Infinity; const data=series.map(s=>{ const pts=[]; for (let k=0;k<N;k++){ if (!semiNode(k)) continue; let v=s.arr[k]; if (logY){ if (!(v>floor)) continue; v=Math.log10(v); } if (!isFinite(v)) continue; pts.push([X(k), v]); if (v<lo) lo=v; if (v>hi) hi=v; } return {s, pts}; });
-    if (!isFinite(lo)){ lo=0; hi=1; } if (logY){ lo=Math.floor(lo); hi=Math.ceil(hi); if (hi-lo<2) hi=lo+2; if (hi-lo>24) lo=hi-24; } else { const pad=(hi-lo)*0.1||0.05; lo-=pad; hi+=pad; }
-    const Y=v=>y1-(v-lo)/(hi-lo)*ph;
-    const yt=[], ym=[]; if (logY){ const stp=Math.max(1, Math.ceil((hi-lo)/5)); for (let e=lo; e<=hi; e++){ if ((e-lo)%stp===0) yt.push({p:Y(e), lab:pow10Label(e)}); else ym.push(Y(e)); } }
-    else { const tk=axisTicks(lo, hi, 4); for (const v of tk.ticks) yt.push({p:Y(v), lab:fmtTick(v)}); for (const v of minorVals(lo, hi, tk.step)) ym.push(Y(v)); }
-    out+=plotAxes(PF, fig, {x0:mL, x1:W-mR, y0, y1, yt, ym, ylabel:ylab, ylabelFs:fs*0.9});
-    for (const d of data){ if (d.pts.length<2) continue; const pp=d.pts.map(q=>[q[0], Math.min(y1, Math.max(y0, Y(q[1])))]); out+=`<polyline points="${pp.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="none" stroke="${d.s.col}" stroke-width="${d.s.dash?lw*0.8:lw}" stroke-linejoin="round" ${d.s.dash?'stroke-dasharray="'+d.s.dash+'"':''}/>`; lay.line(pp,'band');
-      const e=pp[pp.length-1], m=pp[Math.floor(pp.length*0.5)]; lay.add({txt:d.s.name, fs:fs*0.85, fill:C.ink, halo:C.bg, pri:1, home:{x:e[0],y:e[1]}, cands:[{x:e[0]-fs*0.3,y:e[1]-fs*0.4,anchor:'end'},{x:e[0]-fs*0.3,y:e[1]+fs*1.0,anchor:'end'},{x:m[0],y:m[1]-fs*0.4,anchor:'middle'},{x:m[0],y:m[1]+fs*1.0,anchor:'middle'}]}); }
-  };
-  const qfls=new Float64Array(N); for (let k=0;k<N;k++) qfls[k]=pr.Efn[k]-pr.Efp[k];
-  panel(0, 'carrier densities', [{arr:pr.n, col:PAL.blue, name:'n'},{arr:pr.p, col:PAL.orange, name:'p'}], 'n, p (cm^{-3})', true, 1);
-  const rs=[{arr:pr.Rsrh, col:PAL.blue, name:'R_{SRH}'},{arr:pr.Rrad, col:PAL.orange, name:'R_{rad}'},{arr:pr.Raug, col:PAL.aqua, name:'R_{Auger}'}]; if (light) rs.unshift({arr:pr.G, col:C.ink, name:'G', dash:'3 1.5'});
-  panel(1, 'generation and recombination', rs, 'G, R (cm^{-3} s^{-1})', true, 1e6);
-  panel(2, 'quasi-Fermi-level splitting', [{arr:qfls, col:C.ink, name:'E_{Fn} − E_{Fp}'}], 'ΔE_F (eV)', false, 0);
-  out+=lay.fix('V = '+V+' V'+(light?', illuminated':', dark')+'; position not to scale', {x:mL, y:H-fs*0.5, anchor:'start'}, fs*0.8, {fill:C.ink2, italic:true});
-  out+=lay.resolve(); return out+`</svg>`;
+  for (let i=0;i<Ls.length-1;i++){ const x=Xl[Ls[i].i].X0+Xl[Ls[i].i].Xw; out+=`<line x1="${x.toFixed(2)}" y1="${mT}" x2="${x.toFixed(2)}" y2="${y1.toFixed(2)}" stroke="${C.grid}" stroke-width="${lwa}" stroke-dasharray="1.5 1.5"/>`; }
+  let lo=Infinity, hi=-Infinity; const xs=[]; for (let k=0;k<N;k++) if (pick(k)) xs.push(k);
+  const data=series.map(s=>{ const pts=[]; for (const k of xs){ let v=s.arr[k]; if (logY){ if (!(v>floor)) continue; v=Math.log10(v); } if (!isFinite(v)) continue; pts.push([X(k), v]); if (v<lo) lo=v; if (v>hi) hi=v; } return {s, pts}; });
+  if (!isFinite(lo)){ lo=0; hi=1; } if (logY){ lo=Math.floor(lo); hi=Math.ceil(hi); if (hi-lo<2) hi=lo+2; if (hi-lo>24) lo=hi-24; } else { const minSpan=0.02; if (hi-lo<minSpan){ const mid=(hi+lo)/2; lo=mid-minSpan/2; hi=mid+minSpan/2; } const pad=(hi-lo)*0.08; lo-=pad; hi+=pad; }   // a flat curve still gets a finite axis
+  const Y=v=>y1-(v-lo)/(hi-lo)*ph;
+  const yt=[], ym=[]; if (logY){ const stp=Math.max(1, Math.ceil((hi-lo)/8)); for (let e=lo; e<=hi; e++){ if ((e-lo)%stp===0) yt.push({p:Y(e), lab:pow10Label(e)}); else ym.push(Y(e)); } }
+  else { const tk=axisTicks(lo, hi, 6); for (const v of tk.ticks) yt.push({p:Y(v), lab:fmtTick(v)}); for (const v of minorVals(lo, hi, tk.step)) ym.push(Y(v)); }
+  out+=plotAxes(PF, fig, {x0:mL, x1:W-mR, y0, y1, yt, ym, ylabel:ylab});
+  if (!logY && lo<0 && hi>0) out+=`<line x1="${mL.toFixed(2)}" y1="${Y(0).toFixed(2)}" x2="${(W-mR).toFixed(2)}" y2="${Y(0).toFixed(2)}" stroke="${C.ink2}" stroke-width="${(lwa*0.7).toFixed(2)}" stroke-dasharray="2 1.5"/>`;
+  for (const d of data){ if (d.pts.length<2) continue; const pp=d.pts.map(p=>[p[0], Math.min(y1, Math.max(y0, Y(p[1])))]); out+=`<polyline points="${pp.map(p=>p[0].toFixed(2)+','+p[1].toFixed(2)).join(' ')}" fill="none" stroke="${d.s.col}" stroke-width="${d.s.dash?lw*0.8:lw}" stroke-linejoin="round" ${d.s.dash?'stroke-dasharray="'+d.s.dash+'"':''}/>`; lay.line(pp,'band');
+    if (d.s.name && fig.pLegend!=='none'){ const e=pp[pp.length-1], m=pp[Math.floor(pp.length*0.5)]; lay.add({txt:d.s.name, fs:fs*0.9, fill:d.s.col, halo:C.bg, pri:1, home:{x:m[0],y:m[1]}, cands:[{x:m[0],y:m[1]-fs*0.5,anchor:'middle'},{x:m[0],y:m[1]+fs*1.1,anchor:'middle'},{x:e[0]-fs*0.3,y:e[1]-fs*0.5,anchor:'end'},{x:e[0]-fs*0.3,y:e[1]+fs*1.1,anchor:'end'}]}); } }
+  out+=lay.fix('V = '+V+' V'+(light?', illuminated':', dark')+(gamma>=0.999?'':'; position not to scale'), {x:mL, y:H-fs*0.7, anchor:'start'}, fs*0.8, {fill:C.ink2, italic:true});
+  out+=lay.resolve();
+  const sc=Math.pow(10,pow); lastProfiles[q]={ylab, x:xs.map(k=>P.x[k]*1e7), cols:series.map(s=>({name:s.name||ylab, v:xs.map(k=>s.arr[k]*sc)}))};
+  return out+`</svg>`;
 }
-function simCaption(){
-  if (!sim.res) return ''; const S=simState(); const pv=sim.pv; const parts=[];
-  const stack=state.stack.layers.map(l=>(mats[l.mat]||{}).name||l.mat).join('/');
-  parts.push('Simulated current–voltage characteristics of the '+stack+' stack ('+(sim.res.light?(S.light.model==='bl'?'AM1.5G, '+S.light.suns+' sun, Beer–Lambert absorption, light from the '+S.light.side:'uniform generation G = '+sci(S.light.G,2)+' cm⁻³ s⁻¹')+'; the dark curve is also shown':'dark')+'), from a steady-state one-dimensional drift–diffusion solution (Poisson and both continuity equations, Boltzmann statistics, Scharfetter–Gummel discretization, SRH/radiative/Auger recombination).');
-  if (pv && !pv.VocMissing) parts.push('J_sc = '+(pv.Jsc*1e3).toFixed(2)+' mA cm⁻², V_oc = '+pv.Voc.toFixed(3)+' V, FF = '+pv.FF.toFixed(3)+', PCE = '+(pv.PCE*100).toFixed(2)+' % (Shockley–Queisser limit for E_g = '+sim.sq.Eg.toFixed(2)+' eV: '+(sim.sq.PCE*100).toFixed(1)+' %).');
-  if (sim.fit && sim.fit.mid) parts.push('Dark ideality factor n = '+sim.fit.mid.n.toFixed(2)+' with J₀ = '+sci(sim.fit.mid.J0,2)+' A cm⁻² over '+sim.fit.mid.V0.toFixed(2)+'–'+sim.fit.mid.V1.toFixed(2)+' V.');
-  parts.push('Band diagram and profiles at V = '+S.bias+' V'+(S.biasLight&&sim.res.light?' under illumination':'')+'. Contacts: '+['left','right'].map(s=>s+' '+(sim.P[s==='left'?'cL':'cR'].model)).join(', ')+'. No optical interference, no mobile ions, no Fermi–Dirac statistics.');
-  return parts.join(' ');
-}
-/* pointer read-out of V and J on the J–V preview (preview only; the exported SVG is untouched) */
-function simHover(e){ const note=$('#previewNote'); if (!note||currentFig!=='sim'||!sim.res) return; const svg=e.target.closest('svg'); if (!svg||svg.dataset.vlo==null) return;
-  const r=svg.getBoundingClientRect(); const vb=svg.viewBox.baseVal; const px=(e.clientX-r.left)/r.width*vb.width; const x0=+svg.dataset.x0, x1=+svg.dataset.x1, Vlo=+svg.dataset.vlo, Vhi=+svg.dataset.vhi; const V=Vlo+(px-x0)/(x1-x0)*(Vhi-Vlo); if (V<Vlo||V>Vhi) return;
-  const at=(pts)=>{ if (!pts) return null; let b=null; for (const p of pts) if (!b||Math.abs(p.V-V)<Math.abs(b.V-V)) b=p; return b; }; const l=at(sim.res.light), d=at(sim.res.dark);
-  note.textContent='V = '+V.toFixed(3)+' V'+(l?' · light J = '+(l.J*1e3).toFixed(3)+' mA cm⁻²':'')+(d?' · dark J = '+sci(d.J,2)+' A cm⁻²':''); }
+function profileCSV(){ const q=(PROFILE_Q[figIdx.prof||0]||PROFILE_Q[0])[0]; const d=lastProfiles[q]; if (!d) return '';
+  const clean=s=>String(s).replace(/[\^_{}]/g,'').replace(/,/g,';'); const out=['x (nm),'+d.cols.map(c=>clean(c.name)).join(',')];
+  d.x.forEach((x,i)=>out.push([x.toPrecision(7)].concat(d.cols.map(c=>isFinite(c.v[i])?c.v[i].toExponential(6):'')).join(','))); return out.join('\n')+'\n'; }
 
 /* SIMULATE UI END */
 /* ---------- boot ---------- */
-function rebuildAll(){ renderLayers(); renderMaterials(); syncPanel($('#tab-figure')); renderSimPanel(); recompute(); $('#templateSel').value = state.template||''; }
+function rebuildAll(){ renderLayers(); renderMaterials(); syncPanel($('#tab-figure')); recompute(); $('#templateSel').value = state.template||''; }
 function init(){
   mats = loadMats();
   const sel=$('#templateSel'); sel.innerHTML='<option value="">Templates…</option>'+TEMPLATES.map(t=>`<option value="${t.key}">${esc(t.name)}</option>`).join('');
@@ -2964,7 +2846,7 @@ function init(){
   $('#resetMatsBtn').addEventListener('click', ()=>{ if (confirm('Reset all materials to library defaults? Custom materials will be removed.')){ try{localStorage.removeItem('fermi.materials');}catch(e){} mats=loadMats(); renderMaterials(); renderLayers(); recompute(); } });
   // tabs
   $$('.pane-tabs').forEach(tabs=>{ tabs.addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if (!b) return; $$('[data-tab]',tabs).forEach(x=>x.setAttribute('aria-selected', x===b?'true':'false')); const pane=tabs.parentElement; $$('.pane-body',pane).forEach(x=>x.hidden = x.id!=='tab-'+b.dataset.tab); }); });
-  $('#figSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-fig]'); if (!b) return; currentFig=b.dataset.fig; $$('[data-fig]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); view.auto=true; renderPreview(); syncPanel($('#tab-figure')); if (currentFig==='sim'){ renderSimStatus(); $$('#paneRight [data-tab]').forEach(x=>x.setAttribute('aria-selected', x.dataset.tab==='simulate'?'true':'false')); $$('#paneRight .pane-body').forEach(x=>x.hidden = x.id!=='tab-simulate'); } else recompute(); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
+  $('#figSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-fig]'); if (!b) return; currentFig=b.dataset.fig; $$('[data-fig]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); view.auto=true; recompute(); syncPanel($('#tab-figure')); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
   $$('.mobile-nav button').forEach(b=>b.addEventListener('click', ()=>{ $$('.mobile-nav button').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); ['paneLeft','paneCenter','paneRight'].forEach(id=>$('#'+id).dataset.active = (id===b.dataset.pane)?'true':'false'); if (b.dataset.pane==='paneCenter') setTimeout(renderPreview,30); }));
   // 3D view: drag to rotate
   const pv=$('#preview'); let drag=null;
@@ -2986,8 +2868,10 @@ function init(){
   window.addEventListener('storage', e=>{ if (e.key==='nsdg-mode' || e.key===null) applyTheme(siteTheme()); });
   $('#themeBtn').style.display='none';
   // help
-  $('#helpBox').innerHTML=helpHTML(); $('#helpBtn').addEventListener('click', ()=>{ $('#helpModal').setAttribute('open',''); $('#helpClose').focus(); });
-  $('#helpClose').addEventListener('click', ()=>$('#helpModal').removeAttribute('open')); $('#helpModal').addEventListener('click', e=>{ if (e.target.id==='helpModal') e.target.removeAttribute('open'); });
+  const openHelp=(html)=>{ $('#helpBox').innerHTML=html; $('#helpModal').setAttribute('open',''); $('#helpBox').scrollTop=0; $('#helpClose').focus(); };
+  $('#helpBtn').addEventListener('click', ()=>openHelp(helpHTML())); $('#guideBtn').addEventListener('click', ()=>openHelp(guideHTML()));
+  $('#helpModal').addEventListener('click', e=>{ if (e.target.id==='helpModal' || e.target.id==='helpClose') $('#helpModal').removeAttribute('open'); });
+  const psel=$('#profSel'); psel.innerHTML=PROFILE_Q.map((q,i)=>`<option value="${i}">${esc(q[1])}</option>`).join(''); psel.addEventListener('change', ()=>{ showFig(+psel.value, false); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
   // keys
   document.addEventListener('keydown', e=>{ const mod=e.ctrlKey||e.metaKey; const tag=(e.target.tagName||'').toLowerCase(); const typing = tag==='input'||tag==='textarea'||tag==='select';
     if (mod && e.key.toLowerCase()==='z'){ if (typing && tag!=='select') return; e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
@@ -2996,8 +2880,7 @@ function init(){
     if (!typing && !mod && !e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight') && shownFigs.length>1){ e.preventDefault(); showFig(e.key==='ArrowLeft'?-1:1, true); return; }
     if (e.key==='Escape') $('#helpModal').removeAttribute('open'); });
   window.addEventListener('resize', ()=>{ clearTimeout(window._rz); window._rz=setTimeout(renderPreview,120); });
-  renderFigurePanel(); renderExportPanel(); renderSimPanel(); recompute(); renderLayers(); renderMaterials(); updateUndo();
-  $('#preview').addEventListener('pointermove', simHover);
+  renderFigurePanel(); renderExportPanel(); recompute(); renderLayers(); renderMaterials(); updateUndo();
   loadLicense();   // async: re-verifies a stored key offline and unlocks Pro when it is genuine and unexpired
   $('#templateSel').value = state.template||'';
   setTimeout(renderPreview, 50);
