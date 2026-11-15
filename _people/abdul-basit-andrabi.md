@@ -36,4 +36,4 @@ Basit works on the device physics of halide perovskite devices. His research exa
 
 He has also contributed to DLTS studies of ionic defects in flexible perovskite memristors.
 
-*Thesis (in preparation): Electrical characterisation of ionic and electronic defects in halide perovskite devices: a device-simulation study.*
+*Thesis: Electrical characterisation of ionic and electronic defects in halide perovskite devices: a device-simulation study.*
