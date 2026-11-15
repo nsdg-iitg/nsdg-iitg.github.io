@@ -361,13 +361,12 @@ const MATERIAL_LIBRARY = {
           src:'Representative FA/MA/Cs lead-halide values.', note:'Placeholder for any ABX₃ absorber; edit χ and E_g for your composition.'},
   Spiro: {name:'Spiro-OMeTAD', kind:'semi', chi:2.10, Eg:3.10, epsr:3.0, Nc:1e20, Nv:1e20, defType:'p', defN:1e18, color:PAL.magenta, hatch:'hlines',
           src:'HOMO ≈ 5.2, LUMO ≈ 2.1 eV (UPS, various).', note:'Organics: χ = LUMO, E_g = transport gap. DOS set to 1e20 (not a crystalline N_c). Doping ~1e18 with LiTFSI/tBP.'},
-  PCBM:  {name:'PC₆₁BM', kind:'semi', chi:3.90, Eg:2.10, epsr:3.9, Nc:1e20, Nv:1e20, defType:'n', defN:1e17, color:PAL.aqua, hatch:'hlines',
-          src:'LUMO ≈ 3.9–4.1, HOMO ≈ 6.0 eV.', note:'Organic ETL; effective values.'},
+  PCBM:  {name:'PC₆₁BM', kind:'semi', chi:4.10, Eg:2.37, epsr:3.0, Nc:5e19, Nv:5e19, defType:'n', defN:1e18, color:PAL.aqua, hatch:'hlines',
+          src:'', note:'Electron transport layer, n-doped.'},
   P3HT:  {name:'P3HT', kind:'semi', chi:3.00, Eg:2.00, epsr:3.0, Nc:1e20, Nv:1e20, defType:'p', defN:1e16, color:PAL.orange, hatch:'hlines',
           src:'HOMO ≈ 5.0, LUMO ≈ 3.0 eV.', note:'Optical gap ≈ 1.9 eV; transport gap used here.'},
-  PEDOT: {name:'PEDOT:PSS', kind:'semi', chi:3.55, Eg:1.60, epsr:2.58, Nc:2.1e21, Nv:2.0e21, defType:'p', defN:3e20, color:PAL.green, hatch:'hlines',
-          src:'SCAPS-1D set of Mondal et al., Superlattices Microstruct. 152, 106853 (2021), as used by Deepika et al., Beilstein J. Nanotechnol. 16, 119 (2025).',
-          note:'Heavily p-doped polymer HTL. With N_A = 3e20 cm⁻³ the Fermi level sits about 0.05 eV above E_v, which gives φ_s ≈ 5.1 eV, the measured work function (4.9–5.2 eV). Literature sets differ widely (E_g 1.6–2.8 eV, χ 2.2–3.6 eV); edit for your grade.'},
+  PEDOT: {name:'PEDOT:PSS', kind:'semi', chi:2.40, Eg:2.90, epsr:6.5, Nc:5e19, Nv:5e19, defType:'p', defN:1e18, color:PAL.green, hatch:'hlines',
+          src:'', note:'Hole transport layer, p-doped.'},
   ITO:   {name:'ITO',  kind:'metal', phi:4.70, color:PAL.tco, hatch:'dots',
           src:'Work function 4.4–4.8 eV, strongly dependent on cleaning (UV-ozone raises it).', note:'Degenerate TCO treated as a metal.'},
   FTO:   {name:'FTO',  kind:'metal', phi:4.40, color:PAL.tco, hatch:'dots',
@@ -1588,10 +1587,10 @@ const DD_LIBRARY = {
           src:'Same as MAPbI₃ (representative lead-halide values).'},
   Spiro: {mun:2e-4, mup:2e-4, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'analytic', alpha0:1e5, rng:{mun:[1e-5,1e-2], mup:[1e-5,1e-2], tau:[1e-10,1e-5]},
           src:'SCAPS perovskite literature: μ = 2e-4 cm²/Vs (doped Spiro-OMeTAD); N_t 1e15 → τ = 1e-7 s.'},
-  PCBM:  {mun:2e-3, mup:2e-3, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'analytic', alpha0:1e5, rng:{mun:[1e-4,1e-1], mup:[1e-4,1e-1], tau:[1e-10,1e-5]},
-          src:'Organic ETL: μ ≈ 1e-3 cm²/Vs (SCAPS p-i-n papers use 2e-3 to 1e-2).'},
-  PEDOT: {mun:1, mup:20, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'none', rng:{mun:[1e-5,10], mup:[1e-4,50], tau:[1e-10,1e-5]},
-          src:'Mondal et al., Superlattices Microstruct. 152, 106853 (2021): μ_n = 1, μ_p = 20 cm²/Vs, N_t = 1e14 cm⁻³. High-conductivity grade; for AI 4083 use a much lower μ_p. Treated as non-absorbing: its parasitic absorption is not counted.'},
+  PCBM:  {mun:1e-2, mup:1e-2, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'analytic', alpha0:1e5, rng:{mun:[1e-4,1e-1], mup:[1e-4,1e-1], tau:[1e-10,1e-5]},
+          src:''},
+  PEDOT: {mun:1e-2, mup:1e-2, taun:1e-7, taup:1e-7, B:0, Cn:0, Cp:0, alpha:'none', rng:{mun:[1e-5,10], mup:[1e-4,50], tau:[1e-10,1e-5]},
+          src:'Treated as non-absorbing.'},
   P3HT:  {mun:1e-3, mup:1e-3, taun:1e-8, taup:1e-8, B:0, Cn:0, Cp:0, alpha:'analytic', alpha0:1e5, rng:{mun:[1e-5,1e-2], mup:[1e-5,1e-2], tau:[1e-10,1e-6]},
           src:'Organic semiconductor: μ ~1e-3 cm²/Vs (SCLC/OFET literature); τ order of magnitude.'},
 };
@@ -2129,7 +2128,7 @@ const TEMPLATES = [
   {name:'Heterojunction — p-GaAs / n-Al₀.₃Ga₀.₇As', key:'hetero', layers:()=>[L('GaAs',1000,'p',1e17), L('AlGaAs',1000,'n',1e17,{x:0.3})], fig:{biasTerm:'left'}},
   {name:'MOS capacitor — Al / SiO₂ / p-Si', key:'mos', layers:()=>[L('Al',100,'i',0), L('SiO2',10,'i',0), L('Si',1000,'p',1e17)], fig:{biasTerm:'left', mode:'bias', V:0, showEvac:true}},
   {name:'n-i-p perovskite cell — FTO / TiO₂ / MAPbI₃ / Spiro / Au', key:'nip', layers:()=>[L('FTO',400,'i',0), L('TiO2',50,'n',1e17), L('MAPbI3',500,'i',1e13), L('Spiro',200,'p',1e18), L('Au',80,'i',0)], fig:{biasTerm:'right', gamma:0.5}, xs:{substrate:true, light:'bottom'}},
-  {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',40,'p',3e20), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e17), L('Al',100,'i',0)], fig:{biasTerm:'left'}, xs:{substrate:true, light:'bottom'}},
+  {name:'p-i-n perovskite cell — ITO / PEDOT:PSS / MAPbI₃ / PCBM / Al', key:'pin', layers:()=>[L('ITO',150,'i',0), L('PEDOT',30,'p',1e18), L('MAPbI3',500,'i',1e13), L('PCBM',50,'n',1e18), L('Al',100,'i',0)], fig:{biasTerm:'left'}, xs:{substrate:true, light:'bottom'}},
   {name:'Ohmic contact — n-Si / Al (accumulation)', key:'ohmic', layers:()=>[L('Si',1000,'n',1e16), L('Mg',100,'i',0)], fig:{biasTerm:'right'}},
 ];
 
@@ -2157,7 +2156,7 @@ function refreshLayerInfo(){ if (!comp) return; $$('#layers .layer').forEach((di
 let lastSnap='';
 function undo(){ if (!history.length) return; future.push(snapshot()); const s=history.pop(); loadSnapshot(s); lastSnap=s; recompute(); rebuildAll(); updateUndo(); }
 function redo(){ if (!future.length) return; history.push(snapshot()); const s=future.pop(); loadSnapshot(s); lastSnap=s; recompute(); rebuildAll(); updateUndo(); }
-function loadSnapshot(s){ const o=JSON.parse(s); (o.stack&&o.stack.layers||[]).forEach(l=>{ if (l.mat==='PEDOT' && (!l.dop||l.dop==='i')){ l.dop='p'; l.N=3e20; } });   // projects saved when PEDOT:PSS was a metal
+function loadSnapshot(s){ const o=JSON.parse(s); (o.stack&&o.stack.layers||[]).forEach(l=>{ if (l.mat==='PEDOT' && (!l.dop||l.dop==='i')){ l.dop='p'; l.N=1e18; } });   // projects saved when PEDOT:PSS was a metal
   state = { stack:o.stack, fig:Object.assign({},DEFAULT_FIG,o.fig), xs:Object.assign({},DEFAULT_XS,o.xs), sim:Object.assign(JSON.parse(JSON.stringify(DEFAULT_SIM)),o.sim||{}), template:o.template }; try{ localStorage.setItem('fermi.project', snapshot()); }catch(e){} }
 function updateUndo(){ $('#undoBtn').disabled = !history.length; $('#redoBtn').disabled = !future.length; }
 
