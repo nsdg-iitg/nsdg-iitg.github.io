@@ -297,3 +297,13 @@ var NSDG_INDEX = '';
       .then(function () { busy = false; send.disabled = false; input.focus(); });
   });
 })();
+
+// Tools menu in the header: opens on click, closes on a click outside or the Escape key
+(function () {
+  var drop = document.querySelector('.nav-drop'); if (!drop) return;
+  var btn = drop.querySelector('.nav-drop-btn');
+  function set(open) { drop.classList.toggle('open', open); btn.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); set(!drop.classList.contains('open')); });
+  document.addEventListener('click', function (e) { if (!drop.contains(e.target)) set(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drop.classList.contains('open')) { set(false); btn.focus(); } });
+})();

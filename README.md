@@ -58,3 +58,8 @@ Papers a member wrote before joining, or outside the group, go in that member's 
 `_people/` under `other_publications:` (fields: `title`, `authors`, `venue`, `year`, and optional
 `details` and `doi`). They are shown on the member's page under "Other publications" and are
 not counted on the Publications page. Papers with the group stay in `_data/publications.yml`.
+
+## Tools menu
+
+The "Tools" menu in the header is built from `_data/tools.yml`. To add a tool, add an entry with
+`name`, `url` and an optional `note`.

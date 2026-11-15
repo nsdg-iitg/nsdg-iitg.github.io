@@ -1,0 +1,6 @@
+# Items in the "Tools" menu of the header. Add a new tool as a new entry.
+#   name: shown in the menu     url: page on this site or a full https:// address
+#   note: short line under the name (optional)
+- name: "CEISIM"
+  url: /ceisim/
+  note: "Coupled electronic–ionic device simulator"
