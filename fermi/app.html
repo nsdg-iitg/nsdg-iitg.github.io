@@ -89,9 +89,10 @@ main{display:grid;grid-template-columns:330px minmax(0,1fr) 312px;min-height:0}
 .center{display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;background:var(--bg)}
 .fig-toolbar{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
 .fig-toolbar .grow{flex:1}
-.preview{position:relative;overflow:hidden;cursor:grab;background:#fff;touch-action:none}
+.preview{position:relative;overflow:hidden;background:#fff}
 .preview.dragging{cursor:grabbing}
-.preview.rot{cursor:move}
+.preview.rot{cursor:move;touch-action:none}
+.preview .note:empty{display:none}
 .preview .stage{position:absolute;left:0;top:0;transform-origin:0 0}
 .preview .stage svg{display:block}
 .preview .note{position:absolute;left:12px;bottom:10px;font-size:11px;color:var(--ink-3);background:var(--panel);padding:3px 8px;border-radius:3px;border:1px solid var(--line);pointer-events:none;max-width:calc(100% - 24px)}
@@ -272,11 +273,6 @@ textarea.code{font:11.5px/1.4 var(--mono);width:100%;min-height:90px;resize:vert
       </div>
       <div class="grow"></div>
       <span class="muted small" id="solverStatus"></span>
-      <div class="seg" role="group" aria-label="Zoom">
-        <button id="zoomOut" title="Zoom out">&minus;</button>
-        <button id="zoomFit" title="Fit">Fit</button>
-        <button id="zoomIn" title="Zoom in">+</button>
-      </div>
     </div>
     <div class="preview" id="preview">
       <div class="stage" id="stage"></div>
@@ -469,7 +465,7 @@ function domainThickness(R, i, V){
   dPhi += Math.abs(V) + 0.5;
   const Nmaj = Math.max(r.n0, r.p0, 1e12);
   const West = Math.sqrt(2*r.eps*dPhi/(Q*Nmaj));
-  let cap = Math.max(4*West + 10*r.LD, 2e-6);
+  let cap = Math.max(4*West + 10*r.LD, 3e-5);   // layers up to a few hundred nm (transport layers) are always drawn in full
   cap = Math.min(cap, 2e-3);
   const t = r.t>0 ? r.t : Infinity;
   return t > 1.5*cap ? cap : t;
@@ -1411,6 +1407,9 @@ function renderXsec(comp, fig, xs, mats){
   let out = `<svg xmlns="http://www.w3.org/2000/svg" width="${W.toFixed(2)}pt" height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}" font-family="${font}" font-size="${fs}" fill="${C.ink}"><title>Device cross-section: ${esc(R.map(r=>r.name).join(' / '))}</title><defs>${defs}</defs><rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/>${body}`;
   if (!xs.toScale) out += label(x1+fs*2.4, H-fs*0.3, 'thickness not to scale', {anchor:'start', fs:fs*0.75, fill:C.ink2, italic:true});
   out += `</svg>`;
+  if (fig.fillH && W*fig.aspect>H+0.5){ const Hf=W*fig.aspect, dy=(Hf-H)/2, dx=0;   // centre the drawing in the taller frame
+    out = out.replace(`height="${H.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${H.toFixed(2)}"`, `height="${Hf.toFixed(2)}pt" viewBox="0 0 ${W.toFixed(2)} ${Hf.toFixed(2)}"`)
+             .replace(`<rect width="${W.toFixed(2)}" height="${H.toFixed(2)}" fill="${C.bg}"/>`, `<rect width="${W.toFixed(2)}" height="${Hf.toFixed(2)}" fill="${C.bg}"/><g transform="translate(${dx.toFixed(2)} ${dy.toFixed(2)})">`).replace(/<\/svg>$/, '</g></svg>'); }
   return out;
 }
 
@@ -1476,9 +1475,9 @@ function renderDevice3D(comp, fig, xs, mats){
       labs.push({a:best, txt:nm}); }); }
   const labW=showLab ? Math.max(...labs.map(l=>textW(l.txt, fs)), fs*2) : 0;
   const mL=fs*1.4, mR=showLab ? fs*3.0+labW+fs*0.6 : fs*1.4, mT=fs*1.6, mB=fs*1.6+(xs.toScale?0:fs*1.0);
-  let s=(W-mL-mR)/Math.max(maxX-minX,1e-6); const Hmax=W*1.15-mT-mB; if ((maxY-minY)*s>Hmax) s=Hmax/(maxY-minY);
+  let s=(W-mL-mR)/Math.max(maxX-minX,1e-6); const Hmax=(fig.fillH ? W*fig.aspect : W*1.15)-mT-mB; if ((maxY-minY)*s>Hmax) s=Hmax/(maxY-minY);
   const offX=mL+((W-mL-mR)-(maxX-minX)*s)/2;
-  let H=mT+(maxY-minY)*s+mB; const need=mT+mB+labs.length*fs*1.35; if (H<need) H=need;
+  let H= fig.fillH ? W*fig.aspect : mT+(maxY-minY)*s+mB; const need=mT+mB+labs.length*fs*1.35; if (H<need) H=need;
   const offY=mT+((H-mT-mB)-(maxY-minY)*s)/2;
   const SX=p=>offX+(p[0]-minX)*s, SY=p=>offY+(p[1]-minY)*s;
   let body='';
@@ -2115,6 +2114,7 @@ const uid = ()=>Math.random().toString(36).slice(2,9);
 const DEFAULT_FIG = { mode:'eq', V:0, biasTerm:'right', T:300, schematic:false, showEvac:true, showEi:false, showLabels:true, showNumbers:true, showLayerNames:true,
   annEg:true, annPhiB:true, annVbi:true, annW:true, annOffsets:true, annAxis:true, axisRef:'EF', imageForce:false, gamma:0.5,
   eWin:'auto', eMin:-2, eMax:2, widthMm:85, aspect:0.62, font:'sans', fontSize:7, lineWt:1, figTheme:'paper', fillBands:false, insHatch:true,
+  fitPane:true,   // the figure takes the shape of the centre pane and fills it
   // plots (Simulate view)
   pFrame:'box', pTicks:'in', pMinor:true, pGrid:false, pLegend:'direct', pMarkers:false, pShowPV:true, pShowMPP:true, pShowFit:true,
   pColLight:'#000000', pColDark:'#0072b2', pAspect:0.72, pXauto:'auto', pXmin:-0.2, pXmax:1.3, pYauto:'auto', pYmin:-5, pYmax:25, pXlabel:'Voltage (V)', pYlabel:'Current density (mA cm^{-2})' };
@@ -2172,27 +2172,29 @@ function recompute(){
 }
 
 /* ---------- preview ---------- */
-function currentSVGs(){ if (currentFig==='sim') return simFigures();
-  if (currentFig==='xsec') return [{name:'cross-section', title:'Cross-section', svg:renderXsec(comp, state.fig, state.xs, mats)}];
-  if (currentFig==='d3') return [{name:'device-3d', title:'Device, 3D view', svg:renderDevice3D(comp, state.fig, state.xs, mats)}];
-  return [{name:'band-diagram', title:'Band diagram', svg:renderBand(comp, state.fig)}]; }
+/* Figure settings as drawn: with "fill the window" on, the figure takes the height/width ratio of the centre pane,
+   so it fills the pane with no empty paper around it. The export is the same figure that is shown. */
+function previewBox(){ const pr=$('#preview').getBoundingClientRect(); const many=(currentFig==='sim' && sim.res); const padX=many?46:6, padT=many?40:6, padB=6; return {W:pr.width, H:pr.height, padX, padT, w:pr.width-2*padX, h:pr.height-padT-padB}; }
+function effFig(){ const f=state.fig; if (f.fitPane===false) return f; const b=previewBox(); if (!(b.w>40 && b.h>40)) return f; const a=Math.max(0.35, Math.min(1.6, b.h/b.w)); return Object.assign({}, f, {aspect:a, pAspect:a, fillH:true}); }
+function currentSVGs(){ if (currentFig==='sim') return simFigures(); const F=effFig();
+  if (currentFig==='xsec') return [{name:'cross-section', title:'Cross-section', svg:renderXsec(comp, F, state.xs, mats)}];
+  if (currentFig==='d3') return [{name:'device-3d', title:'Device, 3D view', svg:renderDevice3D(comp, F, state.xs, mats)}];
+  return [{name:'band-diagram', title:'Band diagram', svg:renderBand(comp, F)}]; }
 function shownIndex(){ const n=shownFigs.length; let i=figIdx[currentFig]||0; if (i>n-1) i=n-1; if (i<0) i=0; figIdx[currentFig]=i; return i; }
-/* The figure fills the centre pane, one at a time; with several plots (Simulate) the arrows, the dots or the arrow keys change the plot. */
+/* One figure at a time, fitted to the centre pane; with several plots (Simulate) the arrows, the dots or the arrow keys change the plot. */
 function renderPreview(){
   shownFigs=currentSVGs(); const n=shownFigs.length, i=shownIndex(), f=shownFigs[i]; const stage=$('#stage'); stage.innerHTML=f?f.svg:''; const svg=stage.firstElementChild;
   const pv=$('#preview'); pv.style.background=figColors(state.fig.figTheme).bg; pv.classList.toggle('rot', currentFig==='d3');
   if (svg){ view.w=parseFloat(svg.getAttribute('width'))*96/72; view.h=parseFloat(svg.getAttribute('height'))*96/72; }
   const many=n>1; $('#figPrev').hidden=!many; $('#figNext').hidden=!many; const bar=$('#figBar'); bar.hidden=!many;
   if (many) bar.innerHTML=`<span>${esc(f.title||f.name)}</span><span class="mono muted">${i+1} / ${n}</span><span class="dots">${shownFigs.map((g,k)=>`<button data-go="${k}" aria-current="${k===i}" aria-label="${esc(g.title||g.name)}" title="${esc(g.title||g.name)}"></button>`).join('')}</span>`;
-  $('#previewNote').textContent=(currentFig==='d3' ? 'Drag to rotate · Shift + drag to move' : 'Drag to move')+' · Ctrl/Cmd + wheel to zoom'+(many?' · ← → to change plot':'');
-  if (view.auto) zoomFit(); else applyView();
+  $('#previewNote').textContent= currentFig==='d3' ? 'Drag to rotate' : '';
+  zoomFit();
 }
-function applyView(){ const st=$('#stage'), svg=st.firstElementChild; if (svg){ svg.style.width=(view.w*view.scale)+'px'; svg.style.height=(view.h*view.scale)+'px'; } st.style.transform=`translate(${view.tx}px,${view.ty}px)`; }
-function zoomFit(){ const pr=$('#preview').getBoundingClientRect(); view.auto=true; if (!pr.width||!pr.height||!view.w){ applyView(); return; } const many=shownFigs.length>1; const padX=many?54:18, padT=many?44:16, padB=36;
-  const s=Math.min((pr.width-2*padX)/view.w, (pr.height-padT-padB)/view.h, 10); view.scale=Math.max(0.1, s); view.tx=(pr.width-view.w*view.scale)/2; view.ty=padT+((pr.height-padT-padB)-view.h*view.scale)/2; applyView(); }
-function zoomBy(f, cx, cy){ const pv=$('#preview').getBoundingClientRect(); cx = cx==null ? pv.width/2 : cx; cy = cy==null ? pv.height/2 : cy;
-  const ns = Math.min(12, Math.max(0.2, view.scale*f)); view.tx = cx - (cx-view.tx)*(ns/view.scale); view.ty = cy - (cy-view.ty)*(ns/view.scale); view.scale=ns; view.auto=false; applyView(); }
-function showFig(k, relative){ const n=shownFigs.length; if (n<2) return; figIdx[currentFig]= relative ? ((shownIndex()+k)%n+n)%n : Math.max(0, Math.min(n-1, k)); view.auto=true; renderPreview(); if ($('#pngInfo')) updatePngInfo(); }
+function zoomFit(){ const b=previewBox(); const st=$('#stage'), svg=st.firstElementChild; if (!svg||!b.W||!view.w) return;
+  const s=Math.max(0.05, Math.min(b.w/view.w, b.h/view.h)); view.scale=s; svg.style.width=(view.w*s)+'px'; svg.style.height=(view.h*s)+'px';
+  st.style.transform=`translate(${((b.W-view.w*s)/2).toFixed(1)}px,${(b.padT+(b.h-view.h*s)/2).toFixed(1)}px)`; }
+function showFig(k, relative){ const n=shownFigs.length; if (n<2) return; figIdx[currentFig]= relative ? ((shownIndex()+k)%n+n)%n : Math.max(0, Math.min(n-1, k)); renderPreview(); if ($('#pngInfo')) updatePngInfo(); }
 
 /* ---------- readouts ---------- */
 function renderReadouts(){
@@ -2342,7 +2344,7 @@ function renderFigurePanel(){
     ${ctl('Light curve', `<input type="color" data-obj="fig" data-key="pColLight" aria-label="Colour of the light curve">`)}
     ${ctl('Dark curve', `<input type="color" data-obj="fig" data-key="pColDark" aria-label="Colour of the dark curve">`)}
     ${chk('pShowPV','J_sc, V_oc, FF and PCE on the plot')}${chk('pShowMPP','Mark the maximum power point')}${chk('pShowFit','Ideality factor fits (semilog plot)')}
-    ${ctl('Plot shape (h/w)', `<input type="number" step="0.02" min="0.4" max="1.4" data-obj="fig" data-key="pAspect">`)}
+    <div class="fixedShape">${ctl('Plot shape (h/w)', `<input type="number" step="0.02" min="0.4" max="1.4" data-obj="fig" data-key="pAspect">`)}</div>
     ${ctl('Voltage axis', `<select data-obj="fig" data-key="pXauto"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
     <div id="pXRow">${ctl('V min, max (V)', `<div class="row"><input type="number" step="0.1" data-obj="fig" data-key="pXmin"><input type="number" step="0.1" data-obj="fig" data-key="pXmax"></div>`)}</div>
     ${ctl('Current axis', `<select data-obj="fig" data-key="pYauto"><option value="auto">auto</option><option value="manual">manual</option></select>`)}
@@ -2393,7 +2395,8 @@ function renderFigurePanel(){
     ${ctl('Preset', `<select id="stylePreset"><option value="nature">Nature / Science (sans, 7 pt)</option><option value="elsevier">Elsevier / IEEE (serif, 8 pt)</option><option value="acs">ACS (sans, 7 pt, 0.75 pt lines)</option><option value="custom">custom</option><optgroup label="My presets" id="myPresets"></optgroup></select>`)}
     ${ctl('Save style as', `<div class="row"><input type="text" id="presetName" placeholder="preset name" aria-label="Preset name"><button class="btn sm" id="savePreset" title="Save the figure and plot style as a named preset">Save</button><button class="btn sm" id="delPreset" hidden title="Delete the selected preset">Delete</button></div>`)}
     ${ctl('Width', `<select data-obj="fig" data-key="widthMm"><option value="85">85 mm (single column)</option><option value="120">120 mm (1.5 column)</option><option value="180">180 mm (double column)</option></select>`)}
-    <div data-for="band">${ctl('Aspect (h/w)', `<input type="number" step="0.02" min="0.3" max="1.5" data-obj="fig" data-key="aspect">`)}</div>
+    ${chk('fitPane','Fill the window (the figure takes the shape of the pane)')}
+    <div data-for="band" class="fixedShape">${ctl('Aspect (h/w)', `<input type="number" step="0.02" min="0.3" max="1.5" data-obj="fig" data-key="aspect">`)}</div>
     ${ctl('Font', `<select data-obj="fig" data-key="font"><option value="sans">Helvetica / Arial</option><option value="serif">Times</option></select>`)}
     ${ctl('Font size (pt)', `<input type="number" step="0.5" min="5" max="14" data-obj="fig" data-key="fontSize">`)}
     ${ctl('Line weight (pt)', `<input type="number" step="0.25" min="0.25" max="3" data-obj="fig" data-key="lineWt">`)}
@@ -2432,6 +2435,7 @@ function syncPanel(p, except){
   $$('[data-obj]',p).forEach(inp=>{ if (inp===except) return; const v=state[inp.dataset.obj][inp.dataset.key]; if (inp.type==='checkbox') inp.checked=!!v; else inp.value=v; });
   const f=state.fig; $('#biasRow').style.display = f.mode==='bias'?'':'none'; $('#eWinRow').style.display = f.eWin==='manual'?'':'none';
   $$('[data-for]', p).forEach(d=>{ d.hidden=!d.dataset.for.split(' ').includes(currentFig); });   // only the settings of the view that is open
+  $$('.fixedShape', p).forEach(d=>{ if (f.fitPane!==false) d.hidden=true; });
   $('#pXRow').style.display = f.pXauto==='manual'?'':'none'; $('#pYRow').style.display = f.pYauto==='manual'?'':'none'; $('#d3GapRow').style.display = state.xs.d3Style==='exploded'?'':'none';
   const g=$('#gammaVal'); if (g) g.textContent = f.gamma>=0.999?'to scale':f.gamma<=0.001?'equal':('γ = '+f.gamma.toFixed(2));
   const sp=$('#stylePreset'); if (sp){ const ps=loadStylePresets(); const mine=Object.keys(ps).find(n=>STYLE_KEYS.every(k=>ps[n][k]===undefined||ps[n][k]===f[k]));
@@ -2799,15 +2803,15 @@ function bindSimFields(div, Ly){
 /* ---------- figures ---------- */
 function simFigures(){ // the SVGs shown in Simulate mode; all pass through exportSVGs() like the other figures
   if (!sim.res) return [{name:'jv', title:'J–V characteristics', svg:emptyFigure('Run a simulation (Simulate tab) to see the J–V curve, the band diagram at any bias and the carrier profiles')}];
-  const S=simState(); const out=[]; const key=JSON.stringify([S.bias,S.biasLight,S.pvSign,S.showLog,S.showProfiles,state.fig,sim.stale]);
+  const S=simState(); const out=[]; const F=effFig(); const key=JSON.stringify([S.bias,S.biasLight,S.pvSign,S.showLog,S.showProfiles,F,sim.stale]);
   if (sim.figCache.key===key) return sim.figCache.figs;
-  if (sim.res.light) out.push({name:'jv', title:'J–V characteristics', svg:renderJV(state.fig, false)});
-  if (S.showLog || !sim.res.light) out.push({name:'jv-log', title:'J–V, semilog', svg:renderJV(state.fig, true)});
-  const bc=simBandComp(S.bias, S.biasLight && !!sim.res.light); if (bc) out.push({name:'band-diagram-'+String(S.bias).replace('-','m')+'V', title:'Band diagram at V = '+S.bias+' V', svg:renderBand(bc, Object.assign({}, state.fig, {mode:'bias', V:S.bias}))});
-  if (S.showProfiles){ const pr=renderProfiles(S.bias, S.biasLight && !!sim.res.light); if (pr) out.push({name:'profiles', title:'Carrier profiles at V = '+S.bias+' V', svg:pr}); }
+  if (sim.res.light) out.push({name:'jv', title:'J–V characteristics', svg:renderJV(F, false)});
+  if (S.showLog || !sim.res.light) out.push({name:'jv-log', title:'J–V, semilog', svg:renderJV(F, true)});
+  const bc=simBandComp(S.bias, S.biasLight && !!sim.res.light); if (bc) out.push({name:'band-diagram-'+String(S.bias).replace('-','m')+'V', title:'Band diagram at V = '+S.bias+' V', svg:renderBand(bc, Object.assign({}, F, {mode:'bias', V:S.bias}))});
+  if (S.showProfiles){ const pr=renderProfiles(S.bias, S.biasLight && !!sim.res.light, F); if (pr) out.push({name:'profiles', title:'Carrier profiles at V = '+S.bias+' V', svg:pr}); }
   sim.figCache={key, figs:out}; return out;
 }
-function emptyFigure(msg){ const C=figColors(state.fig.figTheme); const W=(state.fig.widthMm||85)/25.4*72, H=W*0.5; return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}pt" height="${H}pt" viewBox="0 0 ${W} ${H}" font-family="${FONTS[state.fig.font||'sans']}"><rect width="${W}" height="${H}" fill="${C.bg}"/><text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="${state.fig.fontSize||7}" fill="${C.ink2}">${esc(msg)}</text></svg>`; }
+function emptyFigure(msg){ const C=figColors(state.fig.figTheme); const W=(state.fig.widthMm||85)/25.4*72, H=W*(effFig().fillH?effFig().aspect:0.5); return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}pt" height="${H}pt" viewBox="0 0 ${W} ${H}" font-family="${FONTS[state.fig.font||'sans']}"><rect width="${W}" height="${H}" fill="${C.bg}"/><text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="${state.fig.fontSize||7}" fill="${C.ink2}">${esc(msg)}</text></svg>`; }
 function simBandComp(V, light){
   const st=simStateAt(V, light); if (!st) return null; const spec=sim.spec, P=sim.P;
   const R=spec.R.map(r=>Object.assign({}, r)); const term=assignTerminals(R, V, state.fig.biasTerm||'right');
@@ -2899,10 +2903,10 @@ function renderJV(fig, logPanel){
   }
   return out+`</svg>`;
 }
-function renderProfiles(V, light){
-  const st=simStateAt(V, light); if (!st) return null; const P=sim.P; const pr=FermiDD.profiles(P, st, light?sim.res.Ge:null); const fig=state.fig;
+function renderProfiles(V, light, figE){
+  const st=simStateAt(V, light); if (!st) return null; const P=sim.P; const pr=FermiDD.profiles(P, st, light?sim.res.Ge:null); const fig=figE||state.fig;
   const C=figColors(fig.figTheme); const fs=fig.fontSize||7, lw=fig.lineWt||1, lwa=Math.max(0.35, lw*0.5); const W=(fig.widthMm||85)/25.4*72; const font=FONTS[fig.font||'sans'];
-  const PF=plotFrame(fig, 1); const panels=3, ph=W*0.26, gap=fs*1.3, mT=fs*2.6, mB=fs*2.6, mL=PF.x0, mR=fs*1.6; const H=mT+panels*ph+(panels-1)*gap+mB;
+  const PF=plotFrame(fig, 1); const panels=3, gap=fs*1.3, mT=fs*2.6, mB=fs*2.6, mL=PF.x0, mR=fs*1.6; const ph= fig.fillH ? Math.max(W*0.1, (W*fig.aspect-mT-mB-(panels-1)*gap)/panels) : W*0.26; const H=mT+panels*ph+(panels-1)*gap+mB;
   const gamma=fig.gamma==null?0.5:fig.gamma; const Ls=P.layers.filter(L=>L.kind!=='metal'); const wsum=Ls.reduce((s,L)=>s+Math.pow(Math.max(L.tphys,1e-7)*1e7,gamma),0)||1; const pw=W-mL-mR;
   let xc=mL; const Xl={}; for (const L of Ls){ const w=pw*Math.pow(Math.max(L.tphys,1e-7)*1e7,gamma)/wsum; Xl[L.i]={X0:xc, Xw:w, xa:P.x[L.ns], xb:P.x[L.ne]}; xc+=w; }
   const X=(k)=>{ let L=P.layers[P.Rn[k]]; if (L.kind==='metal') L=P.layers[P.Ln[k]]; const m=Xl[L.i]; if (!m) return mL; const t=m.xb>m.xa?(P.x[k]-m.xa)/(m.xb-m.xa):0; return m.X0+t*m.Xw; };
@@ -2953,7 +2957,7 @@ function init(){
   let saved=null; try{ saved=localStorage.getItem('fermi.project'); }catch(e){}
   if (saved){ try{ loadSnapshot(saved); }catch(e){ state=freshState(); } } else state=freshState();
   lastSnap=snapshot();
-  sel.addEventListener('change', e=>{ const t=TEMPLATES.find(x=>x.key===e.target.value); if (!t) return; const prev=snapshot(); state=freshState(t); commit({prev}); rebuildAll(); zoomFit(); });
+  sel.addEventListener('change', e=>{ const t=TEMPLATES.find(x=>x.key===e.target.value); if (!t) return; const prev=snapshot(); state=freshState(t); commit({prev}); rebuildAll(); });
   $('#undoBtn').addEventListener('click', undo); $('#redoBtn').addEventListener('click', redo);
   $('#addLayerBtn').addEventListener('click', addLayer);
   $('#addMatBtn').addEventListener('click', ()=>openMatForm(null));
@@ -2961,21 +2965,18 @@ function init(){
   // tabs
   $$('.pane-tabs').forEach(tabs=>{ tabs.addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if (!b) return; $$('[data-tab]',tabs).forEach(x=>x.setAttribute('aria-selected', x===b?'true':'false')); const pane=tabs.parentElement; $$('.pane-body',pane).forEach(x=>x.hidden = x.id!=='tab-'+b.dataset.tab); }); });
   $('#figSeg').addEventListener('click', e=>{ const b=e.target.closest('[data-fig]'); if (!b) return; currentFig=b.dataset.fig; $$('[data-fig]').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); view.auto=true; renderPreview(); syncPanel($('#tab-figure')); if (currentFig==='sim'){ renderSimStatus(); $$('#paneRight [data-tab]').forEach(x=>x.setAttribute('aria-selected', x.dataset.tab==='simulate'?'true':'false')); $$('#paneRight .pane-body').forEach(x=>x.hidden = x.id!=='tab-simulate'); } else recompute(); const cb=$('#captionBox'); if (cb) cb.value=captionText(); });
-  $$('.mobile-nav button').forEach(b=>b.addEventListener('click', ()=>{ $$('.mobile-nav button').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); ['paneLeft','paneCenter','paneRight'].forEach(id=>$('#'+id).dataset.active = (id===b.dataset.pane)?'true':'false'); if (b.dataset.pane==='paneCenter') setTimeout(zoomFit,30); }));
-  // zoom / pan
-  $('#zoomIn').addEventListener('click', ()=>zoomBy(1.25)); $('#zoomOut').addEventListener('click', ()=>zoomBy(0.8)); $('#zoomFit').addEventListener('click', zoomFit);
+  $$('.mobile-nav button').forEach(b=>b.addEventListener('click', ()=>{ $$('.mobile-nav button').forEach(x=>x.setAttribute('aria-pressed', x===b?'true':'false')); ['paneLeft','paneCenter','paneRight'].forEach(id=>$('#'+id).dataset.active = (id===b.dataset.pane)?'true':'false'); if (b.dataset.pane==='paneCenter') setTimeout(renderPreview,30); }));
+  // 3D view: drag to rotate
   const pv=$('#preview'); let drag=null;
   const clamp=(v,a,b)=>Math.max(a, Math.min(b, v));
-  pv.addEventListener('pointerdown', e=>{ if (e.button!==0 || e.target.closest('.navbtn,.figbar')) return; const rot=currentFig==='d3' && !e.shiftKey;
-    drag={x:e.clientX, y:e.clientY, tx:view.tx, ty:view.ty, rot, az:+state.xs.d3Az||0, el:+state.xs.d3El||26, prev:rot?snapshot():null, moved:false}; pv.classList.add('dragging'); pv.setPointerCapture(e.pointerId); });
+  pv.addEventListener('pointerdown', e=>{ if (e.button!==0 || currentFig!=='d3' || e.target.closest('.navbtn,.figbar')) return;
+    drag={x:e.clientX, y:e.clientY, az:+state.xs.d3Az||0, el:+state.xs.d3El||26, prev:snapshot(), moved:false}; pv.setPointerCapture(e.pointerId); });
   pv.addEventListener('pointermove', e=>{ if (!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if (Math.abs(dx)+Math.abs(dy)<2 && !drag.moved) return; drag.moved=true;
-    if (drag.rot){ state.xs.d3Az=Math.round(clamp(drag.az+dx*0.4, -80, 80)); state.xs.d3El=Math.round(clamp(drag.el+dy*0.3, 8, 80)); renderPreview(); }
-    else { view.tx=drag.tx+dx; view.ty=drag.ty+dy; view.auto=false; applyView(); } });
-  const endDrag=()=>{ if (drag && drag.rot && drag.moved){ commit({prev:drag.prev}); syncPanel($('#tab-figure')); } drag=null; pv.classList.remove('dragging'); };
+    state.xs.d3Az=Math.round(clamp(drag.az+dx*0.4, -80, 80)); state.xs.d3El=Math.round(clamp(drag.el+dy*0.3, 8, 80)); renderPreview(); });
+  const endDrag=()=>{ if (drag && drag.moved){ commit({prev:drag.prev}); syncPanel($('#tab-figure')); } drag=null; };
   pv.addEventListener('pointerup', endDrag); pv.addEventListener('pointercancel', endDrag);
   $('#figPrev').addEventListener('click', ()=>showFig(-1, true)); $('#figNext').addEventListener('click', ()=>showFig(1, true));
   $('#figBar').addEventListener('click', e=>{ const b=e.target.closest('[data-go]'); if (b) showFig(+b.dataset.go, false); });
-  pv.addEventListener('wheel', e=>{ if (e.ctrlKey||e.metaKey){ e.preventDefault(); const r=pv.getBoundingClientRect(); zoomBy(e.deltaY<0?1.1:0.9, e.clientX-r.left, e.clientY-r.top); } else { view.tx-=e.deltaX; view.ty-=e.deltaY; view.auto=false; applyView(); } }, {passive:false});
   // theme
   const applyTheme=t=>{ if (t) document.documentElement.setAttribute('data-theme',t); else document.documentElement.removeAttribute('data-theme'); };
   // NSDG edition: the interface follows the light or dark theme chosen on the group website
@@ -2991,16 +2992,15 @@ function init(){
   document.addEventListener('keydown', e=>{ const mod=e.ctrlKey||e.metaKey; const tag=(e.target.tagName||'').toLowerCase(); const typing = tag==='input'||tag==='textarea'||tag==='select';
     if (mod && e.key.toLowerCase()==='z'){ if (typing && tag!=='select') return; e.preventDefault(); if (e.shiftKey) redo(); else undo(); return; }
     if (mod && e.key.toLowerCase()==='y'){ e.preventDefault(); redo(); return; }
-    if (mod && (e.key==='='||e.key==='+')){ e.preventDefault(); zoomBy(1.25); return; } if (mod && e.key==='-'){ e.preventDefault(); zoomBy(0.8); return; } if (mod && e.key==='0'){ e.preventDefault(); zoomFit(); return; }
     if (e.altKey && (e.key==='ArrowUp'||e.key==='ArrowDown') && selectedLayer){ e.preventDefault(); const i=state.stack.layers.findIndex(l=>l.id===selectedLayer); if (i>=0) moveLayer(i, e.key==='ArrowUp'?-1:1); return; }
     if (!typing && !mod && !e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight') && shownFigs.length>1){ e.preventDefault(); showFig(e.key==='ArrowLeft'?-1:1, true); return; }
     if (e.key==='Escape') $('#helpModal').removeAttribute('open'); });
-  window.addEventListener('resize', ()=>{ clearTimeout(window._rz); window._rz=setTimeout(()=>{ if (view.auto) zoomFit(); },120); });
+  window.addEventListener('resize', ()=>{ clearTimeout(window._rz); window._rz=setTimeout(renderPreview,120); });
   renderFigurePanel(); renderExportPanel(); renderSimPanel(); recompute(); renderLayers(); renderMaterials(); updateUndo();
   $('#preview').addEventListener('pointermove', simHover);
   loadLicense();   // async: re-verifies a stored key offline and unlocks Pro when it is genuine and unexpired
   $('#templateSel').value = state.template||'';
-  setTimeout(zoomFit, 50);
+  setTimeout(renderPreview, 50);
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
