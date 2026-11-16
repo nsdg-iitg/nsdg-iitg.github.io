@@ -10,6 +10,7 @@ areas: [trap-analysis-modelling]
 highlights:
   - "A trap-characterisation method based on dark J–V characteristics (Solar Energy, 2023)"
   - "Developed CEISIM, a drift–diffusion device simulator with traps and mobile ions"
+  - "Origin of negative capacitance in perovskite devices: slow charge in interface traps or mobile ions at the injecting contact"
   - "DLTS of ionic defects in flexible perovskite memristors"
 links:
   scholar: "https://scholar.google.com/citations?user=uiO_8fkAAAAJ"
