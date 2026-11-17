@@ -544,7 +544,7 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 
 /* Home opening: justified text, then a row of real plots from the group's papers */
 .hero .lead { text-align: justify; hyphens: auto; }
-.hero-grid.has-plots { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+.hero-grid.text-only { grid-template-columns: minmax(0, 1fr); gap: 36px; }
 .hero-figure.hero-plots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: none; margin: 0; justify-self: stretch; align-self: stretch; }
 .hero-plot { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 10px; color: var(--ink); text-decoration: none; transition: border-color .15s, box-shadow .15s, transform .15s; }
 .hero-plot:hover, .hero-plot:focus-visible { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-1px); }
@@ -562,3 +562,8 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 /* Research cards on the home page: a real figure from the group's papers */
 .area-icon.has-img { height: 132px; background: #fff; border-radius: 8px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; padding: 6px; overflow: hidden; }
 .area-icon.has-img img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
+
+/* Result plot under the text in each research card */
+.area-plot { margin-top: auto; height: 132px; background: #fff; border-radius: 8px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; padding: 6px; overflow: hidden; }
+.area-lead { margin-bottom: 8px; }
+.area-plot img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
