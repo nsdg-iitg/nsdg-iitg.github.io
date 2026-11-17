@@ -3,6 +3,7 @@ title: "Defect spectroscopy and device modelling"
 short: "Device physics"
 order: 5
 figure: model
+card_svg: true
 card_image: /assets/img/areas/trap-analysis-modelling.jpg
 card_alt: "Cross-section of the double-gate MOSFET used for the compact surface-potential model (Phys. Scr. 2025)"
 card_plot: /assets/img/areas/plot-trap-analysis-modelling.jpg
