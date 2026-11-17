@@ -541,3 +541,21 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .app-page main { flex: 1; min-height: 0; display: flex; }
 .app-page .site-footer, .app-page footer { display: none; }
 .app-frame { flex: 1; width: 100%; height: 100%; border: 0; display: block; background: var(--bg); }
+
+/* Home opening: justified text, then a row of real plots from the group's papers */
+.hero .lead { text-align: justify; hyphens: auto; }
+.hero-grid.has-plots { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+.hero-figure.hero-plots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: none; margin: 0; justify-self: stretch; align-self: stretch; }
+.hero-plot { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 10px; color: var(--ink); text-decoration: none; transition: border-color .15s, box-shadow .15s, transform .15s; }
+.hero-plot:hover, .hero-plot:focus-visible { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-1px); }
+.hero-plot .hp-img { flex: 1; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 6px; padding: 4px; }
+.hero-plot img { display: block; width: 100%; height: auto; max-height: 250px; object-fit: contain; }
+.hp-cap { display: flex; justify-content: space-between; align-items: baseline; font: 600 .95rem var(--font); margin: 0 2px 8px; }
+.hp-cap .hp-go { font-weight: 500; font-size: .82rem; color: var(--muted); }
+.hero-plot:hover .hp-go { color: var(--accent); }
+.hp-src { display: block; font-size: .78rem; line-height: 1.4; color: var(--muted); margin: 8px 2px 0; }
+@media (max-width: 899px) {
+  .hero-figure.hero-plots { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 14px; padding-bottom: 6px; }
+  .hero-plot { flex: 0 0 78%; scroll-snap-align: start; }
+}
+@media (max-width: 599px) { .hero .lead { text-align: left; hyphens: manual; } }
