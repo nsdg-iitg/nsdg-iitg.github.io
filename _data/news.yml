@@ -1,4 +1,8 @@
 # Newest first. type: paper marks a paper announcement; these are left out of the home-page news, which already lists recent papers. date: YYYY-MM-DD. If the day is not known use 01; the site then shows only the month. link is optional.
+- date: 2026-11-16
+  title: "Talk by Prof. Subramanian Iyer (UCLA) on advanced packaging"
+  text: "Prof. Subu Iyer, Distinguished Professor at UCLA and former Director of the US National Advanced Packaging Manufacturing Program, spoke at the Department of EEE on “What is next in ‘Advanced’ Packaging?”. The talk covered scale-down and scale-out of packages, and how dense chip-to-chip connection can reduce power in datacentres."
+
 - date: 2026-11-10
   title: "Abinash Baruah defends his PhD thesis"
   text: "Thesis: Multiscale phenomena in perovskite LEDs: coupled interplay of ion migration, dielectric relaxation, and trap-assisted degradation."
@@ -8,6 +12,10 @@
 - date: 2026-10-30
   title: "IIT Guwahati and Tata Electronics sign MoU on semiconductor packaging"
   text: "The group is extending its research to semiconductor packaging and heterogeneous integration."
+
+- date: 2026-10-01
+  title: "Abdul Basit Andrabi presents his synopsis seminar"
+  link: /people/abdul-basit-andrabi/
 
 - date: 2025-12-01
   title: "New paper in J. Phys. D on grain size in perovskite LEDs"
