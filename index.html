@@ -42,13 +42,13 @@ body_class: home
 </section>
 
 {% assign journals = site.data.publications | where: "type", "journal" %}
-{% assign phds = site.people | where: "category", "alumni" %}
 <section class="stats-band">
-  <div class="wrap"><div class="stats">
-    <div><span class="stat-num">{{ journals.size }}</span><span class="stat-label">journal papers since 2020</span></div>
-    <div><span class="stat-num">8</span><span class="stat-label">funded projects</span></div>
-    <div><span class="stat-num">3</span><span class="stat-label">PhD theses completed</span></div>
-    <div><span class="stat-num">5</span><span class="stat-label">IITG facilities we work in</span></div>
+  <div class="wrap"><div class="funders">
+    <p class="funders-label">Our research is funded by</p>
+    <ul class="funder-logos">
+      {% for f in site.data.funders %}<li><a href="{{ f.url }}" title="{{ f.name | escape }}" rel="noopener"><img src="{{ '/assets/img/funders/' | append: f.logo | relative_url }}" alt="{{ f.name | escape }}" loading="lazy"></a></li>
+      {% endfor %}
+    </ul>
   </div></div>
 </section>
 
