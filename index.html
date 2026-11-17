@@ -22,6 +22,19 @@ body_class: home
   </div>
 </section>
 
+<section class="wrap section home-news">
+  <div class="section-head"><h2>News</h2><a class="more" href="{{ '/news/' | relative_url }}">All news →</a></div>
+  <ul class="news-list news-cols">
+    {% assign news_sorted = site.data.news | where_exp: "n", "n.type != 'paper'" | sort: "date" | reverse %}
+    {% for n in news_sorted limit: 8 %}
+    <li>
+      <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
+      <span>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
 <section class="wrap section">
   <div class="section-head">
     <h2>Research</h2>
@@ -52,19 +65,7 @@ body_class: home
   </div></div>
 </section>
 
-<section class="wrap section home-split">
-  <div>
-    <div class="section-head"><h2>News</h2><a class="more" href="{{ '/news/' | relative_url }}">All news →</a></div>
-    <ul class="news-list">
-      {% assign news_sorted = site.data.news | sort: "date" | reverse %}
-      {% for n in news_sorted limit: 4 %}
-      <li>
-        <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
-        <span>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</span>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
+<section class="wrap section">
   <div>
     <div class="section-head"><h2>Recent papers</h2><a class="more" href="{{ '/publications/' | relative_url }}">All publications →</a></div>
     <ol class="pubs compact">

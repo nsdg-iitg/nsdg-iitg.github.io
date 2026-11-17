@@ -4,9 +4,9 @@ short: "Device physics"
 order: 5
 figure: model
 card_image: /assets/img/areas/trap-analysis-modelling.jpg
-card_alt: "Energy-level diagram of the simulated ITO/PEDOT:PSS/MAPbI3/PCBM/Al perovskite solar cell (Sol. Energy 2023)"
+card_alt: "Cross-section of the double-gate MOSFET used for the compact surface-potential model (Phys. Scr. 2025)"
 card_plot: /assets/img/areas/plot-trap-analysis-modelling.jpg
-card_plot_alt: "DLTS rate-window plot of a perovskite LED, showing the trap signature (J. Phys. D 2026)"
+card_plot_alt: "DLTS Arrhenius plot of a flexible perovskite memristor, giving trap activation energies of 0.48 eV and 0.80 eV (IEEE IFETC 2022)"
 lead: "Physics-based methods to characterise traps and mobile ions in perovskite devices from electrical measurements, an in-house device simulator, and compact models of transistors and memories."
 people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed]
 methods: "Sentaurus and Silvaco TCAD · CEISIM (our in-house 1D drift–diffusion simulator) · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"

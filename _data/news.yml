@@ -1,4 +1,4 @@
-# Newest first. date: YYYY-MM-DD. If the day is not known use 01; the site then shows only the month. link is optional.
+# Newest first. type: paper marks a paper announcement; these are left out of the home-page news, which already lists recent papers. date: YYYY-MM-DD. If the day is not known use 01; the site then shows only the month. link is optional.
 - date: 2026-11-10
   title: "Abinash Baruah defends his PhD thesis"
   text: "Thesis: Multiscale phenomena in perovskite LEDs: coupled interplay of ion migration, dielectric relaxation, and trap-assisted degradation."
@@ -11,6 +11,7 @@
 
 - date: 2025-12-01
   title: "New paper in J. Phys. D on grain size in perovskite LEDs"
+  type: paper
   text: "Smaller grains yield higher luminance, whereas larger grains yield longer operating lifetime. Dielectric spectroscopy and DLTS are used to explain this trade-off."
   link: /research/light-emitting-diodes/
 
@@ -22,11 +23,13 @@
   image: /assets/img/news/atanu-phd.jpg
 - date: 2025-06-01
   title: "Nanowire paper in Journal of Applied Physics"
+  type: paper
   text: "A short nitrogen plasma treatment increases the conductivity of a single CuO nanowire by about an order of magnitude."
   link: /research/nanowire-devices/
 
 - date: 2025-02-01
   title: "Flexible lead-free memristor synapses published"
+  type: paper
   text: "Air-stable Cs3Bi2I9 memristors on a flexible PET substrate, integrated into a 4×4 crossbar array, published in Flexible and Printed Electronics."
   link: /research/memristors/
 
