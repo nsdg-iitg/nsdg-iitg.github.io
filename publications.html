@@ -6,16 +6,6 @@ heading: "Publications"
 lead: "Journal papers, conference papers, talks, patents and copyright from the group. Every title links to the paper through its DOI."
 description: "Publications of the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati, with DOI links."
 ---
-{% assign jr = site.data.publications | where: "type", "journal" %}{% assign cf = site.data.publications | where: "type", "conference" %}
-{% assign both = jr | concat: cf %}{% assign ys = both | map: "year" | sort %}{% assign y0 = ys.first %}{% assign y1 = ys.last %}
-<figure class="pub-chart" aria-label="Journal and conference papers per year">
-  <figcaption><strong>Papers per year</strong><span class="pc-legend"><span class="pc-key pc-j"></span>Journal <span class="pc-key pc-c"></span>Conference</span></figcaption>
-  <div class="pc-bars">
-    {% for y in (y0..y1) %}{% assign nj = jr | where: "year", y | size %}{% assign nc = cf | where: "year", y | size %}
-    <div class="pc-col" title="{{ y }}: {{ nj }} journal, {{ nc }} conference"><span class="pc-total">{{ nj | plus: nc }}</span><span class="pc-bar pc-c" style="--n: {{ nc }}"></span><span class="pc-bar pc-j" style="--n: {{ nj }}"></span><span class="pc-year">{{ y }}</span></div>
-    {% endfor %}
-  </div>
-</figure>
 <div class="pub-tools" role="group" aria-label="Filter publications">
   <input type="search" id="pub-search" placeholder="Search title, author or journal" aria-label="Search publications">
   <div class="chips">
