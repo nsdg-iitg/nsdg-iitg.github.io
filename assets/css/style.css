@@ -20,6 +20,8 @@
   --fig-soft2: #c4cbe0;
   --fig-tco: #a8d8e8;
   --fig-glass: #e6eef2;
+  --logo-ink: #1d2a6b;
+  --logo-paper: #ffffff;
   --radius: 14px;
   --shadow: 0 1px 2px rgba(20,23,31,.04), 0 8px 24px rgba(20,23,31,.06);
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -30,6 +32,7 @@
   --bg: #0e1015; --surface: #161a22; --surface-2: #1d222c; --ink: #eceef3; --muted: #a1a8b6; --line: #2a303b;
   --accent: #93a0ff; --accent-ink: #0e1015; --c-energy: #f2bd45; --c-light: #3cc98b; --c-memory: #8b98ff; --c-model: #fb8a4c; --c-nano: #38b2cf;
   --fig-ink: #c9ced8; --fig-line: #3a4150; --fig-metal: #7d8592; --fig-soft: #3b3f48; --fig-soft2: #3a4566; --fig-tco: #2f5f70; --fig-glass: #232a35;
+  --logo-ink: #e6e9ff; --logo-paper: #161a22;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
   color-scheme: dark;
 }
@@ -58,7 +61,7 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 .site-header { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; height: 66px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
-.brand .logo { width: 36px; height: 36px; flex: none; }
+.brand .logo { width: 42px; height: 42px; flex: none; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
 .brand-name { font-weight: 700; letter-spacing: .04em; }
 .brand-sub { font-size: .78rem; color: var(--muted); }
