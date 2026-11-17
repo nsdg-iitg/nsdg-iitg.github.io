@@ -92,3 +92,8 @@ body_class: home
     <a class="btn" href="{{ '/contact/' | relative_url }}">Get in touch</a>
   </div>
 </section>
+{%- assign pi = site.people | where: "category", "pi" | first -%}
+{%- assign mem = site.people | where: "category", "current" | sort: "order" -%}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ResearchOrganization","name":{{ site.group_name | jsonify }},"alternateName":{{ site.short_name | jsonify }},"url":{{ site.url | append: "/" | jsonify }},"description":{{ site.description | jsonify }},"email":{{ site.contact_email | jsonify }},"telephone":{{ site.contact_phone | jsonify }},"address":{"@type":"PostalAddress","streetAddress":"Department of EEE, IIT Guwahati","addressLocality":"Guwahati","postalCode":"781039","addressRegion":"Assam","addressCountry":"IN"},"parentOrganization":{"@type":"CollegeOrUniversity","name":{{ site.institute | jsonify }},"url":"https://www.iitg.ac.in"},"founder":{"@type":"Person","name":{{ pi.name | remove: "Dr. " | jsonify }},"url":{{ pi.url | absolute_url | jsonify }}},"member":[{% for m in mem %}{"@type":"Person","name":{{ m.name | remove: "Dr. " | jsonify }},"url":{{ m.url | absolute_url | jsonify }}}{% unless forloop.last %},{% endunless %}{% endfor %}],"knowsAbout":["Perovskite memristors","Lead-free perovskite solar cells","Perovskite light-emitting diodes","Defect spectroscopy","Nanowire devices","Semiconductor device simulation"]}
+</script>

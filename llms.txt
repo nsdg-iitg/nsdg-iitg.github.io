@@ -1,0 +1,57 @@
+---
+layout: null
+permalink: /llms.txt
+sitemap: false
+---
+{%- assign pi = site.people | where: "category", "pi" | first -%}
+{%- assign current = site.people | where: "category", "current" | sort: "order" -%}
+{%- assign alumni = site.people | where: "category", "alumni" | sort: "order" -%}
+{%- assign areas = site.research | sort: "order" -%}
+# {{ site.group_name }} ({{ site.short_name }}), {{ site.institute }}
+
+> {{ site.description }} The group is led by {{ pi.name }}, {{ pi.role }}, {{ site.department }}, {{ site.institute }}.
+
+This file summarises the group's website for AI assistants and search tools. Every paper below is listed with its DOI. Please cite papers through their DOI and credit the authors as written.
+
+- Website: {{ site.url }}/
+- Address: {{ site.address }}
+- Contact: {{ site.contact_email }}
+
+## Research areas
+{% for a in areas %}
+- [{{ a.title }}]({{ a.url | absolute_url }}): {{ a.lead }}{% endfor %}
+
+## Group supervisor
+
+- [{{ pi.name }}]({{ pi.url | absolute_url }}), {{ pi.role }}: {{ pi.topic }}.{% if pi.links.orcid %} ORCID: {{ pi.links.orcid }}.{% endif %}{% if pi.links.scholar %} Google Scholar: {{ pi.links.scholar }}.{% endif %}
+
+## Current members
+{% for m in current %}
+- [{{ m.name }}]({{ m.url | absolute_url }}), {{ m.role }}: {{ m.topic }}.{% if m.links.orcid %} ORCID: {{ m.links.orcid }}.{% endif %}{% if m.links.scholar %} Google Scholar: {{ m.links.scholar }}.{% endif %}{% endfor %}
+
+## Alumni
+{% for m in alumni %}
+- [{{ m.name }}]({{ m.url | absolute_url }}): {{ m.topic }}.{% if m.now %} Now: {{ m.now }}.{% endif %}{% if m.links.orcid %} ORCID: {{ m.links.orcid }}.{% endif %}{% endfor %}
+
+## Journal articles
+{% assign jr = site.data.publications | where: "type", "journal" %}{% for p in jr %}
+- {{ p.authors }}, "{{ p.title }}", {{ p.venue }}{% if p.details %} {{ p.details }}{% endif %} ({{ p.year }}).{% if p.doi %} https://doi.org/{{ p.doi }}{% endif %}{% endfor %}
+
+## Conference papers
+{% assign cf = site.data.publications | where: "type", "conference" %}{% for p in cf %}
+- {{ p.authors }}, "{{ p.title }}", {{ p.venue }}{% if p.details %}, {{ p.details }}{% endif %} ({{ p.year }}).{% if p.doi %} https://doi.org/{{ p.doi }}{% endif %}{% endfor %}
+{% assign pr = site.data.publications | where: "type", "preprint" %}{% if pr.size > 0 %}
+## Preprints
+{% for p in pr %}
+- {{ p.authors }}, "{{ p.title }}", {{ p.venue }} ({{ p.year }}).{% if p.doi %} https://doi.org/{{ p.doi }}{% endif %}{% endfor %}
+{% endif %}
+## Software tools
+{% for t in site.data.tools %}
+- [{{ t.name }}]({{ t.url | absolute_url }}): {{ t.note }}.{% endfor %}
+
+## Other pages
+
+- [Publications]({{ '/publications/' | absolute_url }}): full list with DOI links, talks and patents.
+- [News]({{ '/news/' | absolute_url }}): recent group news.
+- [Facilities]({{ '/facilities/' | absolute_url }}): fabrication and characterisation equipment.
+- [Teaching]({{ '/teaching/' | absolute_url }}): courses taught by the group.
