@@ -5,6 +5,8 @@ order: 1
 figure: memristor
 card_image: /assets/img/areas/memristors.jpg
 card_alt: "Device stack of the flexible Cs3Bi2I9 memristor on PET (Flex. Print. Electron. 2025)"
+card_plot: /assets/img/areas/plot-memristors.jpg
+card_plot_alt: "Resistive-switching I–V loop of a flexible perovskite memristor (Adv. Electron. Mater. 2023)"
 lead: "Halide perovskite resistive-switching memories on rigid and flexible substrates, integrated into crossbar arrays and artificial synapses for neuromorphic computing."
 people: [radharani-yumlembam, ph-nonglen-meitei, himangshu-jyoti-gogoi]
 methods: "Spin coating and thermal / e-beam evaporation · conductive AFM · DC and pulsed I–V (Keysight B1500A, Keithley 4200) · DLTS · SPICE (Yakopcic) models · ReRAM peripheral circuits at 180 nm and 65 nm"

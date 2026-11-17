@@ -5,6 +5,8 @@ order: 4
 figure: nanowire
 card_image: /assets/img/areas/nanowire-devices.jpg
 card_alt: "Schematic of a single nanowire with four metal contacts for four-probe I–V measurement (J. Appl. Phys. 2025)"
+card_plot: /assets/img/areas/plot-nanowire-devices.jpg
+card_plot_alt: "Log-scale J–V of a nanowire device before and after 7 min N2 plasma treatment (J. Appl. Phys. 2025)"
 lead: "Electrical devices on single metal-oxide nanowires with plasma-modified surfaces for sensing, and nanodevices for combined energy generation and storage."
 people: [jawaharlal-pati, imrongmenla-ozukum]
 methods: "Thermal oxidation growth · laser and e-beam lithography · RIE nitrogen plasma · single-wire Raman · TEM and EDX · 2- and 4-probe I–V · transfer length method"
