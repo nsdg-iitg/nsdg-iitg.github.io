@@ -3,6 +3,7 @@ title: "Perovskite and organic light-emitting diodes"
 short: "Light emission"
 order: 3
 figure: led
+card_svg: led-card
 card_image: /assets/img/areas/light-emitting-diodes.jpg
 card_alt: "Energy levels of the MAPbBr3 LED stack and a photograph of the device emitting green light (J. Phys. D 2025)"
 card_plot: /assets/img/areas/plot-light-emitting-diodes.jpg

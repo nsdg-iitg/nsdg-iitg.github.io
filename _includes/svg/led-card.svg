@@ -1,0 +1,21 @@
+<svg viewBox="0 0 240 158" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Layer stack of the green MAPbBr3 perovskite LED: electrons from LiF/Al and holes from ITO recombine in the perovskite layer and green light at 533 nm leaves through the glass">
+  <defs><marker id="ledah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1f2430"/></marker></defs>
+  <g font-family="Inter, Arial, sans-serif" font-size="13" text-anchor="middle">
+    <rect x="36" y="2" width="200" height="20" rx="2" fill="#9aa1ad"/><text x="136" y="17" fill="#fff" font-weight="600">LiF/Al</text>
+    <rect x="36" y="22" width="200" height="18" fill="#e4dccb"/><text x="136" y="36" fill="#3a3a3a">TPBi</text>
+    <rect x="36" y="40" width="200" height="28" fill="#2aa36b"/><text x="136" y="59" fill="#fff" font-weight="700">MAPbBr₃</text>
+    <rect x="36" y="68" width="200" height="18" fill="#b9c8e6"/><text x="136" y="82" fill="#2b3550">PEDOT:PSS</text>
+    <rect x="36" y="86" width="200" height="18" fill="#3f8ea3"/><text x="136" y="100" fill="#fff" font-weight="600">ITO</text>
+    <rect x="36" y="104" width="200" height="18" rx="2" fill="#dfe9ee"/><text x="136" y="118" fill="#4a5160">glass</text>
+  </g>
+  <g font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" fill="#1f2430">
+    <text x="2" y="16">e⁻</text><text x="2" y="100">h⁺</text>
+  </g>
+  <path d="M18 12 C 30 14, 32 36, 44 50" stroke="#1f2430" stroke-width="1.8" fill="none" marker-end="url(#ledah)"/>
+  <path d="M18 96 C 30 94, 32 72, 44 60" stroke="#1f2430" stroke-width="1.8" fill="none" marker-end="url(#ledah)"/>
+  <g stroke="#2aa36b" stroke-width="3.4" stroke-linecap="round">
+    <line x1="136" y1="128" x2="136" y2="154"/><line x1="112" y1="128" x2="98" y2="152"/><line x1="160" y1="128" x2="174" y2="152"/>
+    <line x1="90" y1="127" x2="66" y2="146"/><line x1="182" y1="127" x2="206" y2="146"/>
+  </g>
+  <text x="0" y="142" font-family="Inter, Arial, sans-serif" font-size="12" fill="#1d8a57" font-weight="700">533 nm</text>
+</svg>
