@@ -1,0 +1,22 @@
+# Funding agencies shown as a logo strip on the home page. Logos in /assets/img/funders/.
+- name: "Ministry of Electronics and Information Technology (MeitY)"
+  logo: meity.png
+  url: https://www.meity.gov.in/
+- name: "Department of Science and Technology (DST)"
+  logo: dst.png
+  url: https://dst.gov.in/
+- name: "Department of Telecommunications (DoT), Telecom Technology Development Fund"
+  logo: dot.png
+  url: https://dot.gov.in/
+- name: "Science and Engineering Research Board (SERB)"
+  logo: serb.png
+  url: https://www.serb.gov.in/
+- name: "DST Fund for Improvement of S&T Infrastructure (FIST)"
+  logo: dst-fist.png
+  url: https://dst.gov.in/
+- name: "Ministry of Education (formerly MHRD), SPARC"
+  logo: mhrd.png
+  url: https://www.education.gov.in/
+- name: "IIT Guwahati"
+  logo: iitg.png
+  url: https://www.iitg.ac.in/
