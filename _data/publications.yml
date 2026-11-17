@@ -169,6 +169,105 @@
   people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
   areas: [memristors]
 
+- type: journal
+  year: 2016
+  title: "Critical role of the sorting polymer in carbon nanotube-based minority carrier devices"
+  authors: "A. T. Mallajosyula, W. Nie, G. Gupta, J. L. Blackburn, S. K. Doorn, A. D. Mohite"
+  venue: "ACS Nano"
+  details: "10 (12), 10808–10815"
+  doi: "10.1021/acsnano.6b04885"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2016
+  title: "Mechanical integrity of solution-processed perovskite solar cells"
+  authors: "N. Rolston, B. L. Watson, C. D. Bailie, M. D. McGehee, J. P. Bastos, R. Gehlhaar, J.-E. Kim, D. Vak, A. T. Mallajosyula, G. Gupta, A. D. Mohite, R. H. Dauskardt"
+  venue: "Extreme Mechanics Letters"
+  details: "9, 353–358"
+  doi: "10.1016/j.eml.2016.06.006"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2016
+  title: "Large-area hysteresis-free perovskite solar cells via temperature controlled doctor blading under ambient environment"
+  authors: "A. T. Mallajosyula, K. Fernando, S. Bhatt, A. Singh, B. W. Alphenaar, J.-C. Blancon, W. Nie, G. Gupta, A. D. Mohite"
+  venue: "Applied Materials Today"
+  details: "3, 96–102"
+  doi: "10.1016/j.apmt.2016.03.002"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2016
+  title: "High-energy density nanofiber-based solid-state supercapacitors"
+  authors: "D. W. Lawrence, C. Tran, A. T. Mallajosyula, S. K. Doorn, A. Mohite, G. Gupta, V. Kalra"
+  venue: "Journal of Materials Chemistry A"
+  details: "4 (1), 160–166"
+  doi: "10.1039/c5ta05552k"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2013
+  title: "Charge transport in polythiophene:fullerene:nanotube bulk heterojunction photovoltaic devices investigated by impedance spectroscopy"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "Current Applied Physics"
+  details: "13 (4), 677–683"
+  doi: "10.1016/j.cap.2012.11.007"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2012
+  title: "Capacitance–voltage characteristics of P3HT:PCBM bulk heterojunction solar cells with ohmic contacts and the impact of single walled carbon nanotubes on them"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "Organic Electronics"
+  details: "13 (7), 1158–1165"
+  doi: "10.1016/j.orgel.2012.03.018"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2011
+  title: "Increasing the efficiency of charge extraction limited poly-(3-hexylthiophene):[6,6] phenyl C61 butyric acid methyl ester solar cells using single walled carbon nanotubes with metallic characteristics"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "Journal of Applied Physics"
+  details: "109 (12), 124908"
+  doi: "10.1063/1.3598081"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2010
+  title: "Role of single walled carbon nanotubes in improving the efficiency of poly-(3-hexylthiophene) based organic solar cells"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "Journal of Applied Physics"
+  details: "108 (9), 094902"
+  doi: "10.1063/1.3493067"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2010
+  title: "Characterization of matrix and isolated organic solar cells"
+  authors: "A. T. Mallajosyula, N. Srivastava, S. S. K. Iyer, B. Mazhari"
+  venue: "Solar Energy Materials and Solar Cells"
+  details: "94 (8), 1319–1323"
+  doi: "10.1016/j.solmat.2008.09.027"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2009
+  title: "A comparative study of poly(3-octylthiophene) and poly(3-hexylthiophene) solar cells blended with single walled carbon nanotubes"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "Japanese Journal of Applied Physics"
+  details: "48 (1R), 011503"
+  doi: "10.1143/JJAP.48.011503"
+  people: [arun-tej-mallajosyula]
+
+- type: journal
+  year: 2008
+  title: "Photovoltaic effect in single-layer organic solar cell devices fabricated with two new imidazolin-5-one molecules"
+  authors: "V. Jain, B. K. Rajbongshi, A. T. Mallajosyula, G. Bhattacharjya, S. S. K. Iyer, G. Ramanathan"
+  venue: "Solar Energy Materials and Solar Cells"
+  details: "92 (9), 1043–1046"
+  doi: "10.1016/j.solmat.2008.02.039"
+  people: [arun-tej-mallajosyula]
+
 # ---------------- Conference proceedings ----------------
 - type: conference
   year: 2026
@@ -311,6 +410,42 @@
   people: [himangshu-jyoti-gogoi, arun-tej-mallajosyula]
   areas: [memristors]
 
+- type: conference
+  year: 2010
+  title: "Role of single walled carbon nanotubes in improving the efficiency of P3HT:PCBM solar cells: impedance spectroscopy and morphology studies"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "35th IEEE Photovoltaic Specialists Conference (PVSC)"
+  details: "95–101"
+  doi: "10.1109/PVSC.2010.5614483"
+  people: [arun-tej-mallajosyula]
+
+- type: conference
+  year: 2009
+  title: "Enhanced performance of poly-3(hexylthiophene)-single walled carbon nanotube bulk heterojunction solar cells using a poly-3(hexylthiophene) buffer layer and Ca electrode"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "34th IEEE Photovoltaic Specialists Conference (PVSC)"
+  details: "748–753"
+  doi: "10.1109/PVSC.2009.5411176"
+  people: [arun-tej-mallajosyula]
+
+- type: conference
+  year: 2008
+  title: "Conduction properties of carbon nanotubes in P3HT:SWNT bulk heterojunction solar cells"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "33rd IEEE Photovoltaic Specialists Conference (PVSC)"
+  details: "1–6"
+  doi: "10.1109/PVSC.2008.4922722"
+  people: [arun-tej-mallajosyula]
+
+- type: conference
+  year: 2008
+  title: "Effect of single walled carbon nanotubes on the performance of poly-(3-hexylthiophene) solar cell"
+  authors: "A. T. Mallajosyula, S. S. K. Iyer, B. Mazhari"
+  venue: "2nd IEEE International Nanoelectronics Conference (INEC)"
+  details: "550–554"
+  doi: "10.1109/INEC.2008.4585547"
+  people: [arun-tej-mallajosyula]
+
 # ---------------- Talks and preprints ----------------
 - type: talk
   year: 2024
@@ -361,6 +496,40 @@
   doi: "10.2139/ssrn.4926406"
   people: [atanu-purkayastha, abdul-basit-andrabi, arun-tej-mallajosyula]
   areas: [solar-cells]
+
+- type: talk
+  year: 2016
+  title: "Insight into carbon nanotube surface structures for PV applications (invited)"
+  authors: "S. K. Doorn, N. F. Hartmann, N. K. Subbaiyan, R. Pramanik, A. T. Mallajosyula, A. Mohite, A.-M. Dowgiallo, J. L. Blackburn"
+  venue: "229th Electrochemical Society Meeting"
+  details: "Meeting Abstracts MA2016-01 (6), 560"
+  doi: "10.1149/MA2016-01/6/560"
+  people: [arun-tej-mallajosyula]
+
+- type: talk
+  year: 2016
+  title: "Insight into carbon nanotube surface structures for photovoltaics applications"
+  authors: "S. Doorn, N. Hartmann, N. Subbaiyan, R. Pramanik, A. Mallajosyula, A. Mohite, J. Blackburn"
+  venue: "251st American Chemical Society National Meeting"
+  details: "Abstracts of Papers of the ACS 251"
+  people: [arun-tej-mallajosyula]
+
+- type: talk
+  year: 2016
+  title: "Hysteresis-free large-area crystalline perovskite solar cells via temperature controlled doctor blading in ambient conditions"
+  authors: "G. Gupta, A. Mallajosyula, S. Bhatt, W. Nie, A. Mohite"
+  venue: "251st American Chemical Society National Meeting"
+  details: "Abstracts of Papers of the ACS 251"
+  people: [arun-tej-mallajosyula]
+
+- type: talk
+  year: 2015
+  title: "Origin of open circuit voltage in solar cells based on polymer wrapped carbon nanotubes and fullerenes"
+  authors: "A. T. Mallajosyula, G. Gupta, S. K. Doorn, A. Mohite"
+  venue: "227th Electrochemical Society Meeting"
+  details: "Meeting Abstracts MA2015-01 (4), 716"
+  doi: "10.1149/MA2015-01/4/716"
+  people: [arun-tej-mallajosyula]
 
 # ---------------- Patents and copyright ----------------
 - type: ip
