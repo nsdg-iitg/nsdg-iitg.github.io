@@ -55,6 +55,15 @@ body_class: home
 </section>
 
 {% assign journals = site.data.publications | where: "type", "journal" %}
+<section class="wrap section">
+  <div>
+    <div class="section-head"><h2>Recent papers</h2><a class="more" href="{{ '/publications/' | relative_url }}">All publications →</a></div>
+    <ol class="pubs compact">
+      {% for p in journals limit: 4 %}{% include pub.html p=p %}{% endfor %}
+    </ol>
+  </div>
+</section>
+
 <section class="stats-band">
   <div class="wrap"><div class="funders">
     <p class="funders-label">Our research is funded by</p>
@@ -63,15 +72,6 @@ body_class: home
       {% endfor %}
     </ul>
   </div></div>
-</section>
-
-<section class="wrap section">
-  <div>
-    <div class="section-head"><h2>Recent papers</h2><a class="more" href="{{ '/publications/' | relative_url }}">All publications →</a></div>
-    <ol class="pubs compact">
-      {% for p in journals limit: 4 %}{% include pub.html p=p %}{% endfor %}
-    </ol>
-  </div>
 </section>
 
 <section class="wrap section">
