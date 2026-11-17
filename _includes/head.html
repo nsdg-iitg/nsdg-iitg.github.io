@@ -12,3 +12,8 @@
 <meta name="referrer" content="no-referrer">
 {% endif %}{% if site.goatcounter and site.goatcounter != "" and page.noindex != true %}<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>{% endif %}
 {% seo %}
+{%- if page.collection == "people" %}{% assign share = page.photo | default: "/assets/img/share-card.jpg" %}
+<meta property="og:image" content="{{ share | absolute_url }}">
+<meta property="og:image:alt" content="{{ page.name | remove: 'Dr. ' | escape }}, {{ site.group_name }}, IIT Guwahati">
+<meta name="twitter:image" content="{{ share | absolute_url }}">
+{%- endif %}
