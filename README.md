@@ -63,3 +63,15 @@ not counted on the Publications page. Papers with the group stay in `_data/publi
 
 The "Tools" menu in the header is built from `_data/tools.yml`. To add a tool, add an entry with
 `name`, `url` and an optional `note`.
+
+## Version 2 (this branch)
+
+This branch holds a redesign made with the free Scrollcraft skill by Nate Herk
+(https://github.com/nateherkai/scroll-craft, MIT licence). Content and data files are unchanged.
+
+- `assets/scrollcraft/` is the skill's scroll engine, copied as it is. Do not edit it.
+- `assets/css/v2.css` holds the new colours, typefaces and layout. It is loaded after `style.css`.
+- `assets/js/device.js` draws the band diagram on the home page. `assets/js/home.js` starts the engine.
+- `index.html` is the new home page.
+
+The live site is built from `main`. Nothing here is published until this branch is merged.

@@ -4,91 +4,213 @@ title: "Nanoelectronics and Semiconductor Devices Group, IIT Guwahati"
 description: "NSDG at IIT Guwahati fabricates and models semiconductor devices for energy harvesting, light emission and memory: perovskite memristors, lead-free solar cells, perovskite LEDs and nanowire devices."
 body_class: home
 ---
-<section class="hero">
-  <div class="wrap hero-head">
-    <p class="kicker">{{ site.group_name }} · IIT Guwahati</p>
-    <h1>Devices that <span class="hl-energy">harvest energy</span>, <span class="hl-light">emit light</span> and <span class="hl-memory">remember</span>.</h1>
-  </div>
-  <div class="wrap hero-grid">
-    <div class="hero-text">
-      <p class="lead">The group fabricates and models semiconductor devices based on halide perovskites, organic semiconductors and nanowires. The work extends from thin-film growth and device fabrication to defect spectroscopy, device simulation and circuit design.</p>
-      <p class="lead">Current devices include flexible perovskite memristors and crossbar arrays for neuromorphic computing, lead-free and tandem perovskite solar cells, green perovskite light-emitting diodes, and sensors based on single nanowires. More recent work addresses organic light-emitting diodes, a memristor-based artificial olfactory system, and energy-harvesting devices and circuits with supercapacitor storage. The group has also begun work on semiconductor packaging.</p>
-      <p class="lead">For each device, we study the underlying physics, namely carrier generation and recombination, electronic and ionic transport, and the energy and spatial distribution of traps and mobile ions. The experimental methods include deep-level transient spectroscopy, impedance spectroscopy, low-temperature I–V and C–V measurements and nanoscale imaging. These are supported by TCAD and by CEISIM, a drift–diffusion simulator developed in the group, which form the basis for analytical and compact models.</p>
-      <p class="cta">
+{% assign areas = site.research | sort: "order" %}
+{% assign journals = site.data.publications | where: "type", "journal" %}
+{% assign confs = site.data.publications | where: "type", "conference" %}
+{% assign pi = site.people | where: "category", "pi" | first %}
+{% assign current = site.people | where: "category", "current" | sort: "order" %}
+{% assign both = journals | concat: confs %}{% assign since = both | map: "year" | sort | first %}
+{% assign phds = site.people | where: "category", "alumni" | where_exp: "m", "m.role contains 'PhD'" %}
+
+<!-- Title page -->
+<section class="ch title-page" id="top" data-chapter="" data-title="{{ site.group_name }}">
+  <div class="sc-wrap title-page__inner">
+    <p class="title-page__group">{{ site.group_name }} <span>· IIT Guwahati</span></p>
+    <h1 class="sc-display title-page__h">Devices that <em>harvest energy</em>, <em>emit light</em> and <em>remember</em>.</h1>
+    <div class="title-page__lede">
+      <p class="sc-lede">We fabricate and model semiconductor devices based on halide perovskites, organic semiconductors and nanowires.</p>
+      <p class="title-page__go">
         <a class="btn" href="{{ '/research/' | relative_url }}">Explore our research</a>
-        <a class="btn ghost" href="{{ '/people/' | relative_url }}">Meet the team</a>
+        <a class="textlink" href="{{ '/people/' | relative_url }}">Meet the team</a>
       </p>
     </div>
-    <figure class="hero-figure" aria-hidden="true">{% include svg/hero.svg %}</figure>
+    <nav class="contents" id="contents" aria-label="On this page">
+      <ol>
+        <li><a href="#device"><span class="contents__no">I</span><span class="contents__t">One material family, three behaviours</span></a></li>
+        <li><a href="#research"><span class="contents__no">II</span><span class="contents__t">Research</span></a></li>
+        <li><a href="#record"><span class="contents__no">III</span><span class="contents__t">Papers and news</span></a></li>
+        <li><a href="#people"><span class="contents__no">IV</span><span class="contents__t">People</span></a></li>
+        <li><a href="#lab"><span class="contents__no">V</span><span class="contents__t">Laboratory and tools</span></a></li>
+      </ol>
+    </nav>
   </div>
 </section>
 
-<section class="wrap section">
-  <div class="section-head">
-    <h2>Research</h2>
-    <a class="more" href="{{ '/research/' | relative_url }}">All research →</a>
-  </div>
-  <div class="area-grid">
-    {% assign areas = site.research | sort: "order" %}
-    {% for a in areas %}
-    <a class="area-card area-{{ a.slug }}" href="{{ a.url | relative_url }}">
-      <span class="area-icon" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</span>
-      <span class="area-short">{{ a.short }}</span>
-      <span class="area-title">{{ a.title }}</span>
-      <span class="area-lead">{{ a.lead }}</span>
-    </a>
-    {% endfor %}
+<!-- Chapter I. The band diagram that follows the scroll. -->
+<section class="ch ch--dark device" id="device" data-sc-act="pin" data-sc-span="6" data-chapter="I" data-title="One material family, three behaviours" data-ground="dark">
+  <div data-sc-stage class="device__stage">
+    <div class="sc-wrap device__grid">
+      <div class="device__text">
+        <p class="ch__no"><span class="vh">Chapter </span>I</p>
+        <h2 class="sc-display device__h">One material family, three behaviours.</h2>
+        <ol class="device__steps">
+          <li data-step="0" class="is-on">
+            <h3>Equilibrium</h3>
+            <p>In the dark and at zero bias the Fermi level is flat. The built-in field tilts the bands of the perovskite layer.</p>
+          </li>
+          <li data-step="1">
+            <h3><a href="{{ '/research/solar-cells/' | relative_url }}">Energy harvesting</a></h3>
+            <p>Light generates electrons and holes. The field sweeps them to opposite contacts, the quasi-Fermi levels split and a photovoltage appears.</p>
+          </li>
+          <li data-step="2">
+            <h3><a href="{{ '/research/light-emitting-diodes/' | relative_url }}">Light emission</a></h3>
+            <p>Forward bias beyond flat band injects electrons and holes from the contacts. They recombine in the perovskite and photons come out.</p>
+          </li>
+          <li data-step="3">
+            <h3><a href="{{ '/research/memristors/' | relative_url }}">Memory</a></h3>
+            <p>The same lattice holds mobile ions and vacancies. A voltage sweep forms a conducting filament and ruptures it again, so the resistance depends on history.</p>
+          </li>
+        </ol>
+      </div>
+      <figure class="device__fig">
+        <div class="device__dials">
+          <div class="dial dial--bias">
+            <span class="dial__label">Bias, set by the scroll position</span>
+            <span class="dial__track" aria-hidden="true">
+              <span class="dial__tick" style="--at: 37.5%"><i>0</i></span>
+              <span class="dial__tick" style="--at: 79.17%"><i>V<sub>OC</sub></i></span>
+              <span class="dial__tick" style="--at: 87.5%"><i>V<sub>bi</sub></i></span>
+              <span class="dial__run" id="bias-thumb"><b></b></span>
+            </span>
+          </div>
+          <div class="dial dial--light"><span class="dial__lamp" id="lamp" aria-hidden="true"></span><span class="dial__label">Light</span></div>
+          <p class="dial dial--state" aria-live="polite"><span class="dial__label">Operating as</span> <strong id="device-state">Equilibrium</strong></p>
+        </div>
+        <svg id="bd" class="device__bd" role="img" aria-label="Schematic energy band diagram of a perovskite device with electron and hole transport layers. Its bias and illumination change as the page is scrolled."></svg>
+        <div class="device__foot">
+          <figcaption>Schematic, not to scale. Real devices use different contact layers for each of the three jobs.</figcaption>
+          <div class="device__jv">
+            <svg id="jv" role="img" aria-label="Current against voltage for the present operating point"></svg>
+          </div>
+        </div>
+        <noscript><p class="device__nojs">The interactive band diagram needs JavaScript. The four states are described alongside.</p></noscript>
+      </figure>
+    </div>
   </div>
 </section>
 
-{% assign journals = site.data.publications | where: "type", "journal" %}
-{% assign phds = site.people | where: "category", "alumni" %}
-<section class="stats-band">
-  <div class="wrap"><div class="stats">
-    <div><span class="stat-num">{{ journals.size }}</span><span class="stat-label">journal papers since 2020</span></div>
-    <div><span class="stat-num">8</span><span class="stat-label">funded projects</span></div>
-    <div><span class="stat-num">3</span><span class="stat-label">PhD theses completed</span></div>
-    <div><span class="stat-num">5</span><span class="stat-label">IITG facilities we work in</span></div>
-  </div></div>
-</section>
+<!-- Chapter II. Research. -->
+<section class="ch sc-section" id="research" data-chapter="II" data-title="Research">
+  <div class="sc-wrap">
+    <header class="ch__head" data-sc-in>
+      <p class="ch__no"><span class="vh">Chapter </span>II</p>
+      <h2 class="sc-display sc-display--lg">From thin-film growth to compact models.</h2>
+    </header>
+    <div class="prose-cols" data-sc-in data-sc-stagger="70">
+      <p>The group fabricates and models semiconductor devices based on halide perovskites, organic semiconductors and nanowires. The work extends from thin-film growth and device fabrication to defect spectroscopy, device simulation and circuit design.</p>
+      <p>Current devices include flexible perovskite memristors and crossbar arrays for neuromorphic computing, lead-free and tandem perovskite solar cells, green perovskite light-emitting diodes, and sensors based on single nanowires. More recent work addresses organic light-emitting diodes, a memristor-based artificial olfactory system, and energy-harvesting devices and circuits with supercapacitor storage. The group has also begun work on semiconductor packaging.</p>
+      <p>For each device, we study the underlying physics, namely carrier generation and recombination, electronic and ionic transport, and the energy and spatial distribution of traps and mobile ions. The experimental methods include deep-level transient spectroscopy, impedance spectroscopy, low-temperature I–V and C–V measurements and nanoscale imaging. These are supported by TCAD and by CEISIM, a drift–diffusion simulator developed in the group, which form the basis for analytical and compact models.</p>
+    </div>
 
-<section class="wrap section home-split">
-  <div>
-    <div class="section-head"><h2>News</h2><a class="more" href="{{ '/news/' | relative_url }}">All news →</a></div>
-    <ul class="news-list">
-      {% assign news_sorted = site.data.news | sort: "date" | reverse %}
-      {% for n in news_sorted limit: 4 %}
-      <li>
-        <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
-        <span>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</span>
+    <ol class="areas">
+      {% for a in areas %}
+      <li class="areas__row area-{{ a.slug }}" data-sc-in>
+        <p class="areas__short">{{ a.short }}</p>
+        <div class="areas__body">
+          <h3 class="areas__title"><a href="{{ a.url | relative_url }}">{{ a.title }}</a></h3>
+          <p>{{ a.lead }}</p>
+          <p class="areas__people">{% for s in a.people %}{% assign m = site.people | where: "slug", s | first %}{% if m %}<a href="{{ m.url | relative_url }}">{{ m.name }}</a>{% unless forloop.last %}, {% endunless %}{% endif %}{% endfor %}</p>
+        </div>
+        <a class="areas__fig" href="{{ a.url | relative_url }}" tabindex="-1" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</a>
       </li>
       {% endfor %}
-    </ul>
-  </div>
-  <div>
-    <div class="section-head"><h2>Recent papers</h2><a class="more" href="{{ '/publications/' | relative_url }}">All publications →</a></div>
-    <ol class="pubs compact">
-      {% for p in journals limit: 4 %}{% include pub.html p=p %}{% endfor %}
     </ol>
+    <p class="ch__more"><a class="textlink" href="{{ '/research/' | relative_url }}">All research, approach and funded projects</a></p>
   </div>
 </section>
 
-<section class="wrap section">
-  <div class="section-head"><h2>Life in the group</h2><a class="more" href="{{ '/gallery/' | relative_url }}">Gallery →</a></div>
-  <div class="photo-strip">
-    {% assign strip = "gallery-02.jpg,gallery-21.jpg,gallery-19.jpg,gallery-13.jpg" | split: "," %}
-    {% for f in strip %}
-    <a href="{{ '/gallery/' | relative_url }}"><img src="{{ '/assets/img/gallery/thumbs/' | append: f | relative_url }}" alt="Group photo" loading="lazy"></a>
-    {% endfor %}
-  </div>
-</section>
-
-<section class="wrap section join">
-  <div class="join-box">
-    <div>
-      <h2>Join us</h2>
-      <p>The group welcomes applications from prospective PhD, M.Tech and B.Tech students, postdoctoral researchers and interns with an interest in device fabrication and device physics. Please write to Dr. Arun Tej Mallajosyula with a CV and a short statement of research interests.</p>
+<!-- Chapter III. Papers and news. -->
+<section class="ch ch--tint sc-section" id="record" data-chapter="III" data-title="Papers and news">
+  <div class="sc-wrap">
+    <header class="ch__head" data-sc-in>
+      <p class="ch__no"><span class="vh">Chapter </span>III</p>
+      <p class="sc-display record__sum">Since {{ since }} the group has published <span class="record__n"><span data-sc-count="0 {{ journals.size }}">{{ journals.size }}</span> journal papers</span> and <span class="record__n"><span data-sc-count="0 {{ confs.size }}">{{ confs.size }}</span> conference papers</span>, completed <span class="record__n"><span data-sc-count="0 {{ phds.size }}">{{ phds.size }}</span> PhD theses</span> and run <span class="record__n"><span data-sc-count="0 {{ site.data.projects.size }}">{{ site.data.projects.size }}</span> funded projects</span>.</p>
+    </header>
+    <div class="record__cols">
+      <div data-sc-in>
+        <div class="list-head"><h3>Recent papers</h3><a class="textlink" href="{{ '/publications/' | relative_url }}">All publications</a></div>
+        <ol class="pubs compact">
+          {% for p in journals limit: 4 %}{% include pub.html p=p %}{% endfor %}
+        </ol>
+      </div>
+      <div data-sc-in>
+        <div class="list-head"><h3>News</h3><a class="textlink" href="{{ '/news/' | relative_url }}">All news</a></div>
+        <ul class="news-list">
+          {% assign news_sorted = site.data.news | sort: "date" | reverse %}
+          {% for n in news_sorted limit: 5 %}
+          <li>
+            <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
+            <span>{% if n.link %}<a href="{{ n.link | relative_url }}">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-    <a class="btn" href="{{ '/contact/' | relative_url }}">Get in touch</a>
+  </div>
+</section>
+
+<!-- Chapter IV. People: a rail that travels sideways. -->
+<section class="ch team" id="people" data-sc-act="pan" data-sc-span="2.6" data-chapter="IV" data-title="People">
+  <div data-sc-stage class="team__stage">
+    <div class="team__rail" data-sc-pan="0.02">
+      <div class="team__lead">
+        <p class="ch__no"><span class="vh">Chapter </span>IV</p>
+        <h2 class="sc-display sc-display--lg">The people who make the devices.</h2>
+        <p class="sc-body">Postdoctoral researchers and PhD, M.Tech and B.Tech students working with {{ pi.name }} at IIT Guwahati.</p>
+      </div>
+      <a class="member member--pi" href="{{ pi.url | relative_url }}">
+        {% include avatar.html person=pi %}
+        <span class="member__name">{{ pi.name }}</span>
+        <span class="member__role">Group supervisor · {{ pi.role }}</span>
+      </a>
+      {% for m in current %}
+      <a class="member" href="{{ m.url | relative_url }}">
+        {% include avatar.html person=m %}
+        <span class="member__name">{{ m.name }}</span>
+        <span class="member__role">{{ m.role | split: "," | first }}</span>
+      </a>
+      {% endfor %}
+      <div class="team__end">
+        <p class="sc-lede">And the alumni of the group, with their theses and where they work now.</p>
+        <p><a class="btn" href="{{ '/people/' | relative_url }}">Meet the team</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Chapter V. Laboratory and tools. -->
+<section class="ch sc-section lab" id="lab" data-sc-act="flow" data-chapter="V" data-title="Laboratory and tools">
+  <div class="sc-wrap lab__grid">
+    <figure class="lab__photo">
+      <div class="lab__frame" data-sc-reveal="up" data-sc-reveal-at="0.08 0.34">
+        <img src="{{ '/assets/img/lab/lab-04.jpg' | relative_url }}" alt="Probe station on a vibration-isolation table" width="1050" height="1400" data-sc-parallax="-0.9" loading="lazy">
+      </div>
+      <figcaption>Probe station</figcaption>
+    </figure>
+    <div class="lab__text">
+      <header class="ch__head" data-sc-in>
+        <p class="ch__no"><span class="vh">Chapter </span>V</p>
+        <h2 class="sc-display sc-display--md">A complete process chain, from substrate cleaning to packaging.</h2>
+      </header>
+      <div data-sc-in data-sc-stagger="70">
+        <p class="sc-body">The group works across five IIT Guwahati facilities, namely the Silicon Photonics and Microelectronics Lab, the VLSI Lab, the Centre for Nanotechnology, the Centre for Organic Electronics and the Central Instruments Facility.</p>
+        <p><a class="textlink" href="{{ '/facilities/' | relative_url }}">Lab facilities</a></p>
+      </div>
+      <h3 class="lab__sub" data-sc-in>Tools written in the group</h3>
+      <ul class="tools" data-sc-in data-sc-stagger="60">
+        {% for t in site.data.tools %}{% assign first = t.url | slice: 0 %}
+        <li><a href="{% if first == '/' %}{{ t.url | relative_url }}{% else %}{{ t.url }}{% endif %}">{% if t.logo %}{% include tool-logo.html name=t.logo %}{% endif %}<span class="tools__name">{{ t.name }}</span><span class="tools__note">{{ t.note }}</span></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="sc-wrap life" data-sc-in>
+    <div class="list-head"><h3>Life in the group</h3><a class="textlink" href="{{ '/gallery/' | relative_url }}">Gallery</a></div>
+    <div class="life__strip">
+      {% assign strip = "gallery-02.jpg,gallery-21.jpg,gallery-19.jpg,gallery-13.jpg" | split: "," %}
+      {% for f in strip %}
+      <a href="{{ '/gallery/' | relative_url }}"><img src="{{ '/assets/img/gallery/thumbs/' | append: f | relative_url }}" alt="Group photo" loading="lazy"></a>
+      {% endfor %}
+    </div>
   </div>
 </section>
