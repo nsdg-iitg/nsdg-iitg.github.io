@@ -24,6 +24,11 @@
   link: /people/atanu-purkayastha/
 
   image: /assets/img/news/atanu-phd.jpg
+- date: 2024-06-12
+  title: "Rice University features Atanu Purkayastha"
+  text: "Rice Engineering published an article on Atanu's time at Rice as a Mehta Rice Engineering Scholar in the group of Prof. Aditya Mohite, where he developed synthesis methods for lead-free tin perovskite solar cells with about 14% power conversion efficiency."
+  link: https://engineering.rice.edu/news/mehta-rice-engineering-scholar-home-court
+
 - date: 2024-06-11
   title: "Talk at IEEE PVSC 2024, Seattle"
   text: "Optical modelling of solution-processed all-perovskite triple-junction solar cells, in the multi-junction perovskite session."

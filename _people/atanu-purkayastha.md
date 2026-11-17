@@ -37,3 +37,5 @@ Atanu worked on lead-free tin perovskite solar cells. He combined device fabrica
 **Light trapping.** In simulation, 10 nm silver nanoparticles at the PCBM/Ag interface increase absorption by about 8%, whereas the same particles in the hole transport layer reduce performance.
 
 **Sustainability.** His life-cycle assessments estimate an energy payback time of 0.53–0.57 years and emissions of 0.03–0.07 kg CO2 per kWh for tin perovskite modules. Both values are well below those estimated for lead perovskite and crystalline silicon modules in India.
+
+**Research visit to Rice University.** As a Mehta Rice Engineering Scholar in 2024, he worked in the group of Prof. Aditya Mohite at Rice University, USA, where he developed synthesis methods for tin perovskite solar cells with a power conversion efficiency of about 14%. Rice Engineering featured his visit in [an article](https://engineering.rice.edu/news/mehta-rice-engineering-scholar-home-court) in June 2024.
