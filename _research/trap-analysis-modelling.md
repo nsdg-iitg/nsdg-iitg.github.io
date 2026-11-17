@@ -4,7 +4,7 @@ short: "Device physics"
 order: 5
 figure: model
 card_image: /assets/img/areas/trap-analysis-modelling.jpg
-card_alt: "Transition-voltage peak in the logarithmic slope of dark J–V for different trap densities (Sol. Energy 2023)"
+card_alt: "DLTS rate-window plot of a perovskite LED, showing the trap signature (J. Phys. D 2026)"
 lead: "Physics-based methods to characterise traps and mobile ions in perovskite devices from electrical measurements, an in-house device simulator, and compact models of transistors and memories."
 people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed]
 methods: "Sentaurus and Silvaco TCAD · CEISIM (our in-house 1D drift–diffusion simulator) · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"
