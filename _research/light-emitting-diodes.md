@@ -9,6 +9,7 @@ card_alt: "Energy levels of the MAPbBr3 LED stack and a photograph of the device
 card_plot: /assets/img/areas/plot-light-emitting-diodes.jpg
 card_plot_alt: "Electroluminescence spectra of green MAPbBr3 LEDs peaking at 533 nm (J. Phys. D 2026)"
 lead: "High-luminance, colour-pure green perovskite LEDs, and the ion migration and trap physics that limit their operational lifetime."
+card_lead: "High-luminance, colour-pure green perovskite and organic LEDs, and the ion migration and trap physics that limit their luminous efficiency and operational lifetime."
 people: [binita-boro, abinash-baruah]
 methods: "Solution processing · electroluminescence and luminance (Konica Minolta CS-2000) · temperature-dependent impedance (77–380 K) · electric modulus and universal dielectric response analysis · DLTS · FESEM and cross-section EDX"
 description: "Perovskite light-emitting diodes (PeLEDs), ion migration, dielectric relaxation and DLTS at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
