@@ -589,3 +589,8 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 /* Intro: all three paragraphs in one style */
 .hero .lead, .hero .lead + .lead { font-size: 1.15rem; line-height: 1.7; color: color-mix(in srgb, var(--ink) 82%, var(--muted)); }
 @media (max-width: 599px) { .hero .lead, .hero .lead + .lead { font-size: 1.05rem; } }
+
+/* Inline SVG figure in a research card (white box, labels shown) */
+.area-icon.has-svg { --fig-ink: #1f2430; --surface: #fff; --muted: #4a5160; }
+.area-icon.has-svg svg { height: 100%; width: auto; max-width: 100%; }
+.area-icon.has-svg .fig-label { display: inline; }
