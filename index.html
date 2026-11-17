@@ -25,7 +25,7 @@ body_class: home
 <section class="wrap section home-news">
   <div class="section-head"><h2>News</h2><a class="more" href="{{ '/news/' | relative_url }}">All news →</a></div>
   <ul class="news-list news-cols">
-    {% assign news_sorted = site.data.news | where_exp: "n", "n.type != 'paper'" | sort: "date" | reverse %}
+    {% assign news_sorted = site.data.news | sort: "date" | reverse %}
     {% for n in news_sorted limit: 8 %}
     <li>
       <time datetime="{{ n.date }}">{{ n.date | date: "%b %Y" }}</time>
