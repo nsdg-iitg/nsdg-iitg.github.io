@@ -44,7 +44,7 @@ body_class: home
     {% assign areas = site.research | sort: "order" %}
     {% for a in areas %}
     <a class="area-card area-{{ a.slug }}" href="{{ a.url | relative_url }}">
-      {% if a.card_svg %}<span class="area-icon has-img has-svg">{% include svg/{{ a.figure }}.svg %}</span>{% elsif a.card_image %}<span class="area-icon has-img"><img src="{{ a.card_image | relative_url }}" alt="{{ a.card_alt | escape }}" loading="lazy"></span>{% else %}<span class="area-icon" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</span>{% endif %}
+      {% if a.card_svg %}<span class="area-icon has-img has-svg">{% if a.card_svg == true %}{% include svg/{{ a.figure }}.svg %}{% else %}{% include svg/{{ a.card_svg }}.svg %}{% endif %}</span>{% elsif a.card_image %}<span class="area-icon has-img"><img src="{{ a.card_image | relative_url }}" alt="{{ a.card_alt | escape }}" loading="lazy"></span>{% else %}<span class="area-icon" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</span>{% endif %}
       <span class="area-short">{{ a.short }}</span>
       <span class="area-title">{{ a.title }}</span>
       <span class="area-lead">{{ a.lead }}</span>
