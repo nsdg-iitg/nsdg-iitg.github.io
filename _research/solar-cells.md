@@ -3,6 +3,8 @@ title: "Lead-free and tandem perovskite solar cells"
 short: "Energy harvesting"
 order: 2
 figure: solar
+card_image: /assets/img/areas/solar-cells.jpg
+card_alt: "Layer stack of the bifacial 2D/3D tin perovskite solar cell (IEEE J. Photovolt. 2025)"
 lead: "Tin-based perovskite solar cells, fabricated in the laboratory and extended through optical and electrical simulation to tandem, triple-junction and bifacial designs, with a life-cycle assessment of each."
 people: [rabin-paul, guri-thanusha, atanu-purkayastha]
 methods: "Spin coating with anti-solvent · spectroscopic ellipsometry · XRD and AFM · J–V and MPP tracking · Silvaco and Sentaurus TCAD · Lumerical FDTD · MATLAB transfer-matrix codes · life-cycle inventory analysis"
