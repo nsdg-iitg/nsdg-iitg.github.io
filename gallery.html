@@ -11,7 +11,7 @@ description: "Photos of the Nanoelectronics and Semiconductor Devices Group, IIT
   {% if forloop.first %}{% assign thumb = "" %}{% else %}{% assign thumb = "thumbs/" %}{% endif %}
   <figure class="g-item{% if forloop.first %} g-feature{% endif %}">
     <a href="{{ '/assets/img/gallery/' | append: g.src | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: thumb | append: g.src | relative_url }}" alt="{{ g.caption | default: 'Group photo' }}" loading="lazy"></a>
-    {% if g.caption %}<figcaption>{{ g.caption }}</figcaption>{% endif %}
+    {% if g.caption %}<figcaption><span>{{ g.caption }}</span></figcaption>{% endif %}
   </figure>
   {% endfor %}
 </div>
