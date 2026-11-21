@@ -9,6 +9,8 @@ mtech:
   - { name: "Himangshu Prakash Mahato", year: 2021, thesis: "TCAD simulation of vertical field effect transistor" }
   - { name: "Mohit Verma", year: 2020, thesis: "Determination of best possible efficiency of tin perovskite solar cells" }
 btech:
+  - { name: "Chinmay Pankaj Torvi", year: 2026, thesis: "A solar-harvested supercapacitor power management unit" }
+  - { name: "Harshita Kaur Adarsh", year: 2025, thesis: "Design and optimisation of 2D/3D mixed-halide perovskite solar cells" }
   - { name: "Shubham Kumar and Aayush", year: 2021, thesis: "A study of perovskite-based memristors" }
   - { name: "Akhilesh Kumar and Bhaskar Baiplawat", year: 2019, thesis: "Modelling chalcogenide memristor" }
   - { name: "Mahaveer Singh Gehlot", year: 2018, thesis: "Large-area perovskite solar cell fabrication using doctor blade system" }
