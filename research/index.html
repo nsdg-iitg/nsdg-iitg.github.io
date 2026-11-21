@@ -9,7 +9,7 @@ description: "Research at NSDG, IIT Guwahati: perovskite memristors, lead-free a
 {% assign areas = site.research | sort: "order" %}
 {% for a in areas %}
 <article class="area-row area-{{ a.slug }}">
-  <figure class="area-figure" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</figure>
+  <figure class="area-figure">{% if a.card_svg %}<span class="area-icon has-img has-svg" aria-hidden="true">{% if a.card_svg == true %}{% include svg/{{ a.figure }}.svg %}{% else %}{% include svg/{{ a.card_svg }}.svg %}{% endif %}</span>{% elsif a.card_image %}<span class="area-icon has-img"><img src="{{ a.card_image | relative_url }}" alt="{{ a.card_alt | escape }}" loading="lazy"></span>{% else %}<span aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</span>{% endif %}</figure>
   <div>
     <p class="kicker">{{ a.short }}</p>
     <h2><a href="{{ a.url | relative_url }}">{{ a.title }}</a></h2>

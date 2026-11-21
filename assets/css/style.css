@@ -230,6 +230,7 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 .area-row h2 a { color: var(--ink); text-decoration: none; }
 .area-row h2 a:hover { color: var(--accent); }
 .area-row .area-figure svg { max-width: 240px; }
+.area-row .area-figure .area-icon.has-img { height: 180px; margin: 0; }
 .area-row p { margin-bottom: .6em; }
 .area-people { font-size: .92rem; }
 .approach { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
