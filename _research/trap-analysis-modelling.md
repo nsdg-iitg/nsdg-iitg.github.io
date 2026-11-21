@@ -10,7 +10,7 @@ card_plot: /assets/img/areas/plot-trap-analysis-modelling.jpg
 card_plot_alt: "Simulated G–V curves (slope of log J against log V) of a perovskite solar cell for trap densities from 1e16 to 5e17 cm-3, showing the transition peak shifting and weakening (Sol. Energy 2023)"
 lead: "Physics-based methods to characterise traps and mobile ions in perovskite devices from electrical measurements, an in-house device simulator, and compact models of transistors and memories."
 card_lead: "Physics-based methods to characterise traps and mobile ions in perovskite devices from electrical measurements, an in-house device simulator, and compact models."
-people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed, pushpitha]
+people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed, pushpitha-ogirala]
 methods: "Sentaurus and Silvaco TCAD · CEISIM (our in-house 1D drift–diffusion simulator) · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"
 description: "Trap and mobile-ion characterisation, DLTS, drift–diffusion device simulation and compact modelling at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 figures:

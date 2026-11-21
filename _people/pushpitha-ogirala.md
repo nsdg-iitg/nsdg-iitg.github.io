@@ -1,13 +1,13 @@
 ---
-name: "Pushpitha"
+name: "Pushpitha Ogirala"
 role: "M.Tech, Electronics and Electrical Engineering"
-photo: /assets/img/people/pushpitha.jpg
+photo: /assets/img/people/pushpitha-ogirala.jpg
 category: current
 order: 10
 topic: "Self-heating in vertically stacked gate-all-around nanosheet FETs"
 email: "pushpitha@iitg.ac.in"
 areas: [trap-analysis-modelling]
-description: "Pushpitha (IIT Guwahati): 3D TCAD study of electrical and thermal behaviour and self-heating in stacked gate-all-around nanosheet FETs at sub-5 nm nodes."
+description: "Pushpitha Ogirala (IIT Guwahati): 3D TCAD study of electrical and thermal behaviour and self-heating in stacked gate-all-around nanosheet FETs at sub-5 nm nodes."
 education:
   - "M.Tech (ongoing), VLSI and Nanoelectronics, IIT Guwahati"
   - "B.Tech, Electrical and Electronics Engineering, Andhra University, Visakhapatnam"
