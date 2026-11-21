@@ -3,8 +3,8 @@ title: "Memristors and neuromorphic hardware"
 short: "Memories"
 order: 1
 figure: memristor
-card_image: /assets/img/areas/memristors.jpg
-card_alt: "Device stack of the flexible Cs3Bi2I9 memristor on PET (Flex. Print. Electron. 2025)"
+card_image: /assets/img/areas/memristors-crossbar.jpg
+card_alt: "Flexible memristor crossbar array on a transparent substrate, contacted by two probes during electrical testing"
 card_plot: /assets/img/areas/plot-memristors.jpg
 card_plot_alt: "Resistive-switching I–V loop of a flexible perovskite memristor (Adv. Electron. Mater. 2023)"
 lead: "Halide perovskite resistive-switching memories on rigid and flexible substrates, integrated into crossbar arrays and artificial synapses for neuromorphic computing."
