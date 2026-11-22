@@ -13,6 +13,7 @@
   --c-memory: #5b6cff;
   --c-model: #c2410c;
   --c-nano: #0e7490;
+  --c-pack: #8b3fd1;
   --fig-ink: #2a2f3a;
   --fig-line: #c9c5ba;
   --fig-metal: #9aa1ad;
@@ -30,7 +31,7 @@
 }
 :root[data-mode="dark"] {
   --bg: #0e1015; --surface: #161a22; --surface-2: #1d222c; --ink: #eceef3; --muted: #a1a8b6; --line: #2a303b;
-  --accent: #93a0ff; --accent-ink: #0e1015; --c-energy: #f2bd45; --c-light: #3cc98b; --c-memory: #8b98ff; --c-model: #fb8a4c; --c-nano: #38b2cf;
+  --accent: #93a0ff; --accent-ink: #0e1015; --c-energy: #f2bd45; --c-light: #3cc98b; --c-memory: #8b98ff; --c-model: #fb8a4c; --c-nano: #38b2cf; --c-pack: #c08cf2;
   --fig-ink: #c9ced8; --fig-line: #3a4150; --fig-metal: #7d8592; --fig-soft: #3b3f48; --fig-soft2: #3a4566; --fig-tco: #2f5f70; --fig-glass: #232a35;
   --logo-ink: #e6e9ff; --logo-paper: #161a22;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
@@ -132,6 +133,8 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 .area-light-emitting-diodes { --c: var(--c-light); }
 .area-trap-analysis-modelling { --c: var(--c-model); }
 .area-nanowire-devices { --c: var(--c-nano); }
+.area-packaging { --c: var(--c-pack); }
+.see-more { text-align: center; margin: 22px 0 0; }
 
 /* Stats */
 .stats-band { padding: 8px 0 0; }

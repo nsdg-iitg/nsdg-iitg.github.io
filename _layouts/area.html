@@ -40,9 +40,13 @@ layout: default
   <h2>Papers in this area</h2>
   {% assign pubs = site.data.publications | where_exp: "p", "p.areas contains slug" %}
   {% assign pubs = pubs | where_exp: "p", "p.type != 'ip'" %}
+  {% if pubs.size > 0 %}
   <ol class="pubs">
     {% for p in pubs %}{% include pub.html p=p %}{% endfor %}
   </ol>
+  {% else %}
+  <p class="muted">Papers will be listed here as they are published.</p>
+  {% endif %}
 </section>
 <nav class="wrap other-areas" aria-label="Other research areas">
   <h2 class="side-title">Other research areas</h2>

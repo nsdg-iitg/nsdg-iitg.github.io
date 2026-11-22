@@ -41,7 +41,7 @@ body_class: home
     <a class="more" href="{{ '/research/' | relative_url }}">All research →</a>
   </div>
   <div class="area-grid">
-    {% assign areas = site.research | sort: "order" %}
+    {% assign areas = site.research | where_exp: "a", "a.home != false" | sort: "order" %}
     {% for a in areas %}
     <a class="area-card area-{{ a.slug }}" href="{{ a.url | relative_url }}">
       {% if a.card_svg %}<span class="area-icon has-img has-svg">{% if a.card_svg == true %}{% include svg/{{ a.figure }}.svg %}{% else %}{% include svg/{{ a.card_svg }}.svg %}{% endif %}</span>{% elsif a.card_image %}<span class="area-icon has-img"><img src="{{ a.card_image | relative_url }}" alt="{{ a.card_alt | escape }}" loading="lazy"></span>{% else %}<span class="area-icon" aria-hidden="true">{% include svg/{{ a.figure }}.svg %}</span>{% endif %}
@@ -52,6 +52,7 @@ body_class: home
     </a>
     {% endfor %}
   </div>
+  <p class="see-more"><a class="btn ghost" href="{{ '/research/' | relative_url }}">See more research →</a></p>
 </section>
 
 {% assign journals = site.data.publications | where: "type", "journal" %}
