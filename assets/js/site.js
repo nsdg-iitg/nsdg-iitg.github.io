@@ -122,8 +122,13 @@
     if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
   });
 
+  var galleryDone = false;
   Array.prototype.forEach.call(groups, function (g) {
-    var figs = g.querySelectorAll('figure');
+    // The photo blocks of the Gallery page (split by the videos) browse as one set
+    var isGal = g.classList.contains('gallery');
+    if (isGal && galleryDone) return;
+    if (isGal) galleryDone = true;
+    var figs = isGal ? document.querySelectorAll('.gallery figure') : g.querySelectorAll('figure');
     var list = Array.prototype.map.call(figs, function (f) {
       var a = f.querySelector('a'), im = f.querySelector('img'), fc = f.querySelector('figcaption');
       return { src: a ? a.getAttribute('href') : im.getAttribute('src'), alt: im ? im.alt : '', cap: fc ? fc.textContent.trim() : '' };

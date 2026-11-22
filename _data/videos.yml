@@ -1,7 +1,6 @@
 # Videos shown on the Gallery page, newest first. They play inside the website.
-# id: the code after "watch?v=" in the YouTube address. people: member page names, so the video
-# also appears on their pages. date (YYYY-MM-DD) and text are optional.
+# id: the code after "watch?v=" in the YouTube address. text: a line about the video, for example who
+# is interviewed. date (YYYY-MM-DD) is optional. people (optional): member page names, so that the
+# video also appears on their pages.
 - id: GJmdQPL5b5g
   title: "Interview"
-  text: "Interview conducted by Himangshu Jyoti Gogoi, Abdul Basit Andrabi and Atanu Purkayastha."
-  people: [himangshu-jyoti-gogoi, abdul-basit-andrabi, atanu-purkayastha]

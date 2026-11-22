@@ -6,19 +6,21 @@ heading: "Gallery"
 lead: "Videos and photos from conferences, workshops, visits and group activities."
 description: "Photos of the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati: conferences, workshops and lab life."
 ---
-{% if site.data.videos.size > 0 %}
-<h2 id="videos">Videos</h2>
-<div class="video-grid">
-  {% for v in site.data.videos %}{% include video.html v=v %}{% endfor %}
+{% comment %} The first photos come first, then the videos, then the rest of the photos, so the videos are easy to find without leading the page. {% endcomment %}
+{% assign first = 9 %}
+{% if site.data.videos.size > 0 %}<p class="gallery-jump"><a href="#videos">▶ Watch videos</a></p>{% endif %}
+<div class="gallery">
+  {% for g in site.data.gallery limit: first %}{% include gallery-item.html g=g feature=forloop.first %}{% endfor %}
 </div>
-<h2 id="photos" class="gallery-sub">Photos</h2>
+{% if site.data.videos.size > 0 %}
+<section class="gallery-videos" id="videos">
+  <h2>Videos</h2>
+  <div class="video-grid">
+    {% for v in site.data.videos %}{% include video.html v=v %}{% endfor %}
+  </div>
+</section>
+<h2 class="gallery-sub">More photos</h2>
 {% endif %}
 <div class="gallery">
-  {% for g in site.data.gallery %}
-  {% if forloop.first %}{% assign thumb = "" %}{% else %}{% assign thumb = "thumbs/" %}{% endif %}
-  <figure class="g-item{% if forloop.first %} g-feature{% endif %}">
-    <a href="{{ '/assets/img/gallery/' | append: g.src | relative_url }}"><img src="{{ '/assets/img/gallery/' | append: thumb | append: g.src | relative_url }}" alt="{{ g.caption | default: 'Group photo' }}" loading="lazy"></a>
-    {% if g.caption %}<figcaption><span>{{ g.caption }}</span></figcaption>{% endif %}
-  </figure>
-  {% endfor %}
+  {% for g in site.data.gallery offset: first %}{% include gallery-item.html g=g %}{% endfor %}
 </div>
