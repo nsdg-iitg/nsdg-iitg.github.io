@@ -309,28 +309,31 @@ var NSDG_INDEX = '';
 })();
 
 
-// Home page research cards: on wide screens five cards are visible. When the reader scrolls down to
+// Home page research cards: on laptops and desktops five cards are visible (fewer in a narrow window). When the reader scrolls down to
 // them, the cards stay in place and slide left until the last card is fully in view, after which the
 // page scrolls on as usual. Scrolling back up slides them to the right again.
 (function () {
   var pin = document.querySelector('.area-pin'); if (!pin) return;
   var sticky = pin.querySelector('.area-sticky'), win = pin.querySelector('.area-window'), track = pin.querySelector('.area-grid');
-  var cards = track ? track.children : []; var VISIBLE = 5, GAP = 14;
-  var motion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var cards = track ? track.children : []; var VISIBLE = 5, GAP = 14, IMG = 132;
   var dist = 0, len = 0, top = 0, on = false, ticking = false;
   function off() {
-    on = false; pin.classList.remove('hs-on'); pin.style.height = ''; track.style.transform = '';
+    on = false; pin.classList.remove('hs-on'); pin.style.height = ''; pin.style.removeProperty('--img-h'); track.style.transform = '';
   }
   function setup() {
-    if (cards.length <= VISIBLE || window.innerWidth < 1000 || (motion && motion.matches)) return off();
-    pin.classList.add('hs-on'); on = true;
+    var vw = window.innerWidth, phone = Math.min(screen.width, screen.height) < 600 || vw < 640;
+    VISIBLE = vw >= 1100 ? 5 : vw >= 860 ? 4 : 3;
+    if (phone || cards.length <= VISIBLE) return off();   // phones keep the normal grid of all cards
+    pin.classList.add('hs-on'); on = true; pin.style.removeProperty('--img-h');
     var w = win.clientWidth - 20;                      // inside the 10px padding on each side
     var cw = (w - GAP * (VISIBLE - 1)) / VISIBLE;
     pin.style.setProperty('--card-w', cw + 'px');
     dist = (cards.length - VISIBLE) * (cw + GAP);
     var header = document.querySelector('.site-header'), hh = header ? header.offsetHeight : 0;
-    var sh = sticky.offsetHeight, ih = window.innerHeight;
-    if (win.offsetHeight - 20 + hh + 12 > ih) return off();  // screen too short to hold the cards: keep the normal grid
+    var ih = window.innerHeight, room = ih - hh - 28, tall = win.offsetHeight - 20;
+    // On a shorter screen the two pictures in each card are made smaller, so that the whole cards fit
+    if (tall > room) pin.style.setProperty('--img-h', Math.max(64, IMG - Math.ceil((tall - room) / 2)) + 'px');
+    var sh = sticky.offsetHeight;
     top = Math.max(hh + 8, Math.round((ih + hh - sh) / 2));
     if (top + sh > ih - 8) top = ih - 8 - sh;           // keep the whole cards in view; the heading may pass under the header
     pin.style.setProperty('--pin-top', top + 'px');
@@ -346,7 +349,6 @@ var NSDG_INDEX = '';
   }
   window.addEventListener('scroll', function () { if (on && !ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
   window.addEventListener('resize', setup);
-  if (motion && motion.addEventListener) motion.addEventListener('change', setup);
   window.addEventListener('load', setup);
   setup();
 })();
