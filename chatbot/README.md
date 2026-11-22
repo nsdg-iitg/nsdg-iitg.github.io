@@ -43,6 +43,11 @@ Extra setup:
 3. Open `https://nsdg-iitg.github.io/edit/?who=admin&key=<EDIT_SECRET>`. This page lists a
    private link for every member, and has forms to add a news item or a publication.
 
+The same admin page also lists a private link for each research page
+(`/edit/?area=<page>&key=...`). Such a link can change the title, summary, home page card
+text, methods, page text and the people listed on that page, edit or remove figure captions,
+and add a new figure (saved in `assets/img/figures/`). It cannot change any other file.
+
 A member link can change only that member's file in `_people/` and their photo. Changing
 `EDIT_SECRET` cancels all links at once. To cancel the links without a new password, delete
 the `EDIT_SECRET` secret.

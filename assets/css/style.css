@@ -122,6 +122,11 @@ code { font-size: .9em; background: var(--surface-2); padding: .1em .35em; borde
 .area-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 196px), 1fr)); }
 .area-card { --c: var(--accent); display: flex; flex-direction: column; gap: 6px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); text-decoration: none; color: var(--ink); box-shadow: var(--shadow); transition: transform .15s, border-color .15s; border-top: 4px solid var(--c); }
 .area-card:hover { transform: translateY(-2px); border-color: var(--c); }
+/* Home page: on wide screens the research cards slide sideways while the page is scrolled (set up in site.js) */
+.area-pin.hs-on .area-sticky { position: sticky; top: var(--pin-top, 80px); }
+.area-pin.hs-on .area-window { overflow: hidden; margin: -10px; padding: 10px; }
+.area-pin.hs-on .area-grid { display: flex; gap: 14px; will-change: transform; }
+.area-pin.hs-on .area-card { flex: 0 0 var(--card-w); }
 .area-icon { display: block; height: 96px; margin-bottom: 6px; }
 .area-icon svg { height: 100%; width: auto; }
 .area-icon .fig-label { display: none; }
@@ -502,6 +507,7 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .edit-box { border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; }
 .edit-box summary { cursor: pointer; font-weight: 600; }
 .edit-box .cite-btn { justify-self: start; }
+.edit-fig img { max-width: 100%; max-height: 220px; justify-self: start; background: #fff; border-radius: 6px; }
 .edit-rows { display: grid; gap: 12px; }
 .edit-rows:empty { display: none; }
 

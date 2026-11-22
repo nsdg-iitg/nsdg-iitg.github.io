@@ -237,8 +237,106 @@ function groupPapersOf(text, who) {
   });
 }
 
+// --- research pages (_research/<slug>.md) ---
+const AREA_TEXT = ['title', 'short', 'lead', 'card_lead', 'methods'];
+function readArea(text) {
+  const doc = splitDoc(text); if (!doc) return null;
+  const a = { title: '', short: '', lead: '', card_lead: '', methods: '', people: [], figures: [], body: doc.body.replace(/^\n+/, '') };
+  toBlocks(doc.fm).forEach(function (b) {
+    const first = b.lines[0].slice(b.key.length + 1);
+    if (AREA_TEXT.indexOf(b.key) >= 0) a[b.key] = String(scalar(first));
+    if (b.key === 'people') {
+      const m = first.match(/\[(.*)\]/);
+      if (m) a.people = m[1].split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+      else b.lines.slice(1).forEach(function (l) { const n = l.match(/^\s*-\s+(.*)$/); if (n) a.people.push(String(scalar(n[1]))); });
+    }
+    if (b.key === 'figures') b.lines.slice(1).forEach(function (l) {
+      const m = l.match(/^\s*(-\s+)?([a-z_]+):\s*(.*)$/); if (!m) return;
+      if (m[1] || !a.figures.length) a.figures.push({});
+      a.figures[a.figures.length - 1][m[2]] = String(scalar(m[3]));
+    });
+  });
+  return a;
+}
+function writeArea(text, a) {
+  const doc = splitDoc(text), made = {};
+  made.title = ['title: ' + q(a.title)];
+  made.short = ['short: ' + q(a.short)];
+  made.lead = ['lead: ' + q(a.lead)];
+  made.card_lead = a.card_lead ? ['card_lead: ' + q(a.card_lead)] : null;   // shorter text for the home page card
+  made.methods = a.methods ? ['methods: ' + q(a.methods)] : null;
+  made.people = ['people: [' + a.people.join(', ') + ']'];
+  made.figures = a.figures.length ? ['figures:'].concat(a.figures.map(function (f) { return '  - src: ' + q(f.src) + '\n    caption: ' + q(f.caption); })) : null;
+  const seen = {}, out = [];
+  toBlocks(doc.fm).forEach(function (b) {
+    if (!(b.key in made)) { out.push(b.lines.join('\n')); return; }
+    seen[b.key] = true;
+    if (made[b.key]) out.push(made[b.key].join('\n'));
+  });
+  Object.keys(made).forEach(function (k) { if (!seen[k] && made[k]) out.push(made[k].join('\n')); });
+  return '---\n' + out.join('\n') + '\n---\n\n' + a.body.trim() + '\n';
+}
+async function memberSlugs(env) {
+  const dir = await gh(env, 'GET', '/contents/_people?ref=main');
+  if (!dir.ok) throw new Error('GitHub ' + dir.status);
+  return dir.data.filter(function (f) { return /\.md$/.test(f.name); }).map(function (f) { return f.name.replace(/\.md$/, ''); });
+}
+// Changes are limited per day
+function overLimit() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (today !== editStamp) { editStamp = today; editCount = 0; }
+  return ++editCount > 60;
+}
+
+// A research page link: /edit/?area=<slug>&key=<key>. It can change only that page and its figures.
+async function editArea(body, env, origin, slug, key) {
+  if (!/^[a-z0-9-]{2,60}$/.test(slug) || !key) return reply({ error: 'This edit link is not valid.' }, 403, origin);
+  if (key !== env.EDIT_SECRET && key !== await keyFor(env.EDIT_SECRET, 'area:' + slug)) return reply({ error: 'This edit link is not valid.' }, 403, origin);
+  const path = '_research/' + slug + '.md';
+  try {
+    const file = await readFile(env, path);
+    const old = file && readArea(file.text);
+    if (!old) return reply({ error: 'This research page could not be found.' }, 404, origin);
+
+    if (body.action === 'area-load') return reply({ area: old, slug: slug, members: await memberSlugs(env) }, 200, origin);
+    if (body.action !== 'area-save') return reply({ error: 'Unknown request.' }, 400, origin);
+    if (overLimit()) return reply({ error: 'Too many changes were sent today. Please try again tomorrow.' }, 429, origin);
+
+    const inp = body.fields || {};
+    const a = { title: oneLine(inp.title, 120) || old.title, short: oneLine(inp.short, 40) || old.short, lead: oneLine(inp.lead, 600) || old.lead,
+      card_lead: oneLine(inp.card_lead, 400), methods: oneLine(inp.methods, 800), body: clean(inp.body, 40000), figures: [] };
+    const members = await memberSlugs(env);
+    a.people = slugList(inp.people, members.concat(old.people));
+    if (!a.body.trim()) return reply({ error: 'The page text cannot be empty.' }, 400, origin);
+    // Existing figures: kept, reordered or removed. Only pictures already on the page can be named.
+    const known = old.figures.map(function (f) { return f.src; });
+    (Array.isArray(inp.figures) ? inp.figures : old.figures).slice(0, 30).forEach(function (f) {
+      if (f && known.indexOf(f.src) >= 0) a.figures.push({ src: f.src, caption: oneLine(f.caption, 600) });
+    });
+    const files = [];
+    const nf = body.newFigure;
+    if (nf && typeof nf.image === 'string' && nf.image) {
+      const b64 = nf.image.replace(/^data:image\/jpeg;base64,/, '');
+      if (b64.length > 2000000 || !/^[A-Za-z0-9+/=]+$/.test(b64) || b64.slice(0, 4) !== '/9j/') return reply({ error: 'The figure could not be used. Please choose a JPG or PNG picture.' }, 400, origin);
+      const caption = oneLine(nf.caption, 600);
+      if (!caption) return reply({ error: 'Please add a caption for the new figure.' }, 400, origin);
+      const src = '/assets/img/figures/' + slug + '-' + new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14) + '.jpg';
+      files.push({ path: src.slice(1), b64: b64 });
+      a.figures.push({ src: src, caption: caption });
+    }
+    const text = writeArea(file.text, a);
+    if (text !== file.text) files.unshift({ path: path, b64: toB64(text), sha: file.sha });
+    if (!files.length) return reply({ error: 'Nothing was changed.' }, 400, origin);
+    await propose(env, 'research-' + slug, 'Research page update: ' + old.title, 'Changes to the research page **' + old.title + '**' + (key === env.EDIT_SECRET ? ' (sent with the administrator link).' : '.'), files);
+    return reply({ done: true }, 200, origin);
+  } catch (e) {
+    return reply({ error: 'The change could not be sent (' + String(e.message || e).slice(0, 40) + '). Please try again later.' }, 502, origin);
+  }
+}
+
 async function edit(body, env, site, origin) {
   if (!env.EDIT_SECRET || !env.GITHUB_TOKEN) return reply({ error: 'Editing is not set up yet.' }, 500, origin);
+  if (body.area) return editArea(body, env, origin, String(body.area), String(body.key || ''));
   const who = String(body.who || ''), key = String(body.key || '');
   if (!/^[a-z0-9-]{2,60}$/.test(who) || !key) return reply({ error: 'This edit link is not valid.' }, 403, origin);
   const admin = key === env.EDIT_SECRET;
@@ -256,7 +354,15 @@ async function edit(body, env, site, origin) {
         const slug = f.name.replace(/\.md$/, '');
         members.push({ slug: slug, link: site + '/edit/?who=' + slug + '&key=' + await keyFor(env.EDIT_SECRET, slug) });
       }
-      return reply({ members: members, areas: AREAS, types: PUB_TYPES }, 200, origin);
+      // One private link for each research page
+      const rdir = await gh(env, 'GET', '/contents/_research?ref=main');
+      const areaLinks = [];
+      if (rdir.ok) for (const f of rdir.data) {
+        if (!/\.md$/.test(f.name)) continue;
+        const slug = f.name.replace(/\.md$/, '');
+        areaLinks.push({ slug: slug, link: site + '/edit/?area=' + slug + '&key=' + await keyFor(env.EDIT_SECRET, 'area:' + slug) });
+      }
+      return reply({ members: members, areaLinks: areaLinks, areas: AREAS, types: PUB_TYPES }, 200, origin);
     }
 
     if (body.action === 'load') {
@@ -268,9 +374,7 @@ async function edit(body, env, site, origin) {
     }
 
     // Everything below files a change, so it is limited per day
-    const today = new Date().toISOString().slice(0, 10);
-    if (today !== editStamp) { editStamp = today; editCount = 0; }
-    if (++editCount > 60) return reply({ error: 'Too many changes were sent today. Please try again tomorrow.' }, 429, origin);
+    if (overLimit()) return reply({ error: 'Too many changes were sent today. Please try again tomorrow.' }, 429, origin);
 
     if (body.action === 'save') {
       const file = await readFile(env, '_people/' + who + '.md');
