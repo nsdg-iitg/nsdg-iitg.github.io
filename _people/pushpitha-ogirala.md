@@ -3,7 +3,7 @@ name: "Pushpitha Ogirala"
 role: "M.Tech, Electronics and Electrical Engineering"
 photo: /assets/img/people/pushpitha-ogirala.jpg
 category: current
-order: 10
+order: 11
 topic: "Self-heating in vertically stacked gate-all-around nanosheet FETs"
 email: "pushpitha@iitg.ac.in"
 areas: [trap-analysis-modelling]

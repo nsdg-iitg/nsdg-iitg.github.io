@@ -3,7 +3,7 @@ name: "Guri Thanusha"
 role: "M.Tech, Electronics and Electrical Engineering"
 photo: /assets/img/people/guri-thanusha.jpg
 category: current
-order: 9
+order: 10
 topic: "Self-powered photovoltaic and supercapacitor circuit for an edge-AI load"
 email: "t.guri@iitg.ac.in"
 areas: [solar-cells]
