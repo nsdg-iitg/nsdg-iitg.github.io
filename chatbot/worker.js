@@ -71,7 +71,7 @@ function reply(obj, status, origin) {
 // ------------------------------------------------------------------------------------
 const DEFAULT_REPO = 'nsdg-iitg/nsdg-iitg.github.io';
 const LINK_KEYS = ['scholar', 'orcid', 'linkedin', 'github', 'irins'];
-const AREAS = ['memristors', 'solar-cells', 'light-emitting-diodes', 'trap-analysis-modelling', 'nanowire-devices'];
+const AREAS = ['memristors', 'solar-cells', 'light-emitting-diodes', 'trap-analysis-modelling', 'nanowire-devices', 'packaging'];
 const PUB_TYPES = ['journal', 'conference', 'preprint', 'ip', 'talk'];
 let editCount = 0, editStamp = '';
 

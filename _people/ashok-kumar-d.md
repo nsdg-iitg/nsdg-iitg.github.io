@@ -5,6 +5,7 @@ photo: /assets/img/people/ashok-kumar-d.jpg
 category: current
 order: 9
 topic: "Advanced packaging for flexible electronics and MEMS"
+areas: [packaging]
 description: "Ashok Kumar D. (IIT Guwahati): Advanced packaging for flexible electronics, MEMS technologies and micro/nano fabrication process integration."
 education:
   - "PhD (ongoing), Centre for Nanotechnology, IIT Guwahati"
