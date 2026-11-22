@@ -36,10 +36,13 @@ body_class: home
 </section>
 
 <section class="wrap section">
+  <div class="area-pin">
+  <div class="area-sticky">
   <div class="section-head">
     <h2>Research</h2>
     <a class="more" href="{{ '/research/' | relative_url }}">All research →</a>
   </div>
+  <div class="area-window">
   <div class="area-grid">
     {% assign areas = site.research | where_exp: "a", "a.home != false" | sort: "order" %}
     {% for a in areas %}
@@ -51,6 +54,9 @@ body_class: home
       {% if a.card_plot %}<span class="area-plot"><img src="{{ a.card_plot | relative_url }}" alt="{{ a.card_plot_alt | escape }}" loading="lazy"></span>{% endif %}
     </a>
     {% endfor %}
+  </div>
+  </div>
+  </div>
   </div>
   <p class="see-more"><a class="btn ghost" href="{{ '/research/' | relative_url }}">See more research →</a></p>
 </section>

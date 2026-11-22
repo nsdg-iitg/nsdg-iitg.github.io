@@ -2,8 +2,8 @@
 title: "Semiconductor packaging"
 short: "Packaging"
 order: 6
-home: false
 figure: packaging
+card_svg: true
 lead: "Advanced packaging for flexible electronics and MEMS, and the integration of micro- and nano-fabrication steps into complete packaged devices."
 people: [ashok-kumar-d]
 methods: "Lithography · dry etching · process development · MEMS fabrication and packaging"
