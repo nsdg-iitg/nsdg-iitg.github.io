@@ -9,7 +9,8 @@
   </div>
   <figcaption>
     <strong>{{ v.title }}</strong>
-    {% if v.date %}<span class="muted"> · {{ v.date | date: "%-d %B %Y" }}</span>{% endif %}
+    {% if v.date %}<span class="video-date">{{ v.date | date: "%-d %B %Y" }}</span>{% endif %}
     {% if v.text %}<span class="video-text">{{ v.text }}</span>{% endif %}
+    {% if v.about %}<details class="video-about"><summary>About the speaker</summary><p>{{ v.about }}</p></details>{% endif %}
   </figcaption>
 </figure>

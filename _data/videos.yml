@@ -1,6 +1,9 @@
 # Videos shown on the Gallery page, newest first. They play inside the website.
 # id: the code after "watch?v=" in the YouTube address. text: a line about the video, for example who
-# is interviewed. date (YYYY-MM-DD) is optional. people (optional): member page names, so that the
+# is interviewed. about (optional): a longer note, shown when the visitor opens it. date (YYYY-MM-DD) is optional. people (optional): member page names, so that the
 # video also appears on their pages.
 - id: GJmdQPL5b5g
-  title: "Interview"
+  title: "Interview with Prof. Yashowanta N. Mohapatra, IIT Kanpur"
+  date: 2019-07-24
+  text: "Recorded during a lecture series held at the Department of Electronics and Electrical Engineering as part of the silver jubilee programmes of IIT Guwahati. One of a series of motivational talks for researchers."
+  about: "Prof. Mohapatra is Professor of Physics and Materials Science at IIT Kanpur, which he joined in 1990 after his doctoral and postdoctoral work at the Indian Institute of Science, Bangalore. He has served as Head of the Department of Physics and of the Materials Science Programme, and as Coordinator and founding member of the Samtel Centre for Display Technologies, a centre for organic light-emitting displays and organic electronics. He was instrumental in setting up the National Centre for Flexible Electronics with the support of MeitY, Government of India, and coordinated the nanotechnology initiatives at IIT Kanpur. His research is on the physics of electronic and photonic materials, in particular inorganic and organic semiconductors. He designs characterisation experiments for these materials and has set up a laboratory for optical and electrical transient studies, including the DLTS (deep-level transient spectroscopy) family of techniques. His current interests include display and electronic applications of polymers and small molecules, and flexible electronics: functional inks, devices and printing processes for large-scale manufacturing."
