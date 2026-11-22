@@ -1,0 +1,15 @@
+{% assign v = include.v %}
+<figure class="video">
+  <div class="video-frame">
+    <button type="button" class="video-play" data-id="{{ v.id }}" data-title="{{ v.title | escape }}" aria-label="Play video: {{ v.title | escape }}">
+      <img src="https://i.ytimg.com/vi/{{ v.id }}/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+      <span class="video-icon" aria-hidden="true"><svg viewBox="0 0 68 48" width="68" height="48"><path d="M66.5 7.7a8.5 8.5 0 0 0-6-6C55.2 0 34 0 34 0S12.8 0 7.5 1.7a8.5 8.5 0 0 0-6 6C0 13 0 24 0 24s0 11 1.5 16.3a8.5 8.5 0 0 0 6 6C12.8 48 34 48 34 48s21.2 0 26.5-1.7a8.5 8.5 0 0 0 6-6C68 35 68 24 68 24s0-11-1.5-16.3z" fill="#e21b1b"/><path d="M27 34V14l18 10z" fill="#fff"/></svg></span>
+    </button>
+    <noscript><a href="https://www.youtube.com/watch?v={{ v.id }}">Watch on YouTube</a></noscript>
+  </div>
+  <figcaption>
+    <strong>{{ v.title }}</strong>
+    {% if v.date %}<span class="muted"> · {{ v.date | date: "%-d %B %Y" }}</span>{% endif %}
+    {% if v.text %}<span class="video-text">{{ v.text }}</span>{% endif %}
+  </figcaption>
+</figure>

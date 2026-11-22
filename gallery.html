@@ -3,9 +3,16 @@ title: "Gallery"
 permalink: /gallery/
 kicker: "Gallery"
 heading: "Gallery"
-lead: "Conferences, workshops, visits and group activities."
+lead: "Videos and photos from conferences, workshops, visits and group activities."
 description: "Photos of the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati: conferences, workshops and lab life."
 ---
+{% if site.data.videos.size > 0 %}
+<h2 id="videos">Videos</h2>
+<div class="video-grid">
+  {% for v in site.data.videos %}{% include video.html v=v %}{% endfor %}
+</div>
+<h2 id="photos" class="gallery-sub">Photos</h2>
+{% endif %}
 <div class="gallery">
   {% for g in site.data.gallery %}
   {% if forloop.first %}{% assign thumb = "" %}{% else %}{% assign thumb = "thumbs/" %}{% endif %}
