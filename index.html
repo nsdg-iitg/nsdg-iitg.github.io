@@ -61,6 +61,23 @@ body_class: home
   <p class="see-more"><a class="btn ghost" href="{{ '/research/' | relative_url }}">See more research →</a></p>
 </section>
 
+<section class="wrap section home-tools">
+  <div class="section-head"><h2>Free tools from the group</h2></div>
+  <p class="muted home-tools-lead">Tools developed in the group for device analysis. They run in the browser and are free to use.</p>
+  <div class="tool-grid">
+    {% for t in site.data.tools %}
+    {% if t.soon %}<div class="tool-card is-soon">{% else %}<a class="tool-card" href="{{ t.url | relative_url }}">{% endif %}
+      {% include tool-logo.html name=t.logo %}
+      <span class="tool-body">
+        <span class="tool-name">{{ t.name }}{% if t.soon %} <span class="tool-badge">Coming soon</span>{% endif %}</span>
+        <span class="tool-about">{{ t.about | default: t.note }}</span>
+        {% unless t.soon %}<span class="tool-open">Open {{ t.name }} →</span>{% endunless %}
+      </span>
+    {% if t.soon %}</div>{% else %}</a>{% endif %}
+    {% endfor %}
+  </div>
+</section>
+
 {% assign journals = site.data.publications | where: "type", "journal" %}
 <section class="wrap section">
   <div>
