@@ -637,7 +637,8 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .area-icon.has-svg .fig-label { display: inline; }
 
 /* Home page: row of the group's tools, after Recent papers */
-.section.home-tools { padding-top: 0; padding-bottom: 28px; margin-top: -18px; }
+.section.home-tools { padding-top: 0; padding-bottom: 0; margin-top: -14px; }
+.section.home-tools + .section { padding-top: 32px; }
 .home-tools .section-head { margin-bottom: 12px; }
 .home-tools h2 { font-size: 1.35rem; }
 .tool-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }

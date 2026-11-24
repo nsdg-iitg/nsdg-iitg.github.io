@@ -29,7 +29,7 @@ Basit works on the device physics of halide perovskite devices. His research exa
 
 **Slow charge at the contact.** His thesis also examines how slow charge near the injecting contact, held either in interface traps or as mobile ions, modifies the injection barrier. He analyses the resulting signatures in impedance and capacitance measurements, including the negative capacitance frequently reported in perovskite devices, and how trap-related and ionic contributions can be distinguished.
 
-**CEISIM.** For this work he developed CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator), a one-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems within a single framework. Since the internal variables of the device are accessible, individual physical couplings can be disabled one at a time, which, to our knowledge, is not possible in established commercial tools. The simulator has been validated against a commercial TCAD simulator.
+**CEISIM.** For this work he developed CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator), a two-dimensional drift–diffusion device simulator. It treats trap occupancy and mobile-ion density as dynamical variables and solves DC, small-signal and transient problems within a single framework. Since the internal variables of the device are accessible, individual physical couplings can be disabled one at a time, which, to our knowledge, is not possible in established commercial tools. The simulator has been validated against a commercial TCAD simulator.
 
 He has also contributed to DLTS studies of ionic defects in flexible perovskite memristors.
 

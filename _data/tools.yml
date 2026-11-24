@@ -6,7 +6,7 @@
   url: /ceisim/
   note: "Coupled electronic–ionic device simulator"
   logo: ceisim
-  about: "One-dimensional drift–diffusion simulation with electronic and ionic transport solved together."
+  about: "Two-dimensional drift–diffusion simulation with electronic and ionic transport solved together."
   soon: true
 - name: "Fermi"
   url: /fermi/
