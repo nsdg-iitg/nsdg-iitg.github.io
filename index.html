@@ -71,13 +71,19 @@ body_class: home
   </div>
 </section>
 
-<section class="wrap home-tools">
-  <span class="home-tools-label">Free tools from the group</span>
-  <ul class="tool-row">
+<section class="wrap section home-tools">
+  <div class="section-head"><h2>Free tools from the group</h2></div>
+  <div class="tool-grid">
     {% for t in site.data.tools %}
-    <li>{% if t.soon %}<span class="tool-chip is-soon">{% else %}<a class="tool-chip" href="{{ t.url | relative_url }}">{% endif %}{% include tool-logo.html name=t.logo %}<span><strong>{{ t.name }}</strong>{% if t.soon %} <span class="tool-badge">Coming soon</span>{% endif %}<span class="tool-about">{{ t.note }}</span></span>{% if t.soon %}</span>{% else %}</a>{% endif %}</li>
+    {% if t.soon %}<div class="tool-card is-soon">{% else %}<a class="tool-card" href="{{ t.url | relative_url }}">{% endif %}
+      {% include tool-logo.html name=t.logo %}
+      <span class="tool-body">
+        <span class="tool-name">{{ t.name }}{% if t.soon %} <span class="tool-badge">Coming soon</span>{% else %} →{% endif %}</span>
+        <span class="tool-about">{{ t.note }}</span>
+      </span>
+    {% if t.soon %}</div>{% else %}</a>{% endif %}
     {% endfor %}
-  </ul>
+  </div>
 </section>
 
 <section class="stats-band">
