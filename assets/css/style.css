@@ -635,3 +635,16 @@ a, .btn, .chip, .site-nav a { transition: color .15s, background-color .15s, bor
 .area-icon.has-svg { --fig-ink: #1f2430; --surface: #fff; --muted: #4a5160; }
 .area-icon.has-svg svg { height: 100%; width: auto; max-width: 100%; }
 .area-icon.has-svg .fig-label { display: inline; }
+
+/* Home page: strip of the group's tools */
+.home-tools-lead { margin: -6px 0 16px; }
+.tool-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.tool-card { display: flex; gap: 14px; align-items: flex-start; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; color: var(--ink); text-decoration: none; transition: transform .15s, border-color .15s, box-shadow .15s; }
+a.tool-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow); }
+.tool-card .tool-logo { width: 44px; height: 44px; flex: none; }
+.tool-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tool-name { font-weight: 700; font-size: 1.05rem; }
+.tool-about { color: var(--muted); font-size: .92rem; line-height: 1.5; }
+.tool-open { margin-top: 4px; color: var(--accent); font-weight: 600; font-size: .92rem; }
+.tool-badge { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 99px; font-size: .72rem; font-weight: 600; vertical-align: 2px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.tool-card.is-soon { opacity: .85; }

@@ -1,15 +1,20 @@
 # Items in the "Tools" menu of the header. Add a new tool as a new entry.
 #   name: shown in the menu     url: page on this site or a full https:// address
 #   note: short line under the name (optional)     logo: name of a logo in _includes/tool-logo.html (optional)
+#   about: one or two lines for the Tools strip on the home page     soon: true while it is not yet available
 - name: "CEISIM"
   url: /ceisim/
   note: "Coupled electronic–ionic device simulator"
   logo: ceisim
+  about: "One-dimensional drift–diffusion simulation with electronic and ionic transport solved together."
+  soon: true
 - name: "Fermi"
   url: /fermi/
   note: "Band diagrams & device figures"
   logo: fermi
+  about: "Energy-band diagrams, device cross-sections, 3D device views and spatial profiles, made in the browser."
 - name: "Nyquist"
   url: /nyquist/
   note: "Impedance & C–V analysis"
   logo: nyquist
+  about: "Equivalent-circuit fitting of impedance spectra and Mott–Schottky analysis of C–V data."
