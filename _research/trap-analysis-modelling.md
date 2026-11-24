@@ -11,7 +11,7 @@ card_plot_alt: "Simulated G–V curves (slope of log J against log V) of a perov
 lead: "Physics-based methods to characterise traps and mobile ions in perovskite devices from electrical measurements, an in-house device simulator, and compact models of transistors and memories."
 card_lead: "Physics-based methods to characterise traps and mobile ions in perovskite devices from electrical measurements, an in-house device simulator, and compact models."
 people: [abdul-basit-andrabi, abinash-baruah, rekib-uddin-ahmed, pushpitha-ogirala]
-methods: "Sentaurus and Silvaco TCAD · CEISIM (our in-house 1D drift–diffusion simulator) · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"
+methods: "Sentaurus and Silvaco TCAD · CEISIM (our in-house 2D drift–diffusion simulator) · DLTS · impedance and capacitance spectroscopy · low-temperature I–V and C–V · MATLAB"
 description: "Trap and mobile-ion characterisation, DLTS, drift–diffusion device simulation and compact modelling at the Nanoelectronics and Semiconductor Devices Group, IIT Guwahati."
 figures:
   - src: "/assets/img/figures/transition-voltage-solen2023.jpg"
@@ -37,6 +37,6 @@ For each device that we fabricate or simulate, the aim is to understand the unde
 ### Key results
 
 - **Trap characterisation from dark J–V characteristics.** Trapped charge near the injecting contact causes band bending, which shifts the diffusion-to-drift transition voltage (the peak of d log J / d log V) to lower values. In simulation, this shift follows the trap density and depth in the presence of mobile ions, and distinguishes films more reliably than V<sub>OC</sub>.
-- **CEISIM, an in-house simulator.** CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator) is a one-dimensional drift–diffusion simulator that treats trap occupancy and mobile ions as dynamical variables, with DC, small-signal and transient solvers in a single framework. It provides access to the internal state of the device during impedance and transient measurements.
+- **CEISIM, an in-house simulator.** CEISIM (Coupled Electronic–Ionic Transport Semiconductor Device Simulator) is a two-dimensional drift–diffusion simulator that treats trap occupancy and mobile ions as dynamical variables, with DC, small-signal and transient solvers in a single framework. It provides access to the internal state of the device during impedance and transient measurements.
 - **DLTS of ionic defects** in perovskite memristors (methylammonium vacancies, 0.48 eV) and LEDs (a bromide-vacancy-related trap, 0.30 eV).
 - **Compact models.** An analytical model of the double-gate MOSFET for the channel potential, subthreshold current and drain current, and a simulation study of a pore-confined phase-change memory that uses current crowding to reduce programming energy.
